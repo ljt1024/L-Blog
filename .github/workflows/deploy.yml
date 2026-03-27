@@ -19,14 +19,10 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: |
-          cd L-blog
-          npm ci
+        run: npm ci
 
       - name: Build VitePress
-        run: |
-          cd L-blog
-          npm run docs:build
+        run: npm run docs:build
 
       - name: Deploy to Alibaba Cloud
         uses: appleboy/scp-action@v0.1.7
@@ -35,7 +31,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
-          source: "L-blog/docs/.vitepress/dist/*"
+          source: "docs/.vitepress/dist/*"
           target: ${{ secrets.DEPLOY_PATH }}
           strip_components: 1
           overwrite: true
