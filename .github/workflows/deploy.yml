@@ -35,4 +35,4 @@ jobs:
           target: ${{ secrets.DEPLOY_PATH }}
           strip_components: 1
           overwrite: true
-          command_timeout: 120
+          command_timeout: 120s
