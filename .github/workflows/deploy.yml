@@ -32,7 +32,7 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
           source: "docs/.vitepress/dist/*"
-          target: "${{ secrets.DEPLOY_PATH }}/dist"
-          strip_components: 0
+          target: "${{ secrets.DEPLOY_PATH }}"
+          strip_components: 3
           overwrite: true
           command_timeout: 120s
