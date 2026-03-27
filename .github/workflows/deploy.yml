@@ -18,13 +18,14 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: L-Blog/package-lock.json
 
       - name: Install dependencies
-        working-directory: L-blog
+        working-directory: L-Blog
         run: npm ci
 
       - name: Build VitePress
-        working-directory: L-blog
+        working-directory: L-Blog
         run: npm run docs:build
 
       - name: Deploy to Alibaba Cloud
@@ -34,7 +35,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           port: 22
-          source: "L-blog/docs/.vitepress/dist/*"
+          source: "L-Blog/docs/.vitepress/dist/*"
           target: ${{ secrets.DEPLOY_PATH }}
           strip_components: 1
           overwrite: true
