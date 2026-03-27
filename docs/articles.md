@@ -28,6 +28,7 @@
 - [手把手实现企业级 RAG 系统：分片 → 向量化 → 召回 → 重排 → 回答](/articles/rag-ts-implementation-complete-guide)
 - [TypeScript 类型体操进阶：从入门到实战](/articles/typescript-type-gymnastics-advanced)
 - [Claude Code 完整使用教程：从安装到高效开发](/articles/claude-code-complete-tutorial)
+- [Next.js 15 App Router 深度解析：从入门到实战](/articles/nextjs-15-app-router-deep-dive)
 - [Web Components 完全指南：构建可复用的原生组件系统](/articles/web-components-complete-guide)
 ---
 
