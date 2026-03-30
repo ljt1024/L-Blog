@@ -30,6 +30,8 @@
 - [Claude Code 完整使用教程：从安装到高效开发](/articles/claude-code-complete-tutorial)
 - [Next.js 15 App Router 深度解析：从入门到实战](/articles/nextjs-15-app-router-deep-dive)
 - [Web Components 完全指南：构建可复用的原生组件系统](/articles/web-components-complete-guide)
+- [微前端架构深入解析：设计模式、实战技巧与避坑指南](/articles/micro-frontend-architecture-deep-dive)
+- [React Server Components 深入解析：下一代 React 渲染范式](/articles/react-server-components-deep-dive)
 ---
 
 *持续更新中...*
