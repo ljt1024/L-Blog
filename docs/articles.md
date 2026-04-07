@@ -46,6 +46,7 @@
 - [TypeScript 装饰器完全指南：从原理到实战](/articles/typescript-decorators-guide)
 - [TypeScript 类型体操进阶：从入门到实战](/articles/typescript-type-gymnastics-advanced)
 - [Webpack 与 Vite 构建优化实战指南](/articles/webpack-vite-build-optimization)
+- [前端 Signals 响应式原语：框架新趋势与实现原理](/articles/frontend-signals-reactive-primitives)
 
 ## 🎯 前端性能 & 浏览器
 
