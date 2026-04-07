@@ -43,6 +43,7 @@
 
 ## 🛠️ TypeScript & 工程化
 
+- [pnpm 包管理器深度解析：为什么越来越多人用它](/articles/pnpm-package-manager-deep-dive)
 - [TypeScript 装饰器完全指南：从原理到实战](/articles/typescript-decorators-guide)
 - [TypeScript 类型体操进阶：从入门到实战](/articles/typescript-type-gymnastics-advanced)
 - [Webpack 与 Vite 构建优化实战指南](/articles/webpack-vite-build-optimization)
