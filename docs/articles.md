@@ -53,6 +53,7 @@
 ## 🎯 前端性能 & 浏览器
 
 - [CSS 动画性能优化：让页面丝滑流畅的终极指南](/articles/css-animation-performance-optimization)
+- [View Transitions API 深度解析：实现原生丝滑的页面切换动画](/articles/view-transitions-api-deep-dive)
 - [浏览器渲染原理与性能优化实战](/articles/browser-rendering-performance)
 - [CSS 工程化实战：从 BEM 到 CSS Modules 再到 CSS-in-JS](/articles/css-engineering-bem-modules-css-in-js)
 - [前端性能监控体系搭建实战](/articles/frontend-performance-monitoring)
