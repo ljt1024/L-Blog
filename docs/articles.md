@@ -58,6 +58,7 @@
 - [CSS 工程化实战：从 BEM 到 CSS Modules 再到 CSS-in-JS](/articles/css-engineering-bem-modules-css-in-js)
 - [前端性能监控体系搭建实战](/articles/frontend-performance-monitoring)
 - [前端安全完全指南：从 XSS 到 CSP 的攻防实战](/articles/frontend-security-complete-guide)
+- [Web Workers 多线程编程完全指南：让前端拥抱并行计算](/articles/web-workers-multithread-guide)
 
 ---
 
