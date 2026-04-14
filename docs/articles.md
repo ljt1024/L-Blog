@@ -49,6 +49,7 @@
 - [TypeScript 类型体操进阶：从入门到实战](/articles/typescript-type-gymnastics-advanced)
 - [Webpack 与 Vite 构建优化实战指南](/articles/webpack-vite-build-optimization)
 - [前端 Signals 响应式原语：框架新趋势与实现原理](/articles/frontend-signals-reactive-primitives)
+- [Bun 1.0 深度解析：下一代 JavaScript 运行时](/articles/bun-javascript-runtime-deep-dive)
 
 ## 🎯 前端性能 & 浏览器
 
@@ -61,6 +62,8 @@
 - [前端安全完全指南：从 XSS 到 CSP 的攻防实战](/articles/frontend-security-complete-guide)
 - [Web Workers 多线程编程完全指南：让前端拥抱并行计算](/articles/web-workers-multithread-guide)
 - [WebSocket 实时通信深度解析：从原理到企业级实战](/articles/websocket-realtime-communication)
+- [CSS Container Queries 完全指南：组件级响应式革命](/articles/css-container-queries-complete-guide)
+- [Motion One 动画编程实战：浏览器动画的正确打开方式](/articles/motion-one-animation-programming-guide)
 
 ---
 
