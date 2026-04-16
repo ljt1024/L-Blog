@@ -49,6 +49,7 @@
 - [TypeScript 类型体操进阶：从入门到实战](/articles/typescript-type-gymnastics-advanced)
 - [Webpack 与 Vite 构建优化实战指南](/articles/webpack-vite-build-optimization)
 - [前端 Signals 响应式原语：框架新趋势与实现原理](/articles/frontend-signals-reactive-primitives)
+- [Biome 深度解析：前端工具链的终极形态](/articles/biome-javascript-toolchain-guide)
 - [Bun 1.0 深度解析：下一代 JavaScript 运行时](/articles/bun-javascript-runtime-deep-dive)
 - [Hono 深度解析：最快的 Web 框架，没有之一](/articles/hono-web-framework-deep-dive)
 
