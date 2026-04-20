@@ -53,6 +53,7 @@
 - [Biome 深度解析：前端工具链的终极形态](/articles/biome-javascript-toolchain-guide)
 - [Bun 1.0 深度解析：下一代 JavaScript 运行时](/articles/bun-javascript-runtime-deep-dive)
 - [Hono 深度解析：最快的 Web 框架，没有之一](/articles/hono-web-framework-deep-dive)
+- [Drizzle ORM 深度解析：TypeScript 全栈开发的最佳数据库方案](/articles/drizzle-orm-deep-dive)
 
 ## 🎯 前端性能 & 浏览器
 
