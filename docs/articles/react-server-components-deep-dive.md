@@ -1,561 +1,473 @@
-# React Server Components 深入解析：下一代 React 渲染范式
+---
+title: React Server Components 深度解析：组件跑在服务端，体验留在客户端
+date: 2026-04-23
+---
 
-> 更新时间：2025-03-29
+# React Server Components 深度解析：组件跑在服务端，体验留在客户端
 
-React Server Components (RSC) 是 React 团队推出的革命性渲染方案，它重新定义了 React 应用的渲染方式。本文将深入解析 RSC 的核心概念、工作原理、实战技巧以及最佳实践。
+> 传统的 SSR 是"整页"渲染，RSC 是"组件级"服务端渲染——组件本身可以在服务器上运行，直接访问数据库、文件系统、密钥，产出的只是序列化后的 React 树，客户端再"接手"交互逻辑。
 
-## 传统 React 渲染方式的局限
+本文由小虾子 🦐 撰写
 
-### 客户端渲染 (CSR)
+## 为什么需要 Server Components？
 
-```javascript
-// 传统 React 应用
-function App() {
-  const [data, setData] = useState(null);
-  
+### SPA 时代的问题
+
+传统的 React 单页应用，数据获取全靠客户端：
+
+```typescript
+// 问题：组件挂载后才发请求，用户看到 loading 状态
+function UserProfile({ userId }: { userId: string }) {
+  const [user, setUser] = useState(null);
   useEffect(() => {
-    fetch('/api/data').then(res => res.json())
-      .then(setData);
-  }, []);
-  
-  return <div>{data?.title}</div>;
+    fetch(`/api/users/${userId}`)
+      .then(r => r.json())
+      .then(setUser); // 慢、loading 闪烁、SEO 不友好
+  }, [userId]);
+
+  if (!user) return <Skeleton />;
+  return <div>{user.name}</div>;
 }
 ```
 
-**问题**：
-- 首屏加载慢，需要等待 JS 加载完成才能渲染
-- SEO 不友好（搜索引擎需要执行 JS 才能抓取内容）
-- 客户端资源消耗大
+即使加了 SSR（Next.js Pages Router），数据获取也通常是"先服务端请求、再客户端水合"，两套逻辑容易分裂。
 
-### 服务端渲染 (SSR)
+### RSC 的核心思想
 
-```javascript
-// Next.js SSR
-export async function getServerSideProps() {
-  const data = await fetchData();
-  return { props: { data } };
-}
+**把组件本身变成服务端代码和数据获取的边界，而不是在组件外部包装一层 API**：
 
-function Page({ data }) {
-  return <div>{data.title}</div>;
-}
-```
+```tsx
+// Server Component - 直接在服务器上运行
+// 可以 await 数据库、文件系统、任何 Node.js API
+async function UserProfile({ userId }: { userId: string }) {
+  // 直接查询数据库，不需要 API 层！
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+  });
 
-**问题**：
-- 每次请求都要完整渲染
-- 客户端仍然需要下载大量 JS
-- 数据获取和渲染逻辑混在一起
+  if (!user) notFound();
 
-### 静态站点生成 (SSG)
-
-```javascript
-// Next.js SSG
-export async function getStaticProps() {
-  const data = await fetchData();
-  return { props: { data } };
-}
-```
-
-**问题**：
-- 不适合动态内容
-- 增量构建时间长
-
-## React Server Components 是什么？
-
-RSC 是 React 18.3+ 引入的新特性，它允许组件在服务端渲染，同时保持客户端的交互能力。
-
-### 核心特性
-
-1. **服务端专用组件**：只在服务端运行，不打包到客户端
-2. **混合渲染**：服务端组件和客户端组件可以共存
-3. **流式渲染**：支持 Suspense，边渲染边发送
-4. **零客户端打包**：服务端组件不会增加客户端 bundle 大小
-
-### 工作原理
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        Server                               │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    │
-│  │ Server      │    │ Server      │    │ Server      │
-│  │ Component   │    │ Component   │    │ Component   │
-│  │ (数据获取)  │    │ (数据获取)  │    │ (处理逻辑)  │
-│  └──────┬──────┘    └──────┬──────┘    └──────┬──────┘    │
-│         │                  │                  │           │
-│         └──────────────────┼──────────────────┘           │
-│                            ▼                                │
-│                    ┌───────────────┐                        │
-│                    │  React Server │                        │
-│                    │  Component    │                        │
-│                    │  Payload      │                        │
-│                    └───────┬───────┘                        │
-└────────────────────────────┼────────────────────────────────┘
-                             │
-                             ▼
-┌────────────────────────────────────────────────────────────┐
-│                        Client                              │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    │
-│  │ Client      │    │   React     │    │   HTML      │    │
-│  │ Component   │◄───│   Runtime   │◄───│   Render    │    │
-│  │ (交互逻辑)  │    │   (水合)    │    │   (显示)    │    │
-│  └─────────────┘    └─────────────┘    └─────────────┘    │
-└────────────────────────────────────────────────────────────┘
-```
-
-## Server Component vs Client Component
-
-### 服务端组件 (Server Component)
-
-```jsx
-// app/blog/page.tsx (默认是 Server Component)
-import { db } from './database';
-
-// 1. 可以直接访问后端资源
-async function getPosts() {
-  return db.posts.findMany();
-}
-
-// 2. 可以是 async 组件
-async function BlogPage() {
-  const posts = await getPosts();
-  
   return (
     <div>
-      {posts.map(post => (
-        <article key={post.id}>
-          <h2>{post.title}</h2>
-          <p>{post.content}</p>
-        </article>
-      ))}
+      <h1>{user.name}</h1>       {/* 纯 HTML，零 JS bundle */}
+      <FollowButton userId={user.id} />  {/* 只这个有交互，传给客户端 */}
     </div>
   );
 }
-
-export default BlogPage;
 ```
 
-**特点**：
-- 可以使用 `async/await`
-- 直接访问数据库、文件系统
-- 不会发送到客户端
-- 不能使用 hooks（useState、useEffect 等）
-- 不能使用浏览器 API
+服务端组件产出的是**序列化后的 React 树**（不是 HTML），客户端收到后直接渲染——所以叫 "React Server Components"，不是 SSR。
 
-### 客户端组件 (Client Component)
+---
 
-```jsx
-// app/Counter.tsx
-'use client';  // 关键：声明为客户端组件
+## 核心概念与模型
+
+### 两个世界的划分
+
+RSC 把组件明确划分为两类：
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Server Components（默认）                                │
+│  - 运行在：Node.js / Edge runtime                       │
+│  - 可以：await 数据库、读文件、访问密钥                   │
+│  - 产出：React 树的序列化描述（不是 HTML）               │
+│  - 不能：useState、useEffect、浏览器 API、event handlers  │
+│  - 文件：默认（无 "use client" 标记）                     │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│  Client Components（需显式声明 "use client"）            │
+│  - 运行在：浏览器（hydration 后）                        │
+│  - 可以：所有 React 特性 + 浏览器 API                    │
+│  - 不能：直接访问数据库/服务器资源                        │
+│  - 用途：交互逻辑、状态管理、事件响应                     │
+└─────────────────────────────────────────────────────────┘
+```
+
+### 边界声明
+
+```tsx
+// app/users/page.tsx - Server Component（默认）
+// 可以 import 服务器专属模块
+import { db } from '@/lib/database';
+import crypto from 'crypto';  // ✅ Node.js 模块随便用
+
+async function UsersPage() {
+  const users = await db.select().from(usersTable);
+  return (
+    <ul>
+      {users.map(u => (
+        // LikeButton 有交互逻辑 → Client Component
+        <li key={u.id}>
+          {u.name}
+          <LikeButton userId={u.id} initialCount={u.likes} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+```tsx
+// components/LikeButton.tsx
+'use client';  // ← 必须声明，才能用 useState / event handlers
 
 import { useState } from 'react';
 
-function Counter() {
-  const [count, setCount] = useState(0);
-  
+function LikeButton({ userId, initialCount }: { userId: string; initialCount: number }) {
+  const [liked, setLiked] = useState(false);
+
+  const handleLike = async () => {
+    setLiked(true);
+    await fetch(`/api/like/${userId}`, { method: 'POST' });
+  };
+
   return (
-    <button onClick={() => setCount(c => c + 1)}>
-      Count: {count}
+    <button onClick={handleLike}>
+      {liked ? '❤️' : '🤍'} {initialCount + (liked ? 1 : 0)}
     </button>
   );
 }
 ```
 
-**特点**：
-- 使用 `use client` 声明
-- 可以使用 hooks 和浏览器 API
-- 可以处理用户交互
-- 会被打包发送到客户端
+### 边界传递规则
 
-## 实战技巧
+Server Component 可以**嵌套** Client Component，但：
 
-### 1. 正确划分组件边界
-
-```jsx
-// ❌ 错误：把不需要交互的组件设为客户端组件
-'use client';
-function Header() {
-  return <h1>My Blog</h1>;
-}
-
-// ✅ 正确：默认使用服务端组件
-function Header() {
-  return <h1>My Blog</h1>;
-}
-
-// ✅ 正确：只在需要交互的组件使用 'use client'
-'use client';
-function LikeButton({ postId }) {
-  const [liked, setLiked] = useState(false);
-  return <button onClick={() => setLiked(!liked)}>❤️</button>;
-}
+```
+Server Component → Client Component → Client Component  ✅
+Client Component → Server Component                     ❌（不能反向）
+Server Component → Server Component（async）           ✅
 ```
 
-### 2. 服务端组件中获取数据
+**关键规则**：Client Component 内部不能 import Server Component，但可以通过 `children` prop 传递：
 
-```jsx
-// app/users/page.tsx
-import { Suspense } from 'react';
+```tsx
+// ❌ 错误：Client 不能 import Server
+'use client';
+import ServerChild from './ServerChild'; // 禁止！
 
-// 模拟数据获取
-async function getUsers() {
-  const res = await fetch('https://api.example.com/users', {
-    cache: 'no-store' // 动态获取
-  });
-  return res.json();
-}
-
-async function getUserStats() {
-  const res = await fetch('https://api.example.com/stats', {
-    next: { revalidate: 60 } // 每60秒重新验证
-  });
-  return res.json();
-}
-
-// 服务端组件可以并发获取数据
-async function UsersPage() {
-  const usersData = getUsers();
-  const statsData = getUserStats();
-  
-  const [users, stats] = await Promise.all([usersData, statsData]);
-  
+// ✅ 正确：通过 children prop 传递
+'use client';
+export function ClientWrapper({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
   return (
-    <div>
-      <h1>Users ({stats.total})</h1>
-      {users.map(user => <UserCard key={user.id} user={user} />)}
+    <div onClick={() => setOpen(!open)}>
+      {children} {/* children 来自 Server Component 树 */}
     </div>
   );
 }
 ```
 
-### 3. 服务端组件作为 props 传递
-
-```jsx
-// app/Feed.tsx
-async function getPosts() {
-  const res = await fetch('/api/posts');
-  return res.json();
-}
-
-function PostList({ posts }) {
+```tsx
+// Server Component 中使用
+async function ServerParent() {
+  const data = await fetchData(); // 服务端数据
   return (
-    <ul>
-      {posts.map(post => (
-        <li key={post.id}>{post.title}</li>
-      ))}
-    </ul>
+    <ClientWrapper>
+      {/* Server Component 作为 children 传入，完全合法 */}
+      <ServerDataDisplay data={data} />
+    </ClientWrapper>
   );
 }
+```
 
-async function Feed() {
-  const posts = await getPosts();
-  
+---
+
+## Next.js App Router 中的 RSC
+
+### 目录结构与约定
+
+```
+app/
+├── layout.tsx              # 根布局（Server Component）
+├── page.tsx                # 首页（Server Component）
+├── users/
+│   ├── page.tsx           # /users 列表页（Server Component）
+│   └── [id]/
+│       └── page.tsx       # /users/:id 详情页（Server Component）
+├── globals.css
+└── loading.tsx            # Suspense fallback
+```
+
+### 并行数据获取与 Streaming
+
+Server Component 支持 `await`，但不做并行优化时会串行执行。用 `Promise.all` 或 `concurrent` 模式加速：
+
+```tsx
+// app/dashboard/page.tsx
+// 两个 fetch 并行执行，不等待一个完成再取另一个
+async function DashboardPage() {
+  const [user, stats, notifications] = await Promise.all([
+    getUser(),       // 并行
+    getStats(),      // 并行
+    getNotifications(), // 并行
+  ]);
+
+  return (
+    <div>
+      <UserCard user={user} />
+      <StatsPanel stats={stats} />
+      <NotificationList items={notifications} />
+    </div>
+  );
+}
+```
+
+### Suspense 边界 + Streaming
+
+即使某个数据慢，也不阻塞整页——用 Suspense 实现流式渲染：
+
+```tsx
+// app/users/page.tsx
+import { Suspense } from 'react';
+
+async function UsersPage() {
+  return (
+    <div>
+      <h1>用户列表</h1>
+      {/* 并行加载，边加载边流式渲染 */}
+      <Suspense fallback={<UsersSkeleton />}>
+        <UsersList />  {/* 可能较慢，不阻塞上面的 h1 */}
+      </Suspense>
+      <Suspense fallback={<StatsSkeleton />}>
+        <Stats />      {/* 独立加载，互不阻塞 */}
+      </Suspense>
+    </div>
+  );
+}
+```
+
+浏览器收到 HTML 的顺序（流式），先渲染骨架屏，数据到达后自动替换——**无白屏等待**。
+
+### 服务端数据访问
+
+```tsx
+// app/posts/[slug]/page.tsx
+// 直接在 Server Component 里访问数据库，无需 API 层
+async function PostPage({ params }: { params: { slug: string } }) {
+  const post = await db.query.posts.findFirst({
+    where: eq(posts.slug, params.slug),
+    with: { author: true, tags: true },
+  });
+
+  if (!post) notFound();
+
+  return (
+    <article>
+      <header>
+        <h1>{post.title}</h1>
+        <span>作者：{post.author.name}</span>
+      </header>
+      <div dangerouslySetInnerHTML={{ __html: post.content }} />
+      <RelatedPosts tags={post.tags} />  {/* 也是 Server Component */}
+    </article>
+  );
+}
+```
+
+---
+
+## 客户端与服务端的协作模式
+
+### Server Component 作为数据容器
+
+```tsx
+// Server - 获取数据，传给 Client
+async function ArticleWithComments({ postId }: { postId: string }) {
+  const [post, comments] = await Promise.all([
+    getPost(postId),
+    getComments(postId),
+  ]);
+
+  return (
+    <article>
+      <h1>{post.title}</h1>
+      <p>{post.content}</p>
+
+      {/* 评论列表有交互 → Client Component */}
+      <CommentSection
+        initialComments={comments}
+        postId={postId}
+      />
+    </article>
+  );
+}
+```
+
+```tsx
+// Client - 接收数据，只负责交互
+'use client';
+function CommentSection({ initialComments, postId }: {
+  initialComments: Comment[];
+  postId: string;
+}) {
+  const [comments, setComments] = useState(initialComments);
+  const [text, setText] = useState('');
+
+  const submit = async () => {
+    const newComment = await postComment(postId, text);
+    setComments(prev => [...prev, newComment]);
+    setText('');
+  };
+
   return (
     <section>
-      <PostList posts={posts} />  {/* 传递数据给客户端组件 */}
+      <h2>评论 {comments.length}</h2>
+      {comments.map(c => <CommentItem key={c.id} comment={c} />)}
+      <textarea value={text} onChange={e => setText(e.target.value)} />
+      <button onClick={submit}>发送</button>
     </section>
   );
 }
 ```
 
-### 4. 使用 Suspense 实现流式渲染
+### Context 在 RSC 中的使用
 
-```jsx
-// app/posts/page.tsx
-import { Suspense } from 'react';
+Context 在 Server Component 中**无法使用**（因为 Context 是运行时概念）。解决方案：
 
-function PostSkeleton() {
-  return <div className="skeleton">Loading...</div>;
-}
-
-function PostContent() {
-  // 实际内容
-  return <div>Post Content</div>;
-}
-
-function PostsPage() {
-  return (
-    <main>
-      <h1>Posts</h1>
-      <Suspense fallback={<PostSkeleton />}>
-        <PostContent />
-      </Suspense>
-    </main>
-  );
-}
-```
-
-### 5. 嵌套服务端和客户端组件
-
-```jsx
-// app/Editor.tsx
+```tsx
+// providers.tsx - Client Component 作为 Context 提供者
 'use client';
-
-import { useState } from 'react';
-
-function Editor({ initialContent }) {
-  const [content, setContent] = useState(initialContent);
-  
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <textarea 
-      value={content}
-      onChange={(e) => setContent(e.target.value)}
-    />
-  );
-}
-
-// app/PostPage.tsx
-import { getPost } from './db';
-
-async function PostPage({ postId }) {
-  const post = await getPost(postId);
-  
-  return (
-    <article>
-      <h1>{post.title}</h1>
-      <p>{post.body}</p>
-      
-      {/* 服务端组件包裹客户端组件 */}
-      <Editor initialContent={post.content} />
-    </article>
+    <ThemeProvider>
+      <AuthProvider>
+        {children}
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 ```
 
-## 深入理解 RSC Payload
+```tsx
+// app/layout.tsx - Server Component
+import { Providers } from './providers';
+import { getServerSession } from 'next-auth';
 
-RSC Payload 是服务端发送给客户端的特殊格式数据：
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await getServerSession();  // 服务端获取 session
 
-```javascript
-// RSC Payload 结构
-[
-  // 1. 渲染结果描述
-  ['$', 'div', null, { className: 'container' }, 
-    ['$', 'h1', null, ['Hello World']]
-  ],
-  
-  // 2. 服务端组件加载指令
-  {
-    children: [
-      {
-        // 指向服务端组件的引用
-        $ => $.invokeServer('ServerComponent', { id: '1' })
-      }
-    ]
-  },
-  
-  // 3. CSS 模块引用
-  ['css', ['module.css']],
-  
-  // 4. 被序列化的数据
-  ['d', { serializedData: '...' }]
-]
+  return (
+    <html lang="zh-CN">
+      <body>
+        <Providers session={session}>  {/* 传给 Client Provider */}
+          {children}
+        </Providers>
+      </body>
+    </html>
+  );
+}
 ```
 
-## 常见问题与解决方案
-
-### 1. 何时使用 'use client'？
-
-```jsx
-// ✅ 需要时使用
+```tsx
+// providers.tsx
 'use client';
-function LikeButton() {
-  const [liked, setLiked] = useState(false);
-  return <button onClick={() => setLiked(!liked)}>Like</button>;
-}
-
-// ❌ 不需要时不使用
-function LikeIcon({ liked }) {
-  return <span>{liked ? '❤️' : '🤍'}</span>;  // 无状态，只是展示
-}
-```
-
-### 2. 服务端组件如何与客户端共享？
-
-```jsx
-// app/Post.tsx - 服务端组件
-import LikeButton from './LikeButton';
-
-async function Post({ id }) {
-  const post = await db.posts.find(id);
-  
+export function Providers({ children, session }: { children: React.ReactNode; session: any }) {
   return (
-    <article>
-      <h1>{post.title}</h1>
-      <LikeButton postId={id} />  {/* 客户端组件 */}
-    </article>
+    <SessionProvider session={session}>
+      {children}
+    </SessionProvider>
   );
 }
 ```
-
-### 3. 处理第三方客户端库
-
-```jsx
-// 第三方库通常需要客户端环境
-'use client';
-
-import { useMemo } from 'react';
-import { format } from 'date-fns';
-
-function DateDisplay({ date }) {
-  const formatted = useMemo(() => {
-    return format(new Date(date), 'yyyy-MM-dd');
-  }, [date]);
-  
-  return <span>{formatted}</span>;
-}
-```
-
-### 4. 服务端组件的缓存策略
-
-```javascript
-// 默认：缓存
-fetch('https://api.example.com/data');
-
-// 每次请求重新获取
-fetch('https://api.example.com/data', { cache: 'no-store' });
-
-// 增量静态再生成 (ISR)，60秒后重新验证
-fetch('https://api.example.com/data', { 
-  next: { revalidate: 60 } 
-});
-
-// 静态生成，永远不更新
-fetch('https://api.example.com/data', { 
-  cache: 'force-cache' 
-});
-```
-
-### 5. 错误边界处理
-
-```jsx
-// app/Error.tsx (客户端错误组件)
-'use client';
-
-import { useEffect } from 'react';
-
-export default function Error({ error, reset }) {
-  useEffect(() => {
-    console.error(error);
-  }, [error]);
-  
-  return (
-    <div>
-      <h2>Something went wrong!</h2>
-      <button onClick={() => reset()}>Try again</button>
-    </div>
-  );
-}
-
-// app/loading.tsx (加载状态)
-export default function Loading() {
-  return <div>Loading...</div>;
-}
-
-// app/not-found.tsx (404)
-export default function NotFound() {
-  return <div>Not Found</div>;
-}
-```
-
-## 性能优化最佳实践
-
-### 1. 减少客户端组件
-
-```jsx
-// ❌ 把整个页面设为客户端组件
-'use client';
-async function Page() {
-  const data = await fetchData(); // 错误：服务端逻辑不能用
-  return <div>{data.title}</div>;
-}
-
-// ✅ 拆分：服务端获取数据，客户端展示
-// app/page.tsx (服务端)
-async function Page() {
-  const data = await fetchData();
-  return <Content data={data} />;
-}
-
-// app/Content.tsx (客户端)
-'use client';
-function Content({ data }) {
-  return <div>{data.title}</div>;
-}
-```
-
-### 2. 使用 Server Actions 处理表单
-
-```jsx
-// app/actions.ts
-'use server';
-
-export async function createPost(formData: FormData) {
-  const title = formData.get('title');
-  
-  await db.posts.create({ title });
-  revalidatePath('/posts');
-}
-
-// app/create-post.tsx
-import { createPost } from './actions';
-
-function CreatePost() {
-  return (
-    <form action={createPost}>
-      <input name="title" />
-      <button type="submit">Create</button>
-    </form>
-  );
-}
-```
-
-### 3. 预加载关键数据
-
-```jsx
-// 使用 link 预加载
-import Link from 'next/link';
-
-function HomePage() {
-  return (
-    <div>
-      <h1>Welcome</h1>
-      {/* 预加载目标页面 */}
-      <Link href="/posts" prefetch={true}>
-        View Posts
-      </Link>
-    </div>
-  );
-}
-```
-
-## RSC vs 传统 SSR 对比
-
-| 特性 | 传统 SSR | React Server Components |
-|------|-----------|-------------------------|
-| 首屏渲染 | 快 | 快 |
-| SEO | 好 | 好 |
-| 客户端 JS | 多 | 少 |
-| 数据获取 | 每次请求 | 按需 |
-| 交互性 | 需要水合 | 按需水合 |
-| 流式渲染 | 需额外配置 | 原生支持 |
-| 缓存 | 需额外配置 | 自动缓存 |
-
-## 总结
-
-React Server Components 代表了 React 渲染范式的重大演进：
-
-1. **更小的 bundle**：服务端组件不发送到客户端
-2. **更好的首屏性能**：流式渲染，边渲染边发送
-3. **更简单的数据获取**：直接在组件中使用 async/await
-4. **更精细的交互**：只对需要交互的组件使用 'use client'
-
-关键是要理解组件的边界：
-- 默认使用服务端组件
-- 只有需要交互时 才使用 'use client'
-- 正确划分数据获取和展示的职责
-
-这样才能充分发挥 RSC 的性能优势，构建快速、高效的 React 应用。
 
 ---
 
-*本文由小虾子 🦐 撰写*
+## 缓存策略与最佳实践
+
+### Next.js 缓存体系
+
+```tsx
+// 三种缓存，各司其职
+
+// ① Data Cache - fetch 级别的持久缓存
+const user = await fetch('https://api.example.com/user', {
+  next: { revalidate: 3600 },  // 1 小时后重新验证
+});
+
+// ② Full Route Cache - 整个路由的静态缓存（部署时渲染）
+// layout.tsx / page.tsx 默认静态渲染（无动态参数时）
+
+// ③ Request Memoization - 单次请求内的内存缓存
+// 同一个组件树中，多次调用同一个 fetch 自动去重
+async function CommentList({ postId }: { postId: string }) {
+  // 虽然调用了两次，但只发一次请求
+  const post = await getPost(postId);      // 第一次
+  const comments = await getComments(postId); // 内部可能也调用 getPost
+  // ...
+}
+```
+
+### 动态与静态路由
+
+```tsx
+// app/posts/[id]/page.tsx
+// 有动态参数 → 默认动态渲染（每次请求实时获取数据）
+async function PostPage({ params }: { params: { id: string } }) {
+  const post = await getPost(params.id);
+  return <article>{post.title}</article>;
+}
+
+// 强制静态生成（SSG）
+export const dynamic = 'force-static';
+async function StaticPostPage() { /* ... */ }
+
+// 强制动态渲染
+export const dynamic = 'force-dynamic';
+```
+
+### 增量静态再生成（ISR）
+
+```tsx
+// 页面级别：每 60 秒重新生成一次
+export const revalidate = 60;
+
+async function BlogIndex() {
+  const posts = await db.select().from(postsTable);  // 缓存 60 秒
+  return <PostList posts={posts} />;
+}
+```
+
+---
+
+## 与 Qwik 的对比
+
+| 维度 | RSC（Next.js） | Qwik |
+|------|---------------|------|
+| 核心思路 | 组件在服务端运行，产出 React 树 | 延迟执行 + Resumability |
+| 数据获取 | 服务端直接访问 DB/API | 服务端/客户端按需加载 |
+| 交互恢复 | Hydration（需要重新绑定事件） | Serialization（直接恢复状态） |
+| 0 JS 策略 | Server Component 零 JS | 按需懒加载 JS 片段 |
+| 生态 | Next.js 官方，背靠 Vercel | 社区驱动，方向不同 |
+| 适合场景 | 全栈 Web 应用、内容型站点 | 超大应用、性能极致优化 |
+
+**两者不互斥**：Qwik 的 resumability 思路可以弥补 RSC hydration 的开销，未来两者融合是趋势。
+
+---
+
+## 实践总结
+
+### 什么时候用 Server Component？
+
+- ✅ 数据获取逻辑紧耦合的展示组件
+- ✅ 需要访问服务端资源（DB、文件系统、密钥）
+- ✅ 纯展示、无交互的 UI（卡片、列表、文章详情）
+- ✅ SEO 敏感页面（服务端直接渲染 HTML）
+
+### 什么时候用 Client Component？
+
+- ✅ 有 useState / useReducer 的状态管理
+- ✅ 有 useEffect 的副作用逻辑
+- ✅ 需要浏览器 API（localStorage、Geolocation）
+- ✅ 有事件处理器（onClick、onChange）
+- ✅ 需要第三方库（图表库、动画库）
+
+### 黄金法则
+
+> **"尽可能 Server Component，需要交互才降级为 Client Component"**
+
+组件树中 Server Component 越多 → 客户端 JS bundle 越小 → 加载越快。
+
+这才是 RSC 真正的价值：**把 JS bundle 大小从 O(组件数) 降到 O(交互组件数)**。
