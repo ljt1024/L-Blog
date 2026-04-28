@@ -23,6 +23,7 @@
 - [React Compiler 深度解析：让 React 自动变快的编译器魔法](/articles/react-compiler-deep-dive)
 - [Zustand 状态管理深度解析：比 Redux 更简洁的现代状态管理方案](/articles/zustand-state-management-deep-dive)
 - [Valtio 深度解析：Proxy 驱动的极简状态管理](/articles/valtio-state-management-deep-dive)
+- [Jotai 深度解析：原子化状态管理的艺术](/articles/jotai-state-management-deep-dive)
 - [TanStack Query 深度解析：告别手写 loading/error 状态](/articles/tanstack-query-deep-dive)
 
 ## 📱 跨端开发
