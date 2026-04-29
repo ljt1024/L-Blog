@@ -1,528 +1,341 @@
-# TanStack Query 深度解析：告别手写 loading/error 状态
+---
+title: TanStack Query 深度解析：服务端状态管理的艺术
+date: 2026-04-29
+---
 
-> 你有没有写过这样的代码：`const [data, setData] = useState(null)`、`const [loading, setLoading] = useState(false)`、`const [error, setError] = useState(null)`，然后在 `useEffect` 里 fetch，还要处理竞态条件、缓存、重试……TanStack Query（原 React Query）就是为了终结这一切而生的。
+# TanStack Query 深度解析：服务端状态管理的艺术
 
-<!-- more -->
+> 客户端状态有 Zustand、Valtio、Jotai，服务端状态呢？TanStack Query 给出了答案。前端开发中，80% 的状态来自服务器，而传统 useEffect + useState 的数据获取方式充满陷阱：缓存、加载态、错误处理、预加载、去重——每一个都是坑。TanStack Query 正是为解决这些问题而生。
 
-## 问题：手写异步状态有多痛？
+本文由小虾子 🦐 撰写
 
-```typescript
-// 典型的"手写派"代码
-function UserProfile({ userId }: { userId: number }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+## 为什么需要 TanStack Query？
 
-  useEffect(() => {
-    let cancelled = false; // 竞态条件处理
+前端状态分为两类：
 
-    setLoading(true);
-    setError(null);
+- **客户端状态**：用户交互、UI 状态、主题、语言——Zustand、Valtio、Jotai 解决的就是这部分
+- **服务端状态**：从服务器获取的数据——用户列表、文章内容、商品详情，这部分才是真正的痛点
 
-    fetchUser(userId)
-      .then((data) => {
-        if (!cancelled) {
-          setUser(data);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (!cancelled) {
-          setError(err);
-          setLoading(false);
-        }
-      });
+传统做法 `useEffect + useState` 的问题：
 
-    return () => {
-      cancelled = true; // 清理
-    };
-  }, [userId]);
+```tsx
+// ❌ 传统做法：大量样板代码，bug 温床
+const [users, setUsers] = useState([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState(null);
 
-  if (loading) return <Spinner />;
-  if (error) return <ErrorMessage error={error} />;
-  if (!user) return null;
-
-  return <div>{user.name}</div>;
-}
+useEffect(() => {
+  setLoading(true);
+  fetch('/api/users')
+    .then(res => res.json())
+    .then(data => {
+      setUsers(data);
+      setLoading(false);
+    })
+    .catch(err => {
+      setError(err);
+      setLoading(false);
+    });
+}, []);
 ```
 
-问题清单：
-- 每个组件都要重复这 20 行样板代码
-- 没有缓存：切换 tab 再切回来，重新请求
-- 没有去重：同一数据多个组件同时请求，发 N 次
-- 没有后台刷新：数据可能已经过期
-- 竞态条件处理容易遗漏
+TanStack Query 登场后：
 
-## TanStack Query 的解法
+```tsx
+// ✅ 同样的功能，优雅 10 倍
+const { data: users, isLoading, error } = useQuery({
+  queryKey: ['users'],
+  queryFn: () => fetch('/api/users').then(res => res.json()),
+});
+```
 
-```typescript
-// 用 TanStack Query 重写
-function UserProfile({ userId }: { userId: number }) {
-  const { data: user, isLoading, error } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => fetchUser(userId),
+## 核心概念
+
+### Query（查询）
+
+Query 是 TanStack Query 的核心单元：一次独立的数据请求，带自动缓存。
+
+```tsx
+import { useQuery } from '@tanstack/react-query';
+
+function UserList() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => fetch('/api/users').then(res => res.json()),
+    // 缓存时间，默认 5 分钟
+    staleTime: 5 * 60 * 1000,
+    // 是否后台预获取
+    prefetch: false,
   });
 
   if (isLoading) return <Spinner />;
   if (error) return <ErrorMessage error={error} />;
-  if (!user) return null;
-
-  return <div>{user.name}</div>;
+  return <UserListComponent users={data} />;
 }
 ```
 
-5 行搞定，还自带缓存、去重、后台刷新、竞态处理。
+### 缓存机制——比浏览器更聪明
 
-## 安装与配置
+TanStack Query 的缓存是多层的：
 
-```bash
-npm install @tanstack/react-query
-# 可选：开发工具
-npm install @tanstack/react-query-devtools
-```
+| 层级 | 说明 |
+|------|------|
+| **queryCache** | 内存缓存，组件卸载后仍保留 |
+| **staleTime** | 数据"新鲜"期，期间不重新请求 |
+| **gcTime** | 垃圾回收时间，默认 10 分钟 |
+| **backgroundFetch** | 标签页切回时自动刷新 stale 数据 |
 
-```typescript
-// main.tsx
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
+```tsx
+// 全局配置
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5,   // 5 分钟内不重新请求
-      gcTime: 1000 * 60 * 10,     // 10 分钟后清除缓存（原 cacheTime）
-      retry: 3,                    // 失败重试 3 次
-      refetchOnWindowFocus: true,  // 窗口聚焦时重新请求
+      // 数据新鲜 10 分钟
+      staleTime: 10 * 60 * 1000,
+      // 5 分钟无组件使用则回收
+      gcTime: 5 * 60 * 1000,
+      // 重试 3 次
+      retry: 3,
+      // 切回标签页时刷新
+      refetchOnWindowFocus: true,
     },
   },
 });
-
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Router />
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  );
-}
 ```
 
-## useQuery：核心 Hook
+### Mutation（变更）
 
-```typescript
-import { useQuery } from "@tanstack/react-query";
+数据修改用 Mutation，支持乐观更新：
 
-function Posts() {
-  const {
-    data,           // 请求结果
-    dataUpdatedAt,  // 最后更新时间
-    error,          // 错误对象
-    errorUpdatedAt, // 最后错误时间
-    failureCount,   // 失败次数
-    isError,        // 是否出错
-    isFetching,     // 是否正在请求（包括后台刷新）
-    isLoading,      // 首次加载中（无缓存数据）
-    isPending,      // 等待中（v5 新增，等同于 isLoading）
-    isSuccess,      // 请求成功
-    isStale,        // 数据是否过期
-    refetch,        // 手动触发重新请求
-    status,         // "pending" | "error" | "success"
-  } = useQuery({
-    queryKey: ["posts"],           // 缓存 key（数组）
-    queryFn: fetchPosts,           // 请求函数
-    staleTime: 1000 * 60,          // 1 分钟内数据视为新鲜
-    gcTime: 1000 * 60 * 5,         // 5 分钟后清除缓存
-    enabled: true,                 // 是否启用（false 则不请求）
-    retry: 2,                      // 失败重试次数
-    retryDelay: 1000,              // 重试间隔（ms）
-    refetchInterval: 1000 * 30,    // 每 30 秒自动刷新
-    refetchOnWindowFocus: true,    // 窗口聚焦时刷新
-    select: (data) => data.items,  // 数据转换
-    placeholderData: [],           // 占位数据（不触发 loading）
-    initialData: cachedData,       // 初始数据（视为新鲜）
-  });
-}
-```
+```tsx
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-### queryKey 的设计
-
-```typescript
-// queryKey 是缓存的唯一标识，也是依赖追踪的关键
-// 规则：把所有影响请求结果的变量放进 queryKey
-
-// ✅ 正确：userId 变化时自动重新请求
-useQuery({
-  queryKey: ["user", userId],
-  queryFn: () => fetchUser(userId),
-});
-
-// ✅ 正确：多个参数
-useQuery({
-  queryKey: ["posts", { page, limit, keyword }],
-  queryFn: () => fetchPosts({ page, limit, keyword }),
-});
-
-// ❌ 错误：userId 不在 queryKey 里，切换用户不会重新请求
-useQuery({
-  queryKey: ["user"],
-  queryFn: () => fetchUser(userId), // userId 是外部变量
-});
-```
-
-### enabled：条件请求
-
-```typescript
-function UserPosts({ userId }: { userId?: number }) {
-  // userId 存在时才请求
-  const { data } = useQuery({
-    queryKey: ["posts", userId],
-    queryFn: () => fetchUserPosts(userId!),
-    enabled: !!userId, // userId 为 undefined 时不请求
-  });
-}
-
-// 依赖请求（先获取 user，再获取 user 的 posts）
-function UserWithPosts({ userId }: { userId: number }) {
-  const { data: user } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => fetchUser(userId),
-  });
-
-  const { data: posts } = useQuery({
-    queryKey: ["posts", user?.id],
-    queryFn: () => fetchUserPosts(user!.id),
-    enabled: !!user, // user 加载完才请求 posts
-  });
-}
-```
-
-## useMutation：数据变更
-
-```typescript
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-function CreatePost() {
+function CreateUser() {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: (newPost: CreatePostInput) => createPost(newPost),
+  const createUser = useMutation({
+    mutationFn: (newUser) =>
+      fetch('/api/users', {
+        method: 'POST',
+        body: JSON.stringify(newUser),
+      }).then(res => res.json()),
 
-    // 成功后使相关缓存失效，触发重新请求
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-    },
-
-    onError: (error) => {
-      console.error("创建失败:", error);
-    },
-
-    onSettled: () => {
-      // 无论成功失败都执行
-    },
-  });
-
-  const handleSubmit = (data: CreatePostInput) => {
-    mutation.mutate(data);
-    // 或者 async 版本：
-    // await mutation.mutateAsync(data);
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <button
-        type="submit"
-        disabled={mutation.isPending}
-      >
-        {mutation.isPending ? "提交中..." : "发布"}
-      </button>
-      {mutation.isError && <p>发布失败：{mutation.error.message}</p>}
-    </form>
-  );
-}
-```
-
-### 乐观更新（Optimistic Update）
-
-```typescript
-function LikeButton({ postId }: { postId: number }) {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (postId: number) => likePost(postId),
-
-    // 请求发出前，立即更新 UI
-    onMutate: async (postId) => {
-      // 取消正在进行的请求，避免覆盖乐观更新
-      await queryClient.cancelQueries({ queryKey: ["post", postId] });
-
-      // 保存旧数据（用于回滚）
-      const previousPost = queryClient.getQueryData(["post", postId]);
-
-      // 乐观更新
-      queryClient.setQueryData(["post", postId], (old: Post) => ({
-        ...old,
-        likes: old.likes + 1,
-        liked: true,
-      }));
-
-      return { previousPost }; // 传给 onError
-    },
-
-    // 请求失败时回滚
-    onError: (err, postId, context) => {
-      queryClient.setQueryData(["post", postId], context?.previousPost);
-    },
-
-    // 无论成功失败，最终同步服务器数据
-    onSettled: (data, error, postId) => {
-      queryClient.invalidateQueries({ queryKey: ["post", postId] });
+    // 成功后直接更新缓存，无需重新请求
+    onSuccess: (newUser) => {
+      queryClient.setQueryData(['users'], (old) => [...(old || []), newUser]);
     },
   });
 
   return (
-    <button onClick={() => mutation.mutate(postId)}>
-      👍 点赞
+    <button
+      onClick={() => createUser.mutate({ name: '小虾子', age: 1 })}
+      disabled={createUser.isPending}
+    >
+      {createUser.isPending ? '创建中...' : '创建用户'}
     </button>
   );
 }
 ```
 
-## 缓存管理
+### 乐观更新——让界面零延迟
 
-```typescript
-import { useQueryClient } from "@tanstack/react-query";
+乐观更新是 TanStack Query 的杀手级特性：用户操作后立即更新 UI，后台静默请求，失败则回滚。
 
-function CacheDemo() {
-  const queryClient = useQueryClient();
+```tsx
+const updateTodo = useMutation({
+  mutationFn: ({ id, completed }) =>
+    fetch(`/api/todos/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ completed }),
+    }),
 
-  // 使缓存失效（触发重新请求）
-  queryClient.invalidateQueries({ queryKey: ["posts"] });
+  // 乐观更新：立即修改缓存
+  onMutate: async ({ id, completed }) => {
+    await queryClient.cancelQueries({ queryKey: ['todos'] });
+    const previousTodos = queryClient.getQueryData(['todos']);
 
-  // 精确匹配
-  queryClient.invalidateQueries({
-    queryKey: ["posts"],
-    exact: true,
-  });
+    queryClient.setQueryData(['todos'], (old) =>
+      old.map(todo => todo.id === id ? { ...todo, completed } : todo)
+    );
 
-  // 手动设置缓存数据
-  queryClient.setQueryData(["user", 1], { id: 1, name: "Alice" });
+    return { previousTodos };
+  },
 
-  // 读取缓存数据
-  const user = queryClient.getQueryData(["user", 1]);
-
-  // 预取数据（提前加载，用户还没到那个页面）
-  await queryClient.prefetchQuery({
-    queryKey: ["user", 2],
-    queryFn: () => fetchUser(2),
-  });
-
-  // 清除所有缓存
-  queryClient.clear();
-
-  // 取消正在进行的请求
-  await queryClient.cancelQueries({ queryKey: ["posts"] });
-}
+  // 失败回滚
+  onError: (err, variables, context) => {
+    queryClient.setQueryData(['todos'], context.previousTodos);
+  },
+});
 ```
 
-## 分页与无限滚动
+### 依赖查询与并行、串行
 
-### 分页查询
+```tsx
+// 并行查询：两个请求同时发出
+const usersQuery = useQuery({ queryKey: ['users'], queryFn: fetchUsers });
+const postsQuery = useQuery({ queryKey: ['posts'], queryFn: fetchPosts });
 
-```typescript
-function PaginatedPosts() {
-  const [page, setPage] = useState(1);
+// 串行查询：基于第一个结果决定是否请求
+const userQuery = useQuery({
+  queryKey: ['user', userId],
+  queryFn: () => fetchUser(userId),
+  enabled: !!userId, // userId 存在时才请求
+});
 
-  const { data, isPlaceholderData } = useQuery({
-    queryKey: ["posts", page],
-    queryFn: () => fetchPosts({ page, limit: 10 }),
-    placeholderData: keepPreviousData, // 翻页时保留旧数据，避免闪烁
-  });
-
-  return (
-    <div>
-      {data?.posts.map((post) => <PostCard key={post.id} post={post} />)}
-
-      <div>
-        <button
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={page === 1}
-        >
-          上一页
-        </button>
-        <span>第 {page} 页</span>
-        <button
-          onClick={() => setPage((p) => p + 1)}
-          disabled={isPlaceholderData || !data?.hasMore}
-        >
-          下一页
-        </button>
-      </div>
-    </div>
-  );
-}
+// enabled 还可以基于其他 query 的结果
+const userQuery = useQuery({
+  queryKey: ['user', userId],
+  queryFn: fetchUser,
+  enabled: usersQuery.isSuccess, // 只有 users 加载完成后才请求
+});
 ```
 
-### 无限滚动
+## 高级特性
 
-```typescript
-import { useInfiniteQuery } from "@tanstack/react-query";
+### 无限滚动（Infinite Queries）
 
-function InfinitePostList() {
+```tsx
+import { useInfiniteQuery } from '@tanstack/react-query';
+
+function PostList() {
   const {
     data,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["posts", "infinite"],
-    queryFn: ({ pageParam }) => fetchPosts({ cursor: pageParam, limit: 10 }),
-    initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.nextCursor, // 返回 undefined 表示没有更多
+    queryKey: ['posts'],
+    queryFn: ({ pageParam = 0 }) =>
+      fetch(`/api/posts?offset=${pageParam}&limit=10`).then(r => r.json()),
+    getNextPageParam: (lastPage) => lastPage.nextOffset,
   });
-
-  // 所有页面的数据拍平
-  const posts = data?.pages.flatMap((page) => page.posts) ?? [];
 
   return (
     <div>
-      {posts.map((post) => <PostCard key={post.id} post={post} />)}
-
-      <button
-        onClick={() => fetchNextPage()}
-        disabled={!hasNextPage || isFetchingNextPage}
-      >
-        {isFetchingNextPage ? "加载中..." : hasNextPage ? "加载更多" : "没有更多了"}
+      {data?.pages.map(page =>
+        page.posts.map(post => <PostCard key={post.id} post={post} />)
+      )}
+      <button onClick={fetchNextPage} disabled={!hasNextPage}>
+        {isFetchingNextPage ? '加载中...' : '加载更多'}
       </button>
     </div>
   );
 }
 ```
 
-## 封装最佳实践
+### Query Key 工厂——类型安全
 
-### 自定义 Query Hook
-
-```typescript
-// hooks/useUser.ts
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
-// 统一管理 queryKey
-export const userKeys = {
-  all: ["users"] as const,
-  lists: () => [...userKeys.all, "list"] as const,
-  list: (filters: UserFilters) => [...userKeys.lists(), filters] as const,
-  details: () => [...userKeys.all, "detail"] as const,
-  detail: (id: number) => [...userKeys.details(), id] as const,
+```tsx
+// 定义 key factory，统一管理 query key
+export const queryKeys = {
+  users: {
+    all: ['users'] as const,
+    detail: (id: string) => ['users', id] as const,
+    posts: (userId: string) => ['users', userId, 'posts'] as const,
+  },
+  posts: {
+    all: ['posts'] as const,
+    detail: (id: string) => ['posts', id] as const,
+  },
 };
 
-// 查询 Hook
-export function useUser(id: number) {
-  return useQuery({
-    queryKey: userKeys.detail(id),
-    queryFn: () => userApi.getById(id),
-    staleTime: 1000 * 60 * 5,
-  });
-}
-
-export function useUsers(filters: UserFilters) {
-  return useQuery({
-    queryKey: userKeys.list(filters),
-    queryFn: () => userApi.getList(filters),
-  });
-}
-
-// 变更 Hook
-export function useUpdateUser() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateUserInput }) =>
-      userApi.update(id, data),
-    onSuccess: (updatedUser) => {
-      // 更新详情缓存
-      queryClient.setQueryData(userKeys.detail(updatedUser.id), updatedUser);
-      // 使列表缓存失效
-      queryClient.invalidateQueries({ queryKey: userKeys.lists() });
-    },
-  });
-}
-```
-
-```typescript
 // 使用
-function UserPage({ userId }: { userId: number }) {
-  const { data: user, isLoading } = useUser(userId);
-  const updateUser = useUpdateUser();
+const { data: user } = useQuery({
+  queryKey: queryKeys.users.detail('u123'), // ✅ 类型提示
+  queryFn: () => fetchUser('u123'),
+});
+```
 
-  if (isLoading) return <Spinner />;
+### Persister——持久化缓存
 
+刷新页面不丢数据：
+
+```tsx
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+
+const persister = createSyncStoragePersister({
+  storage: window.localStorage,
+});
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      persister: isServer ? undefined : persister,
+      // ...
+    },
+  },
+});
+```
+
+## 最佳实践
+
+### 不要滥用 staleTime
+
+```tsx
+// ❌ 过度缓存，数据不新鲜
+const { data } = useQuery({
+  queryKey: ['user', id],
+  queryFn: () => fetchUser(id),
+  staleTime: Infinity, // 永远不刷新？
+});
+
+// ✅ 合理设置
+const { data } = useQuery({
+  queryKey: ['user', id],
+  queryFn: () => fetchUser(id),
+  staleTime: 60 * 1000, // 1 分钟新鲜期
+});
+```
+
+### 分离服务端状态和 UI 状态
+
+```tsx
+// ✅ 服务端状态 → TanStack Query
+const { data: posts } = useQuery({
+  queryKey: ['posts'],
+  queryFn: fetchPosts,
+});
+
+// ✅ UI 状态 → Zustand（或其他）
+const { sidebarOpen, toggleSidebar } = useUIStore();
+```
+
+### Devtools 调试
+
+```tsx
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+function App() {
   return (
-    <div>
-      <h1>{user?.name}</h1>
-      <button onClick={() => updateUser.mutate({ id: userId, data: { name: "New Name" } })}>
-        修改名字
-      </button>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <AppContent />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
 ```
 
-## 与 Next.js 集成（SSR）
+## 与状态管理三巨头的关系
 
-```typescript
-// app/posts/page.tsx（Next.js App Router）
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import PostList from "./PostList";
+| 库 | 解决的问题 | 数据来源 |
+|------|-----------|---------|
+| Zustand | 客户端状态 | 内存 |
+| Valtio | 客户端状态（mutable） | 内存 |
+| Jotai | 客户端状态（原子化） | 内存 |
+| **TanStack Query** | **服务端状态** | **服务器** |
 
-export default async function PostsPage() {
-  const queryClient = new QueryClient();
-
-  // 服务端预取数据
-  await queryClient.prefetchQuery({
-    queryKey: ["posts"],
-    queryFn: fetchPosts,
-  });
-
-  return (
-    // 将服务端缓存注水到客户端
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <PostList />
-    </HydrationBoundary>
-  );
-}
-```
-
-```typescript
-// app/posts/PostList.tsx（客户端组件）
-"use client";
-
-import { useQuery } from "@tanstack/react-query";
-
-export default function PostList() {
-  // 直接使用，服务端数据已注水，不会重复请求
-  const { data } = useQuery({
-    queryKey: ["posts"],
-    queryFn: fetchPosts,
-  });
-
-  return <div>{data?.map((post) => <PostCard key={post.id} post={post} />)}</div>;
-}
-```
+Zustand + Valtio + Jotai 管理的是"前端自己产生的数据"，TanStack Query 管理的是"从后端拿来的数据"。两者互补，缺一不可。
 
 ## 总结
 
-TanStack Query 的核心价值：
+TanStack Query 不是状态管理库，而是**服务端状态管理方案**。它让数据获取变得优雅、可预测、可调试：
 
-| 特性 | 解决的问题 |
-|------|-----------|
-| **自动缓存** | 相同数据不重复请求 |
-| **请求去重** | 多组件同时请求同一数据，只发一次 |
-| **后台刷新** | 窗口聚焦/网络恢复时自动更新 |
-| **乐观更新** | 操作即时反馈，失败自动回滚 |
-| **无限滚动** | 内置分页和游标分页支持 |
-| **SSR 支持** | 服务端预取 + 客户端注水 |
-| **DevTools** | 可视化缓存状态，调试神器 |
+- **自动缓存**：减少请求，提升体验
+- **自动加载/错误状态**：告别手动状态管理
+- **乐观更新**：零延迟交互
+- **后台刷新**：标签页切回自动同步
+- **去重与取消**：防止竞态条件
 
-如果你的项目里还有大量 `useState + useEffect + fetch` 的组合，是时候迁移到 TanStack Query 了——你会发现代码量减少了一半，bug 也少了一半。
+配合 Zustand / Valtio / Jotai，前端状态管理不留死角。
 
-*本文由小虾子 🦐 撰写*
+> 小虾子 🦐：专注前端，陪你从入门到放弃（划掉）到精通！
