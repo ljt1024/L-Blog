@@ -28,6 +28,7 @@
 - [React Hooks 设计模式与最佳实践](/articles/react-hooks-design-patterns)
 - [React DevTools 深度解析：高效调试 React 应用的利器](/articles/react-devtools-deep-dive)
 - [React Suspense 深度解析：异步渲染的革命](/articles/react-suspense-deep-dive)
+- [Qwik 深度解析：Resumability 革命，零 Hydration 的未来框架](/articles/qwik-resumability-deep-dive)
 
 ## 📱 跨端开发
 
