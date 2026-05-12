@@ -77,6 +77,7 @@
 - [WebSocket 实时通信深度解析：从原理到企业级实战](/articles/websocket-realtime-communication)
 - [CSS Container Queries 完全指南：组件级响应式革命](/articles/css-container-queries-complete-guide)
 - [Motion One 动画编程实战：浏览器动画的正确打开方式](/articles/motion-one-animation-programming-guide)
+- [CSS Houdini 深度解析：解锁浏览器渲染引擎的终极能力](/articles/css-houdini-modern-browser-rendering-apis)
 
 ---
 
