@@ -79,6 +79,7 @@
 - [Motion One 动画编程实战：浏览器动画的正确打开方式](/articles/motion-one-animation-programming-guide)
 - [CSS Houdini 深度解析：解锁浏览器渲染引擎的终极能力](/articles/css-houdini-modern-browser-rendering-apis)
 - [CSS :has() 选择器深度解析：终于等到你，父选择器！](/articles/css-has-selector-deep-dive)
+- [Scroll-driven Animations API 深度解析：让滚动 control 动画](/articles/scroll-driven-animations-api)
 
 ---
 
