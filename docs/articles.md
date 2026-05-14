@@ -64,6 +64,10 @@
 - [Drizzle ORM 深度解析：TypeScript 全栈开发的最佳数据库方案](/articles/drizzle-orm-deep-dive)
 - [Tailwind CSS v4 深度解析：CSS-first 的全新时代](/articles/tailwind-css-v4-deep-dive)
 
+## 🐍 Python
+
+- [Python 核心特性深度解析：从语法糖到工程实践](/articles/python-core-features-deep-dive)
+
 ## 🎯 前端性能 & 浏览器
 
 - [CSS 动画性能优化：让页面丝滑流畅的终极指南](/articles/css-animation-performance-optimization)
