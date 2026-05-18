@@ -114,6 +114,13 @@ export default defineConfig({
                     { text: 'MongoDB', link: '/study/back-end/mongodb-advanced' },
                     { text: 'Redis', link: '/study/back-end/redis-advanced' }
                   ]
+                },
+                {
+                  text: 'Python语言',
+                  items: [
+                    { text: 'Python基础', link: '/study/back-end/python-basics' },
+                    { text: 'Python进阶', link: '/study/back-end/python-advanced' }
+                  ]
                 }
               ]
             },
