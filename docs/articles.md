@@ -9,6 +9,7 @@
 - [手写call、apply、bind](/articles/jsCallApplyBind)
 - [js实现翻牌抽奖](/articles/jsDraw)
 - [深入理解 JavaScript 事件循环机制](/articles/js-event-loop-deep-dive)
+- [JavaScript 设计模式：从单例到观察者，写出优雅架构](/articles/javascript-design-patterns)
 
 ## 🎨 Vue 生态
 
