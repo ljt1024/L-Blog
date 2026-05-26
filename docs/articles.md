@@ -66,6 +66,7 @@
 - [前端 Signals 响应式原语：框架新趋势与实现原理](/articles/frontend-signals-reactive-primitives)
 - [Biome 深度解析：前端工具链的终极形态](/articles/biome-javascript-toolchain-guide)
 - [Bun 1.0 深度解析：下一代 JavaScript 运行时](/articles/bun-javascript-runtime-deep-dive)
+- [Bun 深度解析：JavaScript 运行时的新势力（bun install / bun test / bun serve 实战）](/articles/bun-deep-dive)
 - [Hono 深度解析：最快的 Web 框架，没有之一](/articles/hono-web-framework-deep-dive)
 - [Drizzle ORM 深度解析：TypeScript 全栈开发的最佳数据库方案](/articles/drizzle-orm-deep-dive)
 - [Tailwind CSS v4 深度解析：CSS-first 的全新时代](/articles/tailwind-css-v4-deep-dive)
