@@ -63,6 +63,7 @@
 - [TypeScript 装饰器完全指南：从原理到实战](/articles/typescript-decorators-guide)
 - [TypeScript 类型体操进阶：从入门到实战](/articles/typescript-type-gymnastics-advanced)
 - [Webpack 与 Vite 构建优化实战指南](/articles/webpack-vite-build-optimization)
+- [Vite 深度解析：前端构建工具之王的秘密，开发体验与构建质量的完美平衡](/articles/vite-deep-dive)
 - [前端 Signals 响应式原语：框架新趋势与实现原理](/articles/frontend-signals-reactive-primitives)
 - [Biome 深度解析：前端工具链的终极形态](/articles/biome-javascript-toolchain-guide)
 - [ESLint v9 深度解析：Flat Config 时代的全新配置范式，告别 .eslintrc](/articles/eslint-v9-deep-dive)
