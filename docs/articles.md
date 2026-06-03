@@ -34,6 +34,7 @@
 - [React Suspense 深度解析：异步渲染的革命](/articles/react-suspense-deep-dive)
 - [Qwik 深度解析：Resumability 革命，零 Hydration 的未来框架](/articles/qwik-resumability-deep-dive)
 - [Astro 深度解析：内容驱动网站的终极选择](/articles/astro-framework-deep-dive)
+- [HTMX 深度解析：超媒体 API 的现代 Web 回归，HTML 才是最好的 UI 描述语言](/articles/htmx-deep-dive)
 
 ## 📱 跨端开发
 
