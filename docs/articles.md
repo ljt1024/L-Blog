@@ -36,6 +36,10 @@
 - [Astro 深度解析：内容驱动网站的终极选择](/articles/astro-framework-deep-dive)
 - [HTMX 深度解析：超媒体 API 的现代 Web 回归，HTML 才是最好的 UI 描述语言](/articles/htmx-deep-dive)
 
+## 🚀 新兴框架
+
+- [Solid.js 深度解析：React 语法，Vue 性能的细粒度响应式框架](/articles/solidjs-deep-dive)
+
 ## 📱 跨端开发
 
 - [uniapp微信小程序新版本获取用户的头像和昵称，手机号](/articles/uniappGetUserInfo)
