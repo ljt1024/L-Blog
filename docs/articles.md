@@ -100,6 +100,7 @@
 - [CSS :has() 选择器深度解析：终于等到你，父选择器！](/articles/css-has-selector-deep-dive)
 - [Scroll-driven Animations API 深度解析：让滚动 control 动画](/articles/scroll-driven-animations-api)
 - [WebAssembly 深度解析：前端性能的最后一块拼图](/articles/webassembly-deep-dive)
+- [Service Worker 与 PWA 深度实践指南：离线优先的现代 Web 应用](/articles/service-worker-pwa-deep-dive)
 
 ---
 
