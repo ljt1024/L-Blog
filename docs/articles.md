@@ -39,6 +39,7 @@
 ## 🚀 新兴框架
 
 - [Solid.js 深度解析：React 语法，Vue 性能的细粒度响应式框架](/articles/solidjs-deep-dive)
+- [Svelte 5 深度解析：Runes 响应式系统，编译时优化的终极形态](/articles/svelte5-deep-dive)
 
 ## 📱 跨端开发
 
