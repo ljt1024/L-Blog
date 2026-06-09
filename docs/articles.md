@@ -16,6 +16,7 @@
 - [vue3总结](/articles/vue3Summary)
 - [vue3自定义指令](/articles/vue3-custom-directives)
 - [Vue 3 响应式原理深度解析：从 Proxy 到 effect](/articles/vue3-reactivity-deep-dive)
+- [Vue Vapor Mode 深度解析：编译时优化消除 Virtual DOM](/articles/vue-vapor-mode-deep-dive)
 
 ## ⚛️ React 生态
 
