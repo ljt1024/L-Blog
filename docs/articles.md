@@ -89,6 +89,7 @@
 ## 🐍 Python
 
 - [Python 核心特性深度解析：从语法糖到工程实践](/articles/python-core-features-deep-dive)
+- [Hono 深度解析：超轻量 Web 框架的终极形态](/articles/hono-deep-dive)
 - [FastAPI Web 开发实战：从入门到生产部署](/articles/fastapi-python-web-development)
 
 ## 🎯 前端性能 & 浏览器
