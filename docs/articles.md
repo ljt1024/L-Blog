@@ -114,6 +114,7 @@
 - [View Transitions API 深度解析：浏览器原生的页面过渡方案](/articles/view-transitions-api-deep-dive)
 - [WebAssembly 深度解析：前端性能的最后一块拼图](/articles/webassembly-deep-dive)
 - [Service Worker 与 PWA 深度实践指南：离线优先的现代 Web 应用](/articles/service-worker-pwa-deep-dive)
+- [IndexedDB 深度解析：浏览器端数据库的完整实战指南](/articles/indexeddb-deep-dive)
 
 ---
 
