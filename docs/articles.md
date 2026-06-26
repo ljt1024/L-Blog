@@ -116,6 +116,7 @@
 - [Service Worker 与 PWA 深度实践指南：离线优先的现代 Web 应用](/articles/service-worker-pwa-deep-dive)
 - [IndexedDB 深度解析：浏览器端数据库的完整实战指南](/articles/indexeddb-deep-dive)
 - [Speculation Rules API 深度解析：浏览器原生的智能预加载机制](/articles/speculation-rules-api-deep-dive)
+- [Document Picture-in-Picture API 深度解析：画中画不只是视频](/articles/document-picture-in-picture-api-deep-dive)
 
 ---
 
