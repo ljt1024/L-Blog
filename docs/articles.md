@@ -94,6 +94,7 @@
 - [Python 基础完全指南：从零构建坚实的编程地基](/articles/python-basic-guide)
 - [Python 进阶工程实战：从语法精通到架构设计](/articles/python-advanced-guide)
 - [Python 装饰器深度解析：从原理到工程实战的完全指南](/articles/python-decorator-deep-dive)
+- [Python 上下文管理器深度解析：with 语句与资源管理的优雅方案](/articles/python-context-manager-deep-dive)
 - [Python 核心特性深度解析：从语法糖到工程实践](/articles/python-core-features-deep-dive)
 - [Hono 深度解析：超轻量 Web 框架的终极形态](/articles/hono-deep-dive)
 - [Modern Auth 深度解析：从 Session 到 Passkeys 的现代认证机制](/articles/modern-auth-deep-dive)
