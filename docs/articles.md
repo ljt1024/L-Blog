@@ -94,7 +94,6 @@
 - [Python 基础完全指南：从零构建坚实的编程地基](/articles/python-basic-guide)
 - [Python 进阶工程实战：从语法精通到架构设计](/articles/python-advanced-guide)
 - [Python 异步编程深度解析：从 asyncio 到高性能网络应用](/articles/python-asyncio-deep-dive)
-- [Python CLI 工具开发：从脚本到专业命令行工具](/articles/python-cli-tool-development)
 - [Python 装饰器深度解析：从原理到工程实战的完全指南](/articles/python-decorator-deep-dive)
 - [Python 上下文管理器深度解析：with 语句与资源管理的优雅方案](/articles/python-context-manager-deep-dive)
 - [Python 元编程深度解析：元类与描述符的完全指南](/articles/python-metaprogramming-deep-dive)
