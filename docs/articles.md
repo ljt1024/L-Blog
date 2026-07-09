@@ -125,6 +125,7 @@
 - [IndexedDB 深度解析：浏览器端数据库的完整实战指南](/articles/indexeddb-deep-dive)
 - [Speculation Rules API 深度解析：浏览器原生的智能预加载机制](/articles/speculation-rules-api-deep-dive)
 - [Document Picture-in-Picture API 深度解析：画中画不只是视频](/articles/document-picture-in-picture-api-deep-dive)
+- [Web Permissions API 深度解析：浏览器权限的查询、请求与最佳实践](/articles/permissions-api-deep-dive)
 
 ---
 
