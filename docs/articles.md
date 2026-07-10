@@ -92,6 +92,7 @@
 ## 🐍 Python
 
 - [Python 基础完全指南：从零构建坚实的编程地基](/articles/python-basic-guide)
+- [Python 类型系统完全指南：从基础类型提示到高级泛型编程](/articles/python-type-system-deep-dive)
 - [Python 进阶工程实战：从语法精通到架构设计](/articles/python-advanced-guide)
 - [Python 异步编程深度解析：从 asyncio 到高性能网络应用](/articles/python-asyncio-deep-dive)
 - [Python 生成器与迭代器完全指南：从协议到工程实战](/articles/python-iterator-generator-deep-dive)
