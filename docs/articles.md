@@ -88,6 +88,7 @@
 - [CSS Architecture 深度解析：模块化、作用域与样式系统的工程实践](/articles/css-architecture-deep-dive)
 - [Panda CSS 深度解析：CSS-in-JS 的新势力，zero-runtime + 类型安全 + 静态生成](/articles/panda-css-deep-dive)
 - [Zod 运行时类型校验完全指南：TypeScript 优先的数据校验方案](/articles/zod-runtime-type-validation-deep-dive)
+- [CSS Cascade Layers 深度解析：掌控样式优先级的新一代武器](/articles/css-cascade-layers-deep-dive)
 
 ## 🐍 Python
 
