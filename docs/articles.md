@@ -129,6 +129,7 @@
 - [Speculation Rules API 深度解析：浏览器原生的智能预加载机制](/articles/speculation-rules-api-deep-dive)
 - [Document Picture-in-Picture API 深度解析：画中画不只是视频](/articles/document-picture-in-picture-api-deep-dive)
 - [Web Permissions API 深度解析：浏览器权限的查询、请求与最佳实践](/articles/permissions-api-deep-dive)
+- [CSS Color 4 与 OKLCH 色彩空间深度指南：重新认识你每天都在用的颜色](/articles/css-color-4-oklch-deep-dive)
 
 ---
 
