@@ -78,6 +78,7 @@
 - [前端 Signals 响应式原语：框架新趋势与实现原理](/articles/frontend-signals-reactive-primitives)
 - [Biome 深度解析：前端工具链的终极形态](/articles/biome-javascript-toolchain-guide)
 - [Oxc 深度解析：Rust 编写的前端工具链新星，10-100 倍性能提升](/articles/oxc-deep-dive)
+- [Rolldown 深度解析：Vite 的下一代 JavaScript 打包器，Rust 驱动的极速构建](/articles/rolldown-next-gen-javascript-bundler)
 - [ESLint v9 深度解析：Flat Config 时代的全新配置范式，告别 .eslintrc](/articles/eslint-v9-deep-dive)
 - [Bun 1.0 深度解析：下一代 JavaScript 运行时](/articles/bun-javascript-runtime-deep-dive)
 - [Bun 深度解析：JavaScript 运行时的新势力（bun install / bun test / bun serve 实战）](/articles/bun-deep-dive)
