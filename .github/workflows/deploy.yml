@@ -30,7 +30,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
-          port: 22
+          port: 1017
           source: "docs/.vitepress/dist/*"
           target: "${{ secrets.DEPLOY_PATH }}"
           strip_components: 3
