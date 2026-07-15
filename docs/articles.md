@@ -105,6 +105,7 @@
 - [Python 元编程深度解析：元类与描述符的完全指南](/articles/python-metaprogramming-deep-dive)
 - [Python 数据类完全指南：@dataclass 从入门到精通](/articles/python-dataclass-deep-dive)
 - [Python 核心特性深度解析：从语法糖到工程实践](/articles/python-core-features-deep-dive)
+- [Python 错误处理与异常体系完全指南：从 try/except 到 ExceptionGroup](/articles/python-exception-handling-deep-dive)
 - [Hono 深度解析：超轻量 Web 框架的终极形态](/articles/hono-deep-dive)
 - [Modern Auth 深度解析：从 Session 到 Passkeys 的现代认证机制](/articles/modern-auth-deep-dive)
 - [FastAPI Web 开发实战：从入门到生产部署](/articles/fastapi-python-web-development)
