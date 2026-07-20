@@ -108,6 +108,7 @@
 - [Python 错误处理与异常体系完全指南：从 try/except 到 ExceptionGroup](/articles/python-exception-handling-deep-dive)
 - [Python 虚拟环境与依赖管理完全指南：从 venv 到 uv 的实战解析](/articles/python-venv-dependency-management-deep-dive)
 - [Python 测试与调试完全指南：从 pytest 到 pdb 的工程实战](/articles/python-testing-debugging-deep-dive)
+- [Python 日志与监控完全指南：从 logging 到生产运维的实战解析](/articles/python-logging-deep-dive)
 - [Hono 深度解析：超轻量 Web 框架的终极形态](/articles/hono-deep-dive)
 - [Modern Auth 深度解析：从 Session 到 Passkeys 的现代认证机制](/articles/modern-auth-deep-dive)
 - [FastAPI Web 开发实战：从入门到生产部署](/articles/fastapi-python-web-development)
