@@ -96,7 +96,7 @@ ptyProcess.onExit(({ exitCode, signal }) => {
 npm install node-pty
 ```
 
-> ⚠️ 注意：node-pty 是原生插件，需要编译。如果你遇到安装问题，请确保已安装：
+> 注意 注意：node-pty 是原生插件，需要编译。如果你遇到安装问题，请确保已安装：
 > - **Linux**: `build-essential` + `python3`
 > - **macOS**: Xcode Command Line Tools
 > - **Windows**: Visual Studio Build Tools
@@ -294,15 +294,15 @@ console.log('WebSocket server running on ws://localhost:8080');
     const ws = new WebSocket('ws://localhost:8080');
 
     ws.onopen = () => {
-      terminal.writeln('\x1b[1;32m✓ Connected to WebShell\x1b[0m\r\n');
+      terminal.writeln('\x1b[1;32m是 Connected to WebShell\x1b[0m\r\n');
     };
 
     ws.onclose = () => {
-      terminal.writeln('\r\n\x1b[1;31m✗ Connection closed\x1b[0m');
+      terminal.writeln('\r\n\x1b[1;31m否 Connection closed\x1b[0m');
     };
 
     ws.onerror = (err) => {
-      terminal.writeln(`\r\n\x1b[1;31m✗ WebSocket Error: ${err}\x1b[0m`);
+      terminal.writeln(`\r\n\x1b[1;31m否 WebSocket Error: ${err}\x1b[0m`);
     };
 
     // 服务端消息处理
@@ -683,10 +683,10 @@ web-shell/
 
 Node-pty 是构建浏览器端 Shell 工具的基石技术。通过它与 xterm.js、WebSocket 的组合，我们可以实现：
 
-- ✅ 功能完整的 Web 终端（支持 vim、top 等交互式命令）
-- ✅ 远程服务器 SSH 连接（真正的 PTY 会话）
-- ✅ 多标签页管理（类 VS Code 体验）
-- ✅ 跨平台桌面应用（Electron 打包）
+- 正确 功能完整的 Web 终端（支持 vim、top 等交互式命令）
+- 正确 远程服务器 SSH 连接（真正的 PTY 会话）
+- 正确 多标签页管理（类 VS Code 体验）
+- 正确 跨平台桌面应用（Electron 打包）
 
 在 [HTMX 深度解析](/articles/htmx-deep-dive) 一文中我们探讨了超媒体驱动的 Web 回归，而 node-pty + xterm.js 则代表了另一个方向 —— 将原生能力带入浏览器。这两条路并非对立，而是 Web 能力扩张的不同维度。
 
@@ -704,4 +704,4 @@ Node-pty 是构建浏览器端 Shell 工具的基石技术。通过它与 xterm.
 
 ---
 
-*作者：小虾子 🦐 | 如有错误，欢迎指正*
+*作者：小虾子  | 如有错误，欢迎指正*

@@ -52,7 +52,7 @@ async function checkPermission(permissionName) {
   if (!navigator.permissions) {
     throw new Error('当前浏览器不支持 Permissions API');
   }
-  
+
   const { state } = await navigator.permissions.query({ name: permissionName });
   return state;
 }
@@ -69,16 +69,16 @@ console.log(geoState); // 'granted' | 'denied' | 'prompt'
 ```javascript
 async function monitorPermission(permissionName) {
   const { state } = await navigator.permissions.query({ name: permissionName });
-  
+
   // 初始状态
   console.log('当前权限状态:', state);
-  
+
   // 监听变化
   state.addEventListener('change', () => {
     console.log('权限状态已变化:', state);
     // 重新执行业务逻辑
   });
-  
+
   // 组件卸载时清理
   return () => state.removeEventListener('change', handleChange);
 }
@@ -90,7 +90,7 @@ useEffect(() => {
 }, []);
 ```
 
-> ⚠️ **注意**：`state` 参数本身同时也是事件目标，不是字符串。上面的代码中 `state` 变量引用的是一个 `PermissionStatus` 实例，直接监听它的 `change` 事件即可，无需用 `addEventListener`。
+> 注意 **注意**：`state` 参数本身同时也是事件目标，不是字符串。上面的代码中 `state` 变量引用的是一个 `PermissionStatus` 实例，直接监听它的 `change` 事件即可，无需用 `addEventListener`。
 
 ```javascript
 // 正确写法
@@ -111,29 +111,29 @@ permissionStatus.addEventListener('change', () => {
 async function checkGeolocation() {
   const result = await navigator.permissions.query({ name: 'geolocation' });
   console.log(result.state);
-  
+
   result.addEventListener('change', () => {
     console.log('地理位置权限已变更:', result.state);
   });
-  
+
   return result.state;
 }
 
 // 结合实际使用
 async function getUserLocation() {
   const { state } = await navigator.permissions.query({ name: 'geolocation' });
-  
+
   if (state === 'denied') {
     alert('定位权限已被拒绝，请在浏览器设置中开启');
     return;
   }
-  
+
   if (state === 'prompt') {
     // 可以在这里向用户解释为什么需要位置
     const confirmed = confirm('我们需要您的位置来提供个性化服务，确定授权吗？');
     if (!confirmed) return;
   }
-  
+
   // 状态为 granted 或用户同意后，调用 API
   navigator.geolocation.getCurrentPosition(
     pos => console.log('当前位置:', pos.coords.latitude, pos.coords.longitude),
@@ -150,7 +150,7 @@ Web 推送通知的权限状态直接影响 PWA 和即时通讯类应用的能�
 async function checkNotificationPermission() {
   // 新版 API
   const result = await navigator.permissions.query({ name: 'notifications' });
-  
+
   switch (result.state) {
     case 'granted':
       console.log('通知权限已授权');
@@ -190,7 +190,7 @@ async function checkMediaPermissions() {
     navigator.permissions.query({ name: 'camera' }),
     navigator.permissions.query({ name: 'microphone' })
   ]);
-  
+
   return {
     camera: cameraResult.state,
     microphone: micResult.state
@@ -200,12 +200,12 @@ async function checkMediaPermissions() {
 // 获取设备列表时先检查权限
 async function getCameras() {
   const { state } = await navigator.permissions.query({ name: 'camera' });
-  
+
   if (state === 'denied') {
     console.warn('摄像头权限被拒绝，无法获取设备列表');
     return [];
   }
-  
+
   if (state === 'prompt') {
     // 注意：enumerateDevices 不会自动触发权限请求
     // 但 getUserMedia 会。需要先调用一次以触发 prompt
@@ -216,7 +216,7 @@ async function getCameras() {
       // 用户拒绝后，设备列表仍可获取但为空
     }
   }
-  
+
   const devices = await navigator.mediaDevices.enumerateDevices();
   return devices.filter(d => d.kind === 'videoinput');
 }
@@ -267,7 +267,7 @@ async function checkClipboardPermissions() {
     navigator.permissions.query({ name: 'clipboard-read' }),
     navigator.permissions.query({ name: 'clipboard-write' })
   ]);
-  
+
   return {
     canRead: readResult.state === 'granted',
     canWrite: writeResult.state === 'granted'
@@ -277,11 +277,11 @@ async function checkClipboardPermissions() {
 // 安全地读取剪贴板（需要用户授权）
 async function readClipboard() {
   const { state } = await navigator.permissions.query({ name: 'clipboard-read' });
-  
+
   if (state === 'denied') {
     throw new Error('剪贴板读取权限被拒绝');
   }
-  
+
   // 读取时浏览器会自动触发 prompt
   try {
     const text = await navigator.clipboard.readText();
@@ -295,11 +295,11 @@ async function readClipboard() {
 // 写入剪贴板（通常自动 granted，无需请求）
 async function writeClipboard(text) {
   const { state } = await navigator.permissions.query({ name: 'clipboard-write' });
-  
+
   if (state === 'denied') {
     throw new Error('剪贴板写入权限被拒绝');
   }
-  
+
   await navigator.clipboard.writeText(text);
 }
 ```
@@ -344,15 +344,15 @@ async function getHighAccuracyLocation() {
 
 ```
 桌面浏览器:
-✅ Chrome 43+
-✅ Firefox 46+
-✅ Safari 14.1+ (部分权限)
-✅ Edge 79+
+正确 Chrome 43+
+正确 Firefox 46+
+正确 Safari 14.1+ (部分权限)
+正确 Edge 79+
 
 移动浏览器:
-✅ Chrome Android 43+
-✅ Safari iOS 16+ (部分权限)
-⚠️ Firefox Android: 部分支持
+正确 Chrome Android 43+
+正确 Safari iOS 16+ (部分权限)
+注意 Firefox Android: 部分支持
 ```
 
 ### 5.2 优雅降级
@@ -362,13 +362,13 @@ class PermissionManager {
   static isSupported() {
     return !!navigator.permissions;
   }
-  
+
   static async query(permissionName, descriptor = {}) {
     if (!PermissionManager.isSupported()) {
       console.warn('浏览器不支持 Permissions API，使用降级策略');
       return { state: 'prompt', fallback: true };
     }
-    
+
     try {
       return await navigator.permissions.query({ name: permissionName, ...descriptor });
     } catch (e) {
@@ -376,16 +376,16 @@ class PermissionManager {
       return { state: 'prompt', error: e };
     }
   }
-  
+
   // 统一权限处理流程
   static async ensurePermission(permissionName, options = {}) {
     const { state, fallback } = await PermissionManager.query(permissionName);
-    
+
     if (fallback) {
       // 降级：尝试直接调用 API
       return this.fallbackAction(permissionName, options);
     }
-    
+
     switch (state) {
       case 'granted':
         return { allowed: true, state };
@@ -395,7 +395,7 @@ class PermissionManager {
         return { allowed: null, state };
     }
   }
-  
+
   static getDeniedHint(permissionName) {
     const hints = {
       geolocation: '请在浏览器设置中允许获取位置信息',
@@ -406,7 +406,7 @@ class PermissionManager {
     };
     return hints[permissionName] || '请在浏览器设置中开启相关权限';
   }
-  
+
   static fallbackAction(permissionName, options) {
     switch (permissionName) {
       case 'geolocation':
@@ -435,19 +435,19 @@ if (result.state === 'denied') {
 // permissions-panel.js
 export async function buildPermissionsPanel(container) {
   const permissions = [
-    { name: 'geolocation', label: '地理位置', icon: '📍', description: '用于附近服务推荐' },
-    { name: 'notifications', label: '通知', icon: '🔔', description: '重要消息推送' },
-    { name: 'camera', label: '摄像头', icon: '📷', description: '视频通话和拍照' },
-    { name: 'microphone', label: '麦克风', icon: '🎤', description: '语音消息和通话' },
-    { name: 'clipboard-read', label: '剪贴板读取', icon: '📋', description: '粘贴分享的内容' },
+    { name: 'geolocation', label: '地理位置', icon: '', description: '用于附近服务推荐' },
+    { name: 'notifications', label: '通知', icon: '', description: '重要消息推送' },
+    { name: 'camera', label: '摄像头', icon: '', description: '视频通话和拍照' },
+    { name: 'microphone', label: '麦克风', icon: '', description: '语音消息和通话' },
+    { name: 'clipboard-read', label: '剪贴板读取', icon: '', description: '粘贴分享的内容' },
   ];
-  
+
   const panel = document.createElement('div');
   panel.className = 'permissions-panel';
-  
+
   for (const perm of permissions) {
     const { state } = await PermissionManager.query(perm.name);
-    
+
     const card = document.createElement('div');
     card.className = `perm-card perm-${state}`;
     card.innerHTML = `
@@ -461,16 +461,16 @@ export async function buildPermissionsPanel(container) {
         ${state !== 'granted' ? `<button class="req-btn" data-perm="${perm.name}">申请授权</button>` : ''}
       </div>
     `;
-    
+
     // 监听状态变化
     const { state: statusRef } = await PermissionManager.query(perm.name);
     statusRef.addEventListener('change', () => {
       updateStatus(card, statusRef.state);
     });
-    
+
     panel.appendChild(card);
   }
-  
+
   container.appendChild(panel);
 }
 
@@ -583,10 +583,10 @@ function updateStatus(card, state) {
 永远不要在功能不需要时申请权限。如果你的地图功能只需要城市级别的精度，就不要请求 GPS 级别：
 
 ```javascript
-// ❌ 直接请求高精度 GPS
+// 错误 直接请求高精度 GPS
 navigator.geolocation.getCurrentPosition(...);
 
-// ✅ 先查询权限，用户可见意图
+// 正确 先查询权限，用户可见意图
 const { state } = await navigator.permissions.query({ name: 'geolocation' });
 if (state === 'granted') {
   navigator.geolocation.getCurrentPosition(success, error, {
@@ -603,18 +603,18 @@ if (state === 'granted') {
 ```javascript
 async function handleGeolocation() {
   const { state } = await navigator.permissions.query({ name: 'geolocation' });
-  
+
   if (state === 'denied') {
     // 提供手动输入地址的替代方案
     renderManualAddressInput();
     // 不要静默失败，不要刷新页面
     return;
   }
-  
+
   if (state === 'prompt') {
     renderLocationButton();
   }
-  
+
   if (state === 'granted') {
     renderAutoLocationFeature();
   }
@@ -632,7 +632,7 @@ function showPermissionRationale(permissionName) {
     notifications: '开启通知后，您将在第一时间收到重要更新，可随时关闭。',
     camera: '摄像头仅用于实名认证和视频通话，全程加密传输。'
   };
-  
+
   showModal({
     title: '权限请求说明',
     content: messages[permissionName],
@@ -655,4 +655,4 @@ Permissions API 虽然不如 WebGL、WebAssembly 那样耀眼，但它在**用�
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

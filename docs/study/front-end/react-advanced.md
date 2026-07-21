@@ -17,11 +17,11 @@ Hooks 的本质是函数，它们让你"钩入" React 的状态和生命周期�
 // 正确的使用方式
 function MyComponent() {
   const [count, setCount] = useState(0);
-  
+
   useEffect(() => {
     document.title = `You clicked ${count} times`;
   });
-  
+
   return (
     <div>
       <p>You clicked {count} times</p>
@@ -35,14 +35,14 @@ function MyComponent() {
 // 错误的使用方式
 function MyComponent() {
   const [count, setCount] = useState(0);
-  
+
   if (count > 0) {
     // 错误：在条件语句中调用 Hook
     useEffect(() => {
       document.title = `You clicked ${count} times`;
     });
   }
-  
+
   return (
     <div>
       <p>You clicked {count} times</p>
@@ -66,17 +66,17 @@ let index = 0; // 当前状态的索引
 function useState(initialState) {
   // 初始化状态
   memorizedState[index] = memorizedState[index] || initialState;
-  
+
   // 保存当前索引
   const currentIndex = index;
-  
+
   // 设置新状态的函数
   function setState(newState) {
     memorizedState[currentIndex] = newState;
     // 触发组件重新渲染
     render();
   }
-  
+
   // 返回当前状态和设置状态的函数
   return [memorizedState[index++], setState];
 }
@@ -84,7 +84,7 @@ function useState(initialState) {
 // 使用示例
 function Counter() {
   const [count, setCount] = useState(0);
-  
+
   return (
     <div>
       <p>You clicked {count} times</p>
@@ -108,49 +108,49 @@ let effectIndex = 0; // 当前副作用的索引
 function useEffect(callback, deps) {
   // 获取当前副作用
   const currentEffect = memorizedEffects[effectIndex];
-  
+
   // 判断是否需要执行副作用
   let hasChanged = true;
-  
+
   if (currentEffect && deps) {
     // 比较依赖项
     hasChanged = deps.some((dep, i) => dep !== currentEffect.deps[i]);
   }
-  
+
   // 如果依赖项改变或首次执行，则执行副作用
   if (hasChanged) {
     // 清除上次的副作用
     if (currentEffect && currentEffect.cleanup) {
       currentEffect.cleanup();
     }
-    
+
     // 执行新的副作用
     const cleanup = callback();
-    
+
     // 保存副作用信息
     memorizedEffects[effectIndex] = {
       cleanup,
       deps
     };
   }
-  
+
   effectIndex++;
 }
 
 // 使用示例
 function MyComponent() {
   const [count, setCount] = useState(0);
-  
+
   useEffect(() => {
     // 副作用逻辑
     document.title = `You clicked ${count} times`;
-    
+
     // 清除副作用
     return () => {
       console.log('清理副作用');
     };
   }, [count]); // 依赖项数组
-  
+
   return (
     <div>
       <p>You clicked {count} times</p>
@@ -173,19 +173,19 @@ function MyComponent({ a, b }) {
   const expensiveValue = useMemo(() => {
     return computeExpensiveValue(a, b);
   }, [a, b]);
-  
+
   return <div>{expensiveValue}</div>;
 }
 
 // useCallback 用于缓存函数
 function ParentComponent() {
   const [count, setCount] = useState(0);
-  
+
   // 只有当 count 改变时才创建新的 handleClick 函数
   const handleClick = useCallback(() => {
     console.log('点击事件', count);
   }, [count]);
-  
+
   return (
     <div>
       <ChildComponent onClick={handleClick} />
@@ -203,26 +203,26 @@ function ParentComponent() {
 // 自定义 Hook：用于获取鼠标位置
 function useMousePosition() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  
+
   useEffect(() => {
     const handleMouseMove = (e) => {
       setPosition({ x: e.clientX, y: e.clientY });
     };
-    
+
     window.addEventListener('mousemove', handleMouseMove);
-    
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
-  
+
   return position;
 }
 
 // 使用自定义 Hook
 function MouseTracker() {
   const mousePosition = useMousePosition();
-  
+
   return (
     <div>
       鼠标位置: {mousePosition.x}, {mousePosition.y}
@@ -235,7 +235,7 @@ function useApi(url) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -249,21 +249,21 @@ function useApi(url) {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, [url]);
-  
+
   return { data, loading, error };
 }
 
 // 使用自定义 Hook
 function UserProfile({ userId }) {
   const { data: user, loading, error } = useApi(`/api/users/${userId}`);
-  
+
   if (loading) return <div>加载中...</div>;
   if (error) return <div>错误: {error.message}</div>;
   if (!user) return <div>未找到用户</div>;
-  
+
   return <div>用户名: {user.name}</div>;
 }
 ```
@@ -309,21 +309,21 @@ function reconcileChildren(returnFiber, currentFirstChild, newChildren) {
   // 1. 比较新旧子节点
   // 2. 标记需要插入、删除或更新的节点
   // 3. 生成新的 fiber 树
-  
+
   let resultingFirstChild = null;
   let previousNewFiber = null;
-  
+
   let oldFiber = currentFirstChild;
   let newIdx = 0;
-  
+
   // 遍历新子节点
   for (; newIdx < newChildren.length; newIdx++) {
     const newFiber = createChild(returnFiber, newChildren[newIdx]);
-    
+
     if (oldFiber) {
       // 比较新旧 fiber
       const sameType = oldFiber.type === newFiber.type;
-      
+
       if (sameType) {
         // 更新现有 fiber
         newFiber.alternate = oldFiber;
@@ -334,16 +334,16 @@ function reconcileChildren(returnFiber, currentFirstChild, newChildren) {
         oldFiber = oldFiber.sibling;
       }
     }
-    
+
     if (previousNewFiber === null) {
       resultingFirstChild = newFiber;
     } else {
       previousNewFiber.sibling = newFiber;
     }
-    
+
     previousNewFiber = newFiber;
   }
-  
+
   return resultingFirstChild;
 }
 ```
@@ -361,7 +361,7 @@ React 使用启发式算法来优化协调过程，主要包括：
 function updateFromMap(existingChildren, returnFiber, newIdx, newChild) {
   // 1. 从 Map 中查找对应的旧 fiber
   const matchedFiber = existingChildren.get(newChild.key || newIdx);
-  
+
   if (matchedFiber) {
     // 2. 比较类型
     if (matchedFiber.elementType === newChild.type) {
@@ -373,7 +373,7 @@ function updateFromMap(existingChildren, returnFiber, newIdx, newChild) {
       return existing;
     }
   }
-  
+
   // 4. 创建新 fiber
   return createFiberFromElement(newChild, returnFiber);
 }
@@ -387,16 +387,16 @@ React 会批量处理状态更新以提高性能。
 function MyComponent() {
   const [count, setCount] = useState(0);
   const [name, setName] = useState('');
-  
+
   const handleClick = () => {
     // 这些状态更新会被批量处理
     setCount(c => c + 1);
     setCount(c => c + 1);
     setName('React');
-    
+
     // 在事件处理函数结束后，组件只会重新渲染一次
   };
-  
+
   return (
     <div>
       <p>Count: {count}</p>
@@ -429,43 +429,43 @@ class FiberNode {
   constructor(tag, pendingProps, key, mode) {
     // Fiber 类型标识
     this.tag = tag;
-    
+
     // 组件的键值
     this.key = key;
-    
+
     // 元素类型
     this.elementType = null;
-    
+
     // Fiber 类型
     this.type = null;
-    
+
     // 对应的真实 DOM 节点
     this.stateNode = null;
-    
+
     // 指向父 Fiber
     this.return = null;
-    
+
     // 指向第一个子 Fiber
     this.child = null;
-    
+
     // 指向下一个兄弟 Fiber
     this.sibling = null;
-    
+
     // 新的 props
     this.pendingProps = pendingProps;
-    
+
     // 上一次渲染的 props
     this.memoizedProps = null;
-    
+
     // 新的状态
     this.memoizedState = null;
-    
+
     // 更新队列
     this.updateQueue = null;
-    
+
     // 副作用标记
     this.effectTag = NoEffect;
-    
+
     // 副作用列表的第一个和最后一个节点
     this.firstEffect = null;
     this.lastEffect = null;
@@ -484,7 +484,7 @@ Fiber 使用双缓冲树机制来优化渲染过程。
 function beginWork(current, workInProgress, renderExpirationTime) {
   // 根据 current 和 workInProgress 构建新的 fiber
   // ...
-  
+
   // 如果可以复用 current fiber
   if (current !== null && ... /* 一些条件 */) {
     // 复用 current fiber 的部分内容
@@ -495,7 +495,7 @@ function beginWork(current, workInProgress, renderExpirationTime) {
     // 创建新的 fiber 节点
     // ...
   }
-  
+
   return workInProgress.child;
 }
 ```
@@ -516,15 +516,15 @@ function workLoopConcurrent() {
 function performUnitOfWork(unitOfWork) {
   // 处理当前工作单元
   const current = unitOfWork.alternate;
-  
+
   // beginWork：处理当前 fiber 的子 fiber
   let next = beginWork(current, unitOfWork, renderExpirationTime);
-  
+
   if (next === null) {
     // 没有子 fiber，完成当前 fiber 的工作
     next = completeUnitOfWork(unitOfWork);
   }
-  
+
   return next;
 }
 
@@ -550,7 +550,7 @@ const ThemeContext = React.createContext('light');
 // Provider 组件
 function App() {
   const [theme, setTheme] = useState('light');
-  
+
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       <Toolbar />
@@ -570,9 +570,9 @@ function Toolbar() {
 // 使用 useContext Hook
 function ThemedButton() {
   const { theme, setTheme } = useContext(ThemeContext);
-  
+
   return (
-    <button 
+    <button
       className={theme}
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
     >
@@ -588,7 +588,7 @@ const UserContext = React.createContext();
 function AppProvider({ children }) {
   const [theme, setTheme] = useState('light');
   const [user, setUser] = useState(null);
-  
+
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       <UserContext.Provider value={{ user, setUser }}>
@@ -641,15 +641,15 @@ const store = createStore(counterReducer);
 // 使用 Store
 function Counter() {
   const [count, setCount] = useState(store.getState().count);
-  
+
   useEffect(() => {
     const unsubscribe = store.subscribe(() => {
       setCount(store.getState().count);
     });
-    
+
     return unsubscribe;
   }, []);
-  
+
   return (
     <div>
       <span>{count}</span>
@@ -676,7 +676,7 @@ function useLocalStorage(key, initialValue) {
       return initialValue;
     }
   });
-  
+
   // 更新状态并保存到 localStorage
   const setValue = (value) => {
     try {
@@ -686,7 +686,7 @@ function useLocalStorage(key, initialValue) {
       console.error(error);
     }
   };
-  
+
   return [storedValue, setValue];
 }
 
@@ -696,10 +696,10 @@ function MyComponent() {
     theme: 'light',
     language: 'en'
   });
-  
+
   return (
     <div>
-      <select 
+      <select
         value={userPreferences.theme}
         onChange={(e) => setUserPreferences({
           ...userPreferences,
@@ -724,18 +724,18 @@ function useFetch(url) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     // 创建 AbortController
     const controller = new AbortController();
     const signal = controller.signal;
-    
+
     const fetchData = async () => {
       try {
         setLoading(true);
         const response = await fetch(url, { signal });
         const result = await response.json();
-        
+
         // 检查请求是否被取消
         if (!signal.aborted) {
           setData(result);
@@ -751,15 +751,15 @@ function useFetch(url) {
         }
       }
     };
-    
+
     fetchData();
-    
+
     // 清理函数：取消请求
     return () => {
       controller.abort();
     };
   }, [url]);
-  
+
   return { data, loading, error };
 }
 
@@ -768,15 +768,15 @@ function useLatestData(apiCall) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const requestIdRef = useRef(0);
-  
+
   const fetchData = async () => {
     // 增加请求 ID
     const requestId = ++requestIdRef.current;
     setLoading(true);
-    
+
     try {
       const result = await apiCall();
-      
+
       // 只有当这是最新的请求时才更新状态
       if (requestId === requestIdRef.current) {
         setData(result);
@@ -791,7 +791,7 @@ function useLatestData(apiCall) {
       }
     }
   };
-  
+
   return { data, loading, fetchData };
 }
 ```
@@ -840,7 +840,7 @@ class MyComponent extends React.Component {
       nextState.count !== this.state.count
     );
   }
-  
+
   render() {
     return (
       <div>
@@ -892,7 +892,7 @@ function App() {
 }
 
 // 使用 webpack 的 magic comments 进行预加载
-const OtherComponent = React.lazy(() => 
+const OtherComponent = React.lazy(() =>
   import(
     /* webpackChunkName: "other-component" */
     /* webpackPreload: true */
@@ -952,17 +952,17 @@ function MyComponent() {
     // event 是 SyntheticEvent 实例
     console.log(event.target); // 获取触发事件的元素
     console.log(event.type); // 获取事件类型
-    
+
     // 阻止默认行为
     event.preventDefault();
-    
+
     // 阻止事件冒泡
     event.stopPropagation();
-    
+
     // 如果需要访问原生事件
     console.log(event.nativeEvent);
   };
-  
+
   return <button onClick={handleClick}>点击我</button>;
 }
 
@@ -989,7 +989,7 @@ function Parent() {
   const handleParentClick = () => {
     console.log('父组件被点击');
   };
-  
+
   return (
     <div onClick={handleParentClick}>
       <Child />
@@ -1003,7 +1003,7 @@ function Child() {
     // 阻止事件冒泡
     e.stopPropagation();
   };
-  
+
   return <button onClick={handleChildClick}>点击我</button>;
 }
 ```
@@ -1021,16 +1021,16 @@ function MyComponent() {
       console.log(event.target); // 可能无法正常工作
     }, 1000);
   };
-  
+
   const handleAsyncClick = (event) => {
     // 保留 event 对象
     event.persist();
-    
+
     setTimeout(() => {
       console.log(event.target); // 正常工作
     }, 1000);
   };
-  
+
   return (
     <div>
       <button onClick={handleClick}>普通点击</button>
@@ -1054,28 +1054,28 @@ class ErrorBoundary extends React.Component {
     super(props);
     this.state = { hasError: false };
   }
-  
+
   // 静态方法，用于捕获渲染阶段的错误
   static getDerivedStateFromError(error) {
     // 更新 state 使下一次渲染可以显示降级 UI
     return { hasError: true };
   }
-  
+
   // componentDidCatch 用于记录错误信息
   componentDidCatch(error, errorInfo) {
     // 可以将错误日志上报给服务器
     console.error('Error caught by boundary:', error, errorInfo);
-    
+
     // 例如发送到错误监控服务
     // logErrorToService(error, errorInfo);
   }
-  
+
   render() {
     if (this.state.hasError) {
       // 可以渲染任何自定义的降级 UI
       return <h1>Something went wrong.</h1>;
     }
-    
+
     return this.props.children;
   }
 }
@@ -1115,7 +1115,7 @@ import { fetchData } from './api';
 // 组件内部使用 Suspense 获取数据
 function ProfileDetails() {
   const user = fetchData('/api/user');
-  
+
   return (
     <div>
       <h1>{user.name}</h1>
@@ -1139,12 +1139,12 @@ function App() {
 
 ```javascript
 // 预加载策略
-const LazyComponent = React.lazy(() => 
+const LazyComponent = React.lazy(() =>
   import(/* webpackPreload: true */ './LazyComponent')
 );
 
 // 预获取策略
-const LazyComponent = React.lazy(() => 
+const LazyComponent = React.lazy(() =>
   import(/* webpackPrefetch: true */ './LazyComponent')
 );
 
@@ -1153,21 +1153,21 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
             <Suspense fallback="Loading...">
               <HomePage />
             </Suspense>
-          } 
+          }
         />
-        <Route 
-          path="/profile" 
+        <Route
+          path="/profile"
           element={
             <Suspense fallback="Loading...">
               <ProfilePage />
             </Suspense>
-          } 
+          }
         />
       </Routes>
     </Router>
@@ -1178,7 +1178,7 @@ function App() {
 function LazyLoadComponent({ component: Component, ...props }) {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef();
-  
+
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
@@ -1186,14 +1186,14 @@ function LazyLoadComponent({ component: Component, ...props }) {
         observer.disconnect();
       }
     });
-    
+
     if (ref.current) {
       observer.observe(ref.current);
     }
-    
+
     return () => observer.disconnect();
   }, []);
-  
+
   return (
     <div ref={ref}>
       {isVisible ? <Component {...props} /> : <div>Loading...</div>}
@@ -1213,17 +1213,17 @@ Portal 提供了一种将子节点渲染到存在于父组件以外的 DOM 节�
 function Modal({ children }) {
   // 创建一个 div 元素来挂载 modal
   const el = document.createElement('div');
-  
+
   useEffect(() => {
     // 将元素添加到 body
     document.body.appendChild(el);
-    
+
     // 清理函数：移除元素
     return () => {
       document.body.removeChild(el);
     };
   }, [el]);
-  
+
   // 使用 ReactDOM.createPortal 将 children 渲染到 el 中
   return ReactDOM.createPortal(children, el);
 }
@@ -1231,13 +1231,13 @@ function Modal({ children }) {
 // 使用 Modal
 function App() {
   const [showModal, setShowModal] = useState(false);
-  
+
   return (
     <div>
       <button onClick={() => setShowModal(true)}>
         显示模态框
       </button>
-      
+
       {showModal && (
         <Modal>
           <div className="modal">
@@ -1269,12 +1269,12 @@ const FancyButton = React.forwardRef((props, ref) => (
 // 父组件可以获取到 button 的 DOM 节点
 function App() {
   const buttonRef = useRef(null);
-  
+
   const handleClick = () => {
     // 直接访问 button 元素
     buttonRef.current.focus();
   };
-  
+
   return (
     <div>
       <FancyButton ref={buttonRef}>点击我</FancyButton>
@@ -1290,15 +1290,15 @@ function logProps(Component) {
       console.log('old props:', prevProps);
       console.log('new props:', this.props);
     }
-    
+
     render() {
       const { forwardedRef, ...rest } = this.props;
-      
+
       // 将自定义的 props 分配给被包装的组件
       return <Component ref={forwardedRef} {...rest} />;
     }
   }
-  
+
   // 注意 React.forwardRef 回调的第二个参数 ref
   // 我们可以将其作为常规 props 属性传递给 LogProps，例如 forwardedRef
   // 然后它就可以被挂载到被包装的组件上
@@ -1319,15 +1319,15 @@ function withLogging(WrappedComponent) {
     componentDidMount() {
       console.log(`组件 ${WrappedComponent.name} 已挂载`);
     }
-    
+
     componentDidUpdate() {
       console.log(`组件 ${WrappedComponent.name} 已更新`);
     }
-    
+
     componentWillUnmount() {
       console.log(`组件 ${WrappedComponent.name} 将要卸载`);
     }
-    
+
     render() {
       // 传递所有 props 给被包装的组件
       return <WrappedComponent {...this.props} />;
@@ -1348,10 +1348,10 @@ function enhance(WrappedComponent) {
   class Enhance extends React.Component {
     // ...
   }
-  
+
   // 必须准确知道应该拷贝哪些方法
   Enhance.staticMethod = WrappedComponent.staticMethod;
-  
+
   return Enhance;
 }
 
@@ -1362,9 +1362,9 @@ function enhance(WrappedComponent) {
   class Enhance extends React.Component {
     // ...
   }
-  
+
   hoistNonReactStatics(Enhance, WrappedComponent);
-  
+
   return Enhance;
 }
 ```
@@ -1380,14 +1380,14 @@ class Mouse extends React.Component {
     super(props);
     this.state = { x: 0, y: 0 };
   }
-  
+
   handleMouseMove = (event) => {
     this.setState({
       x: event.clientX,
       y: event.clientY
     });
   };
-  
+
   render() {
     return (
       <div style={{ height: '100vh' }} onMouseMove={this.handleMouseMove}>
@@ -1413,14 +1413,14 @@ function App() {
 // 使用 children 作为函数
 function Mouse({ children }) {
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
-  
+
   const handleMouseMove = (event) => {
     setMouse({
       x: event.clientX,
       y: event.clientY
     });
   };
-  
+
   return (
     <div style={{ height: '100vh' }} onMouseMove={handleMouseMove}>
       {children(mouse)}

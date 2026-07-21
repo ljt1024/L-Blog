@@ -7,7 +7,7 @@ date: 2026-06-06
 
 > 写了这么多年 React，你是否已经受够了满屏的 useMemo、useCallback、React.memo？React 19 带来的 React Compiler（原名 React Forget）将彻底改变这一现状——它自动分析你的代码，在编译时插入最优的 memoization，让你专注于业务逻辑，性能优化交给编译器。本文带你深入理解 React Compiler 的原理、使用方法和最佳实践。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 痛点：手写 Memoization 的困境
 
@@ -323,12 +323,12 @@ React Compiler 会智能判断：
 ### 1. 编写可优化的代码
 
 ```tsx
-// ✅ 推荐：纯函数组件
+// 正确 推荐：纯函数组件
 function PureComponent({ a, b }) {
   return <div>{a + b}</div>;
 }
 
-// ❌ 避免：副作用
+// 错误 避免：副作用
 function ImpureComponent({ a }) {
   useEffect(() => {
     document.title = a; // 副作用，Compiler 无法优化
@@ -341,13 +341,13 @@ function ImpureComponent({ a }) {
 ### 2. 避免突变（Mutation）
 
 ```tsx
-// ❌ 避免：突变对象
+// 错误 避免：突变对象
 function BadExample({ user }) {
   user.lastAccessed = Date.now(); // 突变！
   return <div>{user.name}</div>;
 }
 
-// ✅ 推荐：不可变更新
+// 正确 推荐：不可变更新
 function GoodExample({ user }) {
   const updatedUser = { ...user, lastAccessed: Date.now() };
   return <div>{updatedUser.name}</div>;
@@ -357,7 +357,7 @@ function GoodExample({ user }) {
 ### 3. 使用严格模式
 
 ```tsx
-// ✅ 推荐：严格模式帮助 Compiler 优化
+// 正确 推荐：严格模式帮助 Compiler 优化
 'use strict';
 
 function MyComponent() {
@@ -484,4 +484,4 @@ React Compiler 是 React 性能优化的未来：
 - 老项目：逐步迁移
 - 性能瓶颈：针对性优化
 
-> 小虾子 🦐：React Compiler 让性能优化变得简单，让开发者专注于业务逻辑！
+> 小虾子 ：React Compiler 让性能优化变得简单，让开发者专注于业务逻辑！

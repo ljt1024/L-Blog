@@ -7,7 +7,7 @@ date: 2026-06-05
 
 > React 的 Hooks 语法好用，但 Virtual DOM 的 Diff 开销让人头疼。Vue 的性能优秀，但 Options API / Composition API 和 React 差异太大。Solid.js 给出了一个有趣的答案：用 React Hooks 的写法，跑出 Vue 甚至原生 DOM 的性能。它是第一个将 "细粒度响应式" 和 "JSX 编译时优化" 结合的框架。本文从原理到实战，带你掌握 Solid.js。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## Solid.js 是什么？
 
@@ -63,7 +63,7 @@ function Example() {
   const [count, setCount] = createSignal(0);
   //            ↑ 读值   ↑ 写值
 
-  // ⚠️ 注意：count 是函数！要调用才能拿到值
+  // 注意 注意：count 是函数！要调用才能拿到值
   console.log(count()); // 0
   setCount(1);
   console.log(count()); // 1
@@ -440,14 +440,14 @@ export default function render() {
 ## Solid.js 适用场景
 
 ```
-✅ 适合 Solid.js 的项目：
+正确 适合 Solid.js 的项目：
 ─────────────────────────────────
 - 高性能要求的 SPA（图表、画板、游戏）
 - 从 React 迁移（语法相似，迁移成本低）
 - 想要细粒度响应式（不想要 VDOM Diff）
 - 全栈项目（SolidStart 越来越成熟）
 
-❌ 不适合 Solid.js 的项目：
+错误 不适合 Solid.js 的项目：
 ─────────────────────────────────
 - 需要庞大生态（组件库、工具链不如 React）
 - 团队不熟悉 Signals（学习曲线存在）
@@ -580,6 +580,6 @@ Solid 的答案：
 Signal 无闭包问题、createEffect 自动追踪、createMemo 自动缓存、无 VDOM
 ```
 
-如果你喜欢 React 的 Hooks 语法，但又对性能有极致追求，Solid.js 值得一试 🚀
+如果你喜欢 React 的 Hooks 语法，但又对性能有极致追求，Solid.js 值得一试
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

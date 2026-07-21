@@ -23,8 +23,8 @@ Drizzle 的设计哲学：**SQL-first，TypeScript-native**。
 |--------|--------|---------|
 | 包体积 | ~20MB | **~500KB** |
 | 冷启动 | 慢（需生成 client） | **极快** |
-| Edge Runtime | ❌ | **✅** |
-| 类型安全 | ✅ | **✅（更精确）** |
+| Edge Runtime | 错误 | **正确** |
+| 类型安全 | 正确 | **正确（更精确）** |
 | SQL 掌控感 | 低 | **高** |
 | 学习曲线 | 中 | **低（懂 SQL 即会）** |
 
@@ -319,8 +319,8 @@ const postsWithRelations = await db.query.posts.findMany({
 });
 
 // 类型完全推断！
-// postsWithRelations[0].author.name ✅
-// postsWithRelations[0].postsTags[0].tag.name ✅
+// postsWithRelations[0].author.name 正确
+// postsWithRelations[0].postsTags[0].tag.name 正确
 ```
 
 ### 插入（Insert）
@@ -600,4 +600,4 @@ Drizzle ORM 的核心优势：
 
 Bun + Hono + Drizzle，TypeScript 全栈三件套，2025 年最值得投资的技术组合。
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

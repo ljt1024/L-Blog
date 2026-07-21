@@ -7,7 +7,7 @@ date: 2026-05-18
 
 > WebAssembly 不是要替代 JavaScript，而是与它并肩作战。当 JS 遇到计算密集型任务的性能天花板时，Wasm 打开了通往原生性能的大门。本文从前端开发者的视角出发，深入理解 Wasm 的核心原理、实际应用场景和上手路径。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 什么是 WebAssembly？
 
@@ -575,12 +575,12 @@ async function hashFile(file) {
 ### 1. 减少跨边界调用
 
 ```javascript
-// ❌ 差：频繁跨 JS-Wasm 边界
+// 错误 差：频繁跨 JS-Wasm 边界
 for (let i = 0; i < 10000; i++) {
   wasmExports.processSinglePixel(i, r, g, b);  // 10000 次边界调用
 }
 
-// ✅ 好：批量传递数据
+// 正确 好：批量传递数据
 const pixelData = new Uint8Array(wasmMemory.buffer, ptr, 40000);
 pixelData.set(jsPixelArray);  // 1 次内存拷贝
 wasmExports.processAllPixels(ptr, 10000);       // 1 次边界调用
@@ -589,13 +589,13 @@ wasmExports.processAllPixels(ptr, 10000);       // 1 次边界调用
 ### 2. 使用 TypedArray 视图
 
 ```javascript
-// ❌ 差：通过 DataView 逐字节读写
+// 错误 差：通过 DataView 逐字节读写
 const view = new DataView(wasmMemory.buffer);
 for (let i = 0; i < 1000; i++) {
   view.setFloat64(i * 8, data[i]);
 }
 
-// ✅ 好：直接操作 TypedArray
+// 正确 好：直接操作 TypedArray
 const f64 = new Float64Array(wasmMemory.buffer);
 f64.set(data);  // 一次性写入
 ```
@@ -603,13 +603,13 @@ f64.set(data);  // 一次性写入
 ### 3. 复用 Wasm 实例
 
 ```javascript
-// ❌ 差：每次请求都创建新实例
+// 错误 差：每次请求都创建新实例
 async function processRequest(data) {
   const wasm = await WebAssembly.instantiateStreaming(fetch('proc.wasm'));
   return wasm.instance.exports.process(data);
 }
 
-// ✅ 好：全局初始化一次
+// 正确 好：全局初始化一次
 let wasmInstance = null;
 
 async function init() {
@@ -701,6 +701,6 @@ wasmtime target/wasm32-wasip1/debug/my-app.wasm
 - DOM 操作 → JS
 - 字符串处理 → JS
 
-Wasm 不是要取代 JS，而是让 Web 平台拥有处理任何计算任务的能力。前端开发者的武器库中，Wasm 是那把重剑——不到万不得已不出鞘，一旦出鞘，所向披靡 ⚔️
+Wasm 不是要取代 JS，而是让 Web 平台拥有处理任何计算任务的能力。前端开发者的武器库中，Wasm 是那把重剑——不到万不得已不出鞘，一旦出鞘，所向披靡
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

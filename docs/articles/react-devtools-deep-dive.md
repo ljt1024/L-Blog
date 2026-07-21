@@ -7,7 +7,7 @@ date: 2026-05-05
 
 > 每个 React 开发者都在用 React DevTools，但大多数人的使用深度不超过"查看 props"。Profiler 的火焰图怎么看？组件为什么 render？哪些 State 触发了更新？Timeline 里藏着哪些性能密码？本文带你从入门到精通，把 React DevTools 用成第二本能。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么 React DevTools 必不可少？
 
@@ -20,7 +20,7 @@ React DevTools 是 React 官方提供的浏览器调试工具，能做的事情�
 传统调试方式 vs DevTools：
 
 ```tsx
-// ❌ 传统方式：疯狂 console.log
+// 错误 传统方式：疯狂 console.log
 function ExpensiveComponent({ data }) {
   console.log('组件渲染了', data);
   const result = useMemo(() => processData(data), [data]);
@@ -28,7 +28,7 @@ function ExpensiveComponent({ data }) {
   return <div>{result}</div>;
 }
 
-// ✅ DevTools 方式：零侵入，完整可视化
+// 正确 DevTools 方式：零侵入，完整可视化
 // 直接在 DevTools 里看 render 次数、render 原因、耗时
 function ExpensiveComponent({ data }) {
   const result = useMemo(() => processData(data), [data]);
@@ -189,9 +189,9 @@ function App() {
 
 - 每次组件 render 时，对应区域会闪一下
 - 不同颜色表示 render 频率：
-  - 🟢 绿色：低频更新
-  - 🔵 蓝色：中频更新
-  - 🔴 红色：高频更新
+  -  绿色：低频更新
+  -  蓝色：中频更新
+  -  红色：高频更新
 
 这对于发现不必要的 render 非常有帮助！
 
@@ -249,12 +249,12 @@ App (800ms)
 
 ```
 Commit #1 (0ms)
-  ✓ Initial mount
+  是 Initial mount
 Commit #2 (150ms)
-  ✓ User clicked "Load More"
+  是 User clicked "Load More"
   Changed: PostList → PostItem × 12
 Commit #3 (80ms)
-  ✓ Theme changed to dark
+  是 Theme changed to dark
   Changed: App → Header, Sidebar, Content
 ```
 
@@ -309,7 +309,7 @@ Timeline 面板清晰展示这两个阶段：
 Layout Thrashing（布局抖动）是常见的性能杀手：
 
 ```tsx
-// ❌ 布局抖动：读写交替，强制多次布局
+// 错误 布局抖动：读写交替，强制多次布局
 function BadComponent() {
   const [height, setHeight] = useState(0);
   const ref = useRef();
@@ -333,9 +333,9 @@ Timeline 中可以看到每次读写之间的空白（浏览器重新计算布�
 Timeline 帮助识别阻塞主线程的长时间任务：
 
 ```
-Long Task (500ms) ⚠️
+Long Task (500ms) 注意
   ████████████████████████████████████████
-  ❌ User interaction blocked
+  错误 User interaction blocked
 ```
 
 ## 常见问题诊断
@@ -380,7 +380,7 @@ function Parent() {
 ```tsx
 const ThemeContext = createContext({ theme: 'light', toggle: () => {} });
 
-// ❌ 每次 setTheme 都创建新对象
+// 错误 每次 setTheme 都创建新对象
 function ThemeProvider({ children }) {
   const [theme, setTheme] = useState('light');
   return (
@@ -390,7 +390,7 @@ function ThemeProvider({ children }) {
   );
 }
 
-// ✅ 用 useMemo 稳定 value
+// 正确 用 useMemo 稳定 value
 function ThemeProvider({ children }) {
   const [theme, setTheme] = useState('light');
   const toggle = useCallback(() => setTheme(t => t === 'light' ? 'dark' : 'light'), []);
@@ -408,7 +408,7 @@ function ThemeProvider({ children }) {
 症状：Profiler 显示 render 次数无限增长
 
 ```tsx
-// ❌ 循环 render
+// 错误 循环 render
 function BuggyComponent() {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -417,7 +417,7 @@ function BuggyComponent() {
   return <div>{count}</div>;
 }
 
-// ✅ useRef 替代
+// 正确 useRef 替代
 function FixedComponent() {
   const countRef = useRef(0);
   useEffect(() => {
@@ -480,4 +480,4 @@ React DevTools 是 React 开发者的瑞士军刀：
 
 学会用好 DevTools，你不需要 console.log 满天飞，不需要猜测组件为什么 render，不需要凭感觉优化性能——一切都是可视化的、量化的。
 
-> 小虾子 🦐：工欲善其事，必先利其器！DevTools 用得好，bug 跑得早！
+> 小虾子 ：工欲善其事，必先利其器！DevTools 用得好，bug 跑得早！

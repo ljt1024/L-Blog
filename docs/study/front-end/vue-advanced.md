@@ -52,7 +52,7 @@ function reactive(target) {
       return Reflect.set(target, key, value, receiver);
     }
   };
-  
+
   return new Proxy(target, handler);
 }
 
@@ -72,13 +72,13 @@ class Dep {
   constructor() {
     this.subscribers = new Set();
   }
-  
+
   depend() {
     if (activeEffect) {
       this.subscribers.add(activeEffect);
     }
   }
-  
+
   notify() {
     this.subscribers.forEach(effect => effect());
   }
@@ -307,7 +307,7 @@ function patch(oldVnode, vnode) {
     const elm = oldVnode.elm
     const parent = nodeOps.parentNode(elm)
     createElm(vnode)
-    
+
     if (parent !== null) {
       nodeOps.insertBefore(parent, vnode.elm, nodeOps.nextSibling(elm))
       nodeOps.removeChild(parent, elm)
@@ -317,19 +317,19 @@ function patch(oldVnode, vnode) {
 
 function patchVnode(oldVnode, vnode) {
   if (oldVnode === vnode) return
-  
+
   const elm = vnode.elm = oldVnode.elm
-  
+
   if (isTrue(vnode.isStatic) &&
       isTrue(oldVnode.isStatic) &&
       vnode.key === oldVnode.key) {
     vnode.componentInstance = oldVnode.componentInstance
     return
   }
-  
+
   const oldCh = oldVnode.children
   const ch = vnode.children
-  
+
   if (isUndef(vnode.text)) {
     if (isDef(oldCh) && isDef(ch)) {
       if (oldCh !== ch) updateChildren(elm, oldCh, ch)
@@ -434,7 +434,7 @@ class ComputedRefImpl {
       }
     })
   }
-  
+
   get value() {
     if (this._dirty) {
       this._value = this.effect()
@@ -456,7 +456,7 @@ function watch(source, cb, options = {}) {
   } else {
     getter = () => traverse(source)
   }
-  
+
   let oldValue = INITIAL_WATCHER_VALUE
   const job = () => {
     const newValue = effect.run()
@@ -465,7 +465,7 @@ function watch(source, cb, options = {}) {
       oldValue = newValue
     }
   }
-  
+
   const effect = new ReactiveEffect(getter, job)
   if (options.immediate) {
     job()
@@ -512,24 +512,24 @@ const { foo, bar } = toRefs(state)
 export default {
   name: 'keep-alive',
   abstract: true,
-  
+
   props: {
     include: patternTypes,
     exclude: patternTypes,
     max: [String, Number]
   },
-  
+
   created() {
     this.cache = Object.create(null)
     this.keys = []
   },
-  
+
   destroyed() {
     for (const key in this.cache) {
       pruneCacheEntry(this.cache, key, this.keys)
     }
   },
-  
+
   mounted() {
     this.$watch('include', val => {
       pruneCache(this, name => matches(val, name))
@@ -538,28 +538,28 @@ export default {
       pruneCache(this, name => !matches(val, name))
     })
   },
-  
+
   render() {
     const slot = this.$slots.default
     const vnode = getFirstComponentChild(slot)
     const componentOptions = vnode && vnode.componentOptions
-    
+
     if (componentOptions) {
       const name = getComponentName(componentOptions)
       const { include, exclude } = this
-      
+
       if (
         (include && (!name || !matches(include, name))) ||
         (exclude && name && matches(exclude, name))
       ) {
         return vnode
       }
-      
+
       const { cache, keys } = this
       const key = vnode.key == null
         ? componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
         : vnode.key
-      
+
       if (cache[key]) {
         vnode.componentInstance = cache[key].componentInstance
         remove(keys, key)
@@ -571,10 +571,10 @@ export default {
           pruneCacheEntry(cache, keys[0], keys, this._vnode)
         }
       }
-      
+
       vnode.data.keepAlive = true
     }
-    
+
     return vnode || (slot && slot[0])
   }
 }
@@ -681,10 +681,10 @@ if (this.max && keys.length > parseInt(this.max)) {
   <div>
     <!-- 普通插槽 -->
     <slot></slot>
-    
+
     <!-- 具名插槽 -->
     <slot name="header"></slot>
-    
+
     <!-- 作用域插槽 -->
     <slot name="footer" :user="user" :time="currentTime"></slot>
   </div>
@@ -706,12 +706,12 @@ export default {
   <MyComponent>
     <!-- 普通插槽内容 -->
     <p>这是默认插槽内容</p>
-    
+
     <!-- 具名插槽 -->
     <template #header>
       <h1>这是头部内容</h1>
     </template>
-    
+
     <!-- 作用域插槽 -->
     <template #footer="{ user, time }">
       <p>用户: {{ user.name }}, 时间: {{ time }}</p>
@@ -756,14 +756,14 @@ export default {
     // 获取插槽内容
     const slots = this.$slots
     const scopedSlots = this.$scopedSlots
-    
+
     return h('div', [
       // 渲染默认插槽
       slots.default || [],
-      
+
       // 渲染具名插槽
       slots.header || [],
-      
+
       // 渲染作用域插槽
       scopedSlots.footer && scopedSlots.footer({
         user: this.user,
@@ -811,8 +811,8 @@ export default {
 ```vue
 <!-- 父组件 -->
 <template>
-  <child-component 
-    :message="parentMessage" 
+  <child-component
+    :message="parentMessage"
     @child-event="handleChildEvent">
   </child-component>
 </template>
@@ -944,7 +944,7 @@ export default {
   created() {
     // 实例创建完成，已完成数据观测、属性和方法的运算，watch/event 事件回调
   },
-  
+
   // 挂载阶段
   beforeMount() {
     // 挂载开始之前被调用
@@ -952,7 +952,7 @@ export default {
   mounted() {
     // 实例挂载到 DOM 上之后调用
   },
-  
+
   // 更新阶段
   beforeUpdate() {
     // 数据更新时调用，发生在虚拟 DOM 重新渲染和打补丁之前
@@ -960,7 +960,7 @@ export default {
   updated() {
     // 数据更改导致的虚拟 DOM 重新渲染和打补丁之后调用
   },
-  
+
   // 销毁阶段
   beforeDestroy() {
     // 实例销毁之前调用
@@ -1044,9 +1044,9 @@ export default {
         console.log(entry.name, entry.duration)
       }
     })
-    
+
     observer.observe({ entryTypes: ['measure'] })
-    
+
     performance.mark('render-start')
     await this.fetchData()
     performance.mark('render-end')

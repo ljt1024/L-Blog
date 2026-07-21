@@ -7,14 +7,14 @@ date: 2026-04-30
 
 > 当 `useEffect` + `useState` 的数据获取方式成为历史，Suspense 正在重新定义 React 的异步渲染范式。从代码分割到数据获取，从 Error Boundary 到 Concurrent Rendering，Suspense 是 React 架构演进的基石。理解它，才能理解 React Server Components、use hook、以及 React 19 的所有新特性。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## Suspense 是什么？
 
 传统 React 应用的异步处理充满嵌套和条件判断：
 
 ```tsx
-// ❌ 传统模式：状态地狱
+// 错误 传统模式：状态地狱
 function Profile() {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState(null);
@@ -41,7 +41,7 @@ function Profile() {
 Suspense 让声明式异步成为可能：
 
 ```tsx
-// ✅ Suspense 模式：声明式优雅
+// 正确 Suspense 模式：声明式优雅
 function Profile() {
   const user = use(fetchUser()); // React 19 use hook
   const posts = use(fetchPosts());
@@ -94,12 +94,12 @@ React 18 让 Suspense 支持数据获取，但需要一个"数据源"：
 function wrapPromise(promise) {
   let status = 'pending';
   let result;
-  
+
   promise.then(
     (data) => { status = 'fulfilled'; result = data; },
     (error) => { status = 'rejected'; result = error; }
   );
-  
+
   return {
     read() {
       if (status === 'pending') throw promise;
@@ -196,7 +196,7 @@ import { useDeferredValue, useMemo } from 'react';
 
 function SearchResults({ query }) {
   const deferredQuery = useDeferredValue(query);
-  
+
   // 搜索结果是延迟的，不阻塞用户输入
   const results = useMemo(
     () => searchItems(deferredQuery),
@@ -269,7 +269,7 @@ function UserProfile() {
 多个 Suspense 嵌套可能导致瀑布加载：
 
 ```tsx
-// ❌ 瀑布加载：顺序请求
+// 错误 瀑布加载：顺序请求
 function App() {
   return (
     <Suspense fallback={<Spinner />}>
@@ -286,7 +286,7 @@ function App() {
 解决方案：**并行预取**
 
 ```tsx
-// ✅ 并行加载：同时请求
+// 正确 并行加载：同时请求
 function App() {
   // 预取所有数据
   const userPromise = fetchUser();
@@ -356,12 +356,12 @@ export default function App() {
 ### 1. Fallback 就近原则
 
 ```tsx
-// ❌ 全局 loading，用户体验差
+// 错误 全局 loading，用户体验差
 <Suspense fallback={<FullPageSpinner />}>
   <App />
 </Suspense>
 
-// ✅ 细粒度 loading，体验流畅
+// 正确 细粒度 loading，体验流畅
 <div>
   <Header />
   <main>
@@ -429,4 +429,4 @@ Suspense 不是数据获取库，而是 React 异步渲染的基石。它的核�
 
 理解 Suspense，才能真正理解 React 18/19 的演进方向。
 
-> 小虾子 🦐：异步渲染的艺术，让用户体验丝滑如绸！
+> 小虾子 ：异步渲染的艺术，让用户体验丝滑如绸！

@@ -76,14 +76,14 @@ DOM + CSSOM 合并生成 Render Tree，只包含**可见节点**（`display: non
 | 字体变化 | `font-size`、`font-family` |
 
 ```javascript
-// ❌ 强制同步布局（Layout Thrashing）
+// 错误 强制同步布局（Layout Thrashing）
 // 每次读取都会强制浏览器刷新布局
 for (let i = 0; i < elements.length; i++) {
   const width = elements[i].offsetWidth  // 读取 → 触发重排
   elements[i].style.width = width + 10 + 'px'  // 写入
 }
 
-// ✅ 批量读取，批量写入
+// 正确 批量读取，批量写入
 const widths = elements.map(el => el.offsetWidth)  // 批量读取
 elements.forEach((el, i) => {
   el.style.width = widths[i] + 10 + 'px'  // 批量写入
@@ -108,13 +108,13 @@ color、background-color、visibility、box-shadow、border-radius...
 - `will-change`
 
 ```css
-/* ❌ 触发重排 */
+/* 错误 触发重排 */
 .box {
   left: 100px;
   top: 100px;
 }
 
-/* ✅ 只触发合成，GPU 加速 */
+/* 正确 只触发合成，GPU 加速 */
 .box {
   transform: translate(100px, 100px);
 }
@@ -159,17 +159,17 @@ filter: blur(4px);
 **合成层爆炸（Layer Explosion）：**
 
 ```css
-/* ❌ 危险：will-change 滥用 */
+/* 错误 危险：will-change 滥用 */
 * {
   will-change: transform; /* 所有元素都变成合成层，内存爆炸 */
 }
 
-/* ✅ 正确：只对需要动画的元素使用 */
+/* 正确 正确：只对需要动画的元素使用 */
 .animated-card {
   will-change: transform;
 }
 
-/* ✅ 动画结束后移除 */
+/* 正确 动画结束后移除 */
 .animated-card.done {
   will-change: auto;
 }
@@ -184,13 +184,13 @@ filter: blur(4px);
 将 DOM 操作放入 `rAF`，确保在浏览器下一帧渲染前执行，避免丢帧。
 
 ```javascript
-// ❌ 可能在一帧内触发多次重排
+// 错误 可能在一帧内触发多次重排
 function animate() {
   element.style.left = getNewPosition() + 'px'
   setTimeout(animate, 16)
 }
 
-// ✅ 与浏览器渲染节奏同步
+// 正确 与浏览器渲染节奏同步
 function animate() {
   element.style.transform = `translateX(${getNewPosition()}px)`
   requestAnimationFrame(animate)
@@ -206,13 +206,13 @@ React/Vue 的虚拟 DOM 本质上就是在做**批量 DOM 操作**，减少重�
 function batchUpdate(updates) {
   // 使用 DocumentFragment 离线操作
   const fragment = document.createDocumentFragment()
-  
+
   updates.forEach(({ tag, text }) => {
     const el = document.createElement(tag)
     el.textContent = text
     fragment.appendChild(el)
   })
-  
+
   // 一次性插入，只触发一次重排
   document.getElementById('container').appendChild(fragment)
 }
@@ -221,7 +221,7 @@ function batchUpdate(updates) {
 ### 4.3 CSS 动画 vs JS 动画
 
 ```css
-/* ✅ CSS 动画：浏览器可以在合成线程执行，不阻塞主线程 */
+/* 正确 CSS 动画：浏览器可以在合成线程执行，不阻塞主线程 */
 .slide-in {
   animation: slideIn 0.3s ease-out;
 }
@@ -233,7 +233,7 @@ function batchUpdate(updates) {
 ```
 
 ```javascript
-// ✅ Web Animations API：兼具 CSS 动画的性能和 JS 的灵活性
+// 正确 Web Animations API：兼具 CSS 动画的性能和 JS 的灵活性
 element.animate(
   [
     { transform: 'translateX(-100%)' },
@@ -300,7 +300,7 @@ layout.read(() => {
 ### 4.5 Intersection Observer 替代滚动监听
 
 ```javascript
-// ❌ scroll 事件频繁触发，每次都读取 getBoundingClientRect
+// 错误 scroll 事件频繁触发，每次都读取 getBoundingClientRect
 window.addEventListener('scroll', () => {
   elements.forEach(el => {
     const rect = el.getBoundingClientRect()  // 触发重排！
@@ -310,7 +310,7 @@ window.addEventListener('scroll', () => {
   })
 })
 
-// ✅ Intersection Observer：浏览器原生支持，无需手动计算
+// 正确 Intersection Observer：浏览器原生支持，无需手动计算
 const observer = new IntersectionObserver(
   (entries) => {
     entries.forEach(entry => {
@@ -363,13 +363,13 @@ console.log(`渲染耗时: ${measure.duration.toFixed(2)}ms`)
 
 | 优先级 | 优化项 | 说明 |
 |--------|--------|------|
-| 🔴 高 | 避免 Layout Thrashing | 批量读写，不要交替读写布局属性 |
-| 🔴 高 | 动画使用 transform/opacity | 只触发合成，不触发重排重绘 |
-| 🟡 中 | 合理使用 will-change | 提前提升合成层，但不要滥用 |
-| 🟡 中 | 使用 rAF 调度动画 | 与浏览器渲染节奏同步 |
-| 🟡 中 | 用 Intersection Observer | 替代 scroll 事件中的位置计算 |
-| 🟢 低 | CSS 动画优于 JS 动画 | 可在合成线程执行，不阻塞主线程 |
-| 🟢 低 | DocumentFragment 批量插入 | 减少 DOM 操作次数 |
+|  高 | 避免 Layout Thrashing | 批量读写，不要交替读写布局属性 |
+|  高 | 动画使用 transform/opacity | 只触发合成，不触发重排重绘 |
+|  中 | 合理使用 will-change | 提前提升合成层，但不要滥用 |
+|  中 | 使用 rAF 调度动画 | 与浏览器渲染节奏同步 |
+|  中 | 用 Intersection Observer | 替代 scroll 事件中的位置计算 |
+|  低 | CSS 动画优于 JS 动画 | 可在合成线程执行，不阻塞主线程 |
+|  低 | DocumentFragment 批量插入 | 减少 DOM 操作次数 |
 
 ---
 
@@ -386,4 +386,4 @@ console.log(`渲染耗时: ${measure.duration.toFixed(2)}ms`)
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

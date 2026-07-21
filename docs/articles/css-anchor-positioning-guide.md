@@ -7,7 +7,7 @@ date: 2026-07-02
 
 > 多年来，弹出层（Tooltip、Dropdown、Popover）的定位问题一直困扰着前端开发者。开发者不得不用 JavaScript 计算位置、处理滚动、监听窗口变化——现在，CSS Anchor Positioning 让这一切成为历史。本文系统解析这一革命性 API 的原理、语法与实战。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要 Anchor Positioning？
 
@@ -51,16 +51,16 @@ CSS Anchor Positioning 的核心理念：
 ```
 Anchor Positioning 适用场景：
 ─────────────────────────────────
-✅ Tooltip（文字提示）
-✅ Dropdown Menu（下拉菜单）
-✅ Popover（气泡确认框）
-✅ Select（自定义选择器）
-✅ Date Picker（日期选择器）
-✅ Combobox（带搜索的下拉）
-✅ Context Menu（右键菜单）
-✅ Notifications（通知气泡）
-✅ Avatar Menu（头像下拉）
-✅ Sub-navigation（子导航）
+正确 Tooltip（文字提示）
+正确 Dropdown Menu（下拉菜单）
+正确 Popover（气泡确认框）
+正确 Select（自定义选择器）
+正确 Date Picker（日期选择器）
+正确 Combobox（带搜索的下拉）
+正确 Context Menu（右键菜单）
+正确 Notifications（通知气泡）
+正确 Avatar Menu（头像下拉）
+正确 Sub-navigation（子导航）
 ```
 
 ---
@@ -334,10 +334,10 @@ Popover 方式：
   → 浏览器搞定一切！
 
 Popover 特性：
-  ✅ 顶层渲染（top-layer，不受 overflow 影响）
-  ✅ 点击外部自动关闭
-  ✅ ESC 键关闭
-  ✅ 无障碍支持（::backdrop 伪元素）
+  正确 顶层渲染（top-layer，不受 overflow 影响）
+  正确 点击外部自动关闭
+  正确 ESC 键关闭
+  正确 无障碍支持（::backdrop 伪元素）
 ```
 
 ### 完整示例：Tooltip
@@ -394,7 +394,7 @@ Popover 特性：
 </style>
 
 <button class="btn" aria-describedby="tip">
-  ℹ️
+  ℹ
   <span class="tooltip" id="tip" role="tooltip">
     这是一条提示信息
   </span>
@@ -644,10 +644,10 @@ function App() {
 ```
 浏览器支持情况（2024）：
 ─────────────────────────────────
-Chrome 125+：✅ 完全支持
-Edge 125+：✅ 完全支持（基于 Chromium）
-Safari 18+：✅ 支持（Safari TP 已实现）
-Firefox：⚠️ 部分支持（需要 flag）
+Chrome 125+：正确 完全支持
+Edge 125+：正确 完全支持（基于 Chromium）
+Safari 18+：正确 支持（Safari TP 已实现）
+Firefox：注意 部分支持（需要 flag）
 
 推荐使用 @supports 检测：
 */
@@ -718,18 +718,18 @@ Anchor Positioning vs Floating UI：
 | 性能 | 浏览器原生优化 | JS 计算 |
 | 滚动同步 | 自动 | 手动监听 |
 | 边界检测 | @position-try | autoPlacement |
-| 遮挡检测 | ❌ 不支持 | ✅ 支持 |
-| 复杂定位算法 | ❌ 受限 | ✅ 强大 |
+| 遮挡检测 | 错误 不支持 | 正确 支持 |
+| 复杂定位算法 | 错误 受限 | 正确 强大 |
 | 浏览器支持 | Safari 18+ | 所有浏览器 |
 | 包大小 | 0KB | ~60KB (核心) |
 
 选型建议：
-  ✅ 选 CSS Anchor Positioning：
+  正确 选 CSS Anchor Positioning：
     → 简单弹出层（Tooltip、简单 Dropdown）
     → 性能敏感场景
     → 新项目（浏览器支持 OK）
 
-  ✅ 选 Floating UI：
+  正确 选 Floating UI：
     → 复杂定位（智能位置选择）
     → 遮挡检测（自动避开其他元素）
     → 需要兼容旧浏览器
@@ -858,7 +858,7 @@ Anchor Positioning 速查：
 3. 按优先级顺序罗列（浏览器按顺序尝试）
 4. 浏览器自动检测哪个位置能让元素完整显示在视口内
 
-CSS Anchor Positioning 让弹出层定位从 JavaScript 的负担变成了 CSS 的声明式能力，配合 Popover API 简直是前端开发的黄金组合 🎯
+CSS Anchor Positioning 让弹出层定位从 JavaScript 的负担变成了 CSS 的声明式能力，配合 Popover API 简直是前端开发的黄金组合
 ```
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

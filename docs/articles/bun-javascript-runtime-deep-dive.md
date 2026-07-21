@@ -89,7 +89,7 @@ const server = Bun.serve({
       return Response.json(users);
     }
 
-    return new Response("Hello from Bun! 🚀", {
+    return new Response("Hello from Bun! ", {
       headers: { "Content-Type": "text/plain; charset=utf-8" }
     });
   },
@@ -281,7 +281,7 @@ import { serve } from "bun";         // 比 http 快 5 倍
 console.log(Buffer.from("hello").toString("base64")); // aGVsbG8=
 ```
 
-> ⚠️ **已知不兼容的模块**：`child_process.exec`/`spawn` 部分功能、`process.binding`、原生 C++ 模块（`.node`）。
+> 注意 **已知不兼容的模块**：`child_process.exec`/`spawn` 部分功能、`process.binding`、原生 C++ 模块（`.node`）。
 
 ## 性能对比
 
@@ -291,15 +291,15 @@ console.log(Buffer.from("hello").toString("base64")); // aGVsbG8=
 
 Express (Node 20)    :  ~45,000 req/s
 Fastify (Node 20)    :  ~85,000 req/s
-Hono (Bun)           :  ~250,000 req/s   ⚡
-Bun.serve (原生)     :  ~400,000 req/s   🚀
+Hono (Bun)           :  ~250,000 req/s
+Bun.serve (原生)     :  ~400,000 req/s
 ```
 
 ```bash
 # npm install 速度对比
 npm install   :  45 seconds
 pnpm install  :  12 seconds
-bun install   :  3 seconds   ⚡
+bun install   :  3 seconds
 ```
 
 ## 实战：一个完整的 REST API
@@ -378,14 +378,14 @@ bun build index.ts --outfile server --target bun
 
 | 类别 | 成熟度 | 备注 |
 |------|--------|------|
-| HTTP Server（Hono/Express） | ✅ 成熟 | Hono 是 Bun 的最佳搭档 |
-| 数据库（SQLite/Postgres） | ✅ 成熟 | 内置 SQLite，企业用 Bun:sqlite |
-| 文件 I/O | ✅ 成熟 | 比 Node 快 5-10 倍 |
-| Testing | ✅ 成熟 | 内置 Bun Test，比 Jest 快 |
-| npm 兼容 | ✅ 成熟 | 99%+ 的 npm 包可正常运行 |
-| Docker 部署 | ✅ 成熟 | 官方提供 alpine 镜像 |
-| Node.js 兼容 | ⚠️ 接近完整 | 少数不兼容，文档有清单 |
-| Windows 支持 | ⚠️ Beta | WSL2 或 Docker 里跑更稳定 |
+| HTTP Server（Hono/Express） | 正确 成熟 | Hono 是 Bun 的最佳搭档 |
+| 数据库（SQLite/Postgres） | 正确 成熟 | 内置 SQLite，企业用 Bun:sqlite |
+| 文件 I/O | 正确 成熟 | 比 Node 快 5-10 倍 |
+| Testing | 正确 成熟 | 内置 Bun Test，比 Jest 快 |
+| npm 兼容 | 正确 成熟 | 99%+ 的 npm 包可正常运行 |
+| Docker 部署 | 正确 成熟 | 官方提供 alpine 镜像 |
+| Node.js 兼容 | 注意 接近完整 | 少数不兼容，文档有清单 |
+| Windows 支持 | 注意 Beta | WSL2 或 Docker 里跑更稳定 |
 
 ## 迁移指南
 
@@ -416,4 +416,4 @@ Bun 的出现让 JavaScript 工具链第一次有了"大一统"的可能。它�
 
 但也需要注意：**生产环境稳定性**、**Windows 支持** 和 **企业级运维经验** 是目前 Bun 的短板。对于中小型项目、BFF 层、边缘函数等场景，Bun 已经完全可以胜任，甚至成为首选。
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

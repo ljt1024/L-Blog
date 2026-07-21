@@ -7,7 +7,7 @@ date: 2026-06-17
 
 > 认证（Authentication）是 Web 开发中最容易出错、也最容易被忽视的环节。从传统的 Session + Cookie，到 JWT、OAuth 2.0、OpenID Connect，再到最新的 Passkeys（WebAuthn），认证机制在不断演进。本文系统解析每种机制的适用场景、实现方式、安全陷阱，以及 2025-2026 年的最佳实践。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 认证机制的演进
 
@@ -85,13 +85,13 @@ function requireAuth(req, res, next) {
 ### Session 的优缺点
 
 ```
-✅ 优点：
+正确 优点：
   - 服务端完全可控（可主动注销）
   - 无 XSS 风险（httpOnly Cookie）
   - 无 Token 泄露风险（Token 存在服务端）
   - 适合传统 Web 应用（SSR）
 
-❌ 缺点：
+错误 缺点：
   - 需要服务端存储（Redis/Memcached）
   - 跨域麻烦（Cookie 受同源策略限制）
   - 移动端/原生 App 支持差
@@ -156,23 +156,23 @@ function requireAuth(req, res, next) {
 ### JWT 的安全陷阱
 
 ```typescript
-// ❌ 陷阱 1：把敏感信息放进 Payload
+// 错误 陷阱 1：把敏感信息放进 Payload
 // JWT Payload 是 Base64 编码，任何人都可以解码！
 jwt.sign({ userId: 1, password: 'secret123' }, secret);
 // 攻击者只需 Base64 解码就能看到 password！
 
-// ✅ 正确：只放非敏感信息
+// 正确 正确：只放非敏感信息
 jwt.sign({ userId: 1, role: 'admin' }, secret);
 
-// ❌ 陷阱 2：使用 none 算法（签名绕过）
+// 错误 陷阱 2：使用 none 算法（签名绕过）
 // 攻击者可以把 Header 改成 { "alg": "none" }，绕过签名验证
 // 确保服务端验证算法白名单
 
-// ❌ 陷阱 3：Token 无法主动注销
+// 错误 陷阱 3：Token 无法主动注销
 // JWT 一旦签发，在过期前一直有效
 // 解决方案：Token 设短有效期 + Refresh Token
 
-// ❌ 陷阱 4：XSS 窃取 Token
+// 错误 陷阱 4：XSS 窃取 Token
 // 如果 Token 存在 localStorage，XSS 攻击可以轻松读取
 // 解决方案：存在 httpOnly Cookie（但失去无状态优势）
 ```
@@ -372,10 +372,10 @@ Passkeys（通行密钥）：
 - 支持跨设备同步（iCloud Keychain / Google Password Manager）
 
 支持情况（2025）：
-  ✅ Safari 16+（2022 年起）
-  ✅ Chrome 108+（2022 年起）
-  ✅ Firefox 122+（2024 年起）
-  ✅  iOS 16+ / Android 9+
+  正确 Safari 16+（2022 年起）
+  正确 Chrome 108+（2022 年起）
+  正确 Firefox 122+（2024 年起）
+  正确  iOS 16+ / Android 9+
 ```
 
 ### Passkeys 注册流程
@@ -507,10 +507,10 @@ app.use(session({
 }));
 
 // 2. 防范 XSS（Token 窃取）
-// ❌ 不要存在 localStorage
+// 错误 不要存在 localStorage
 localStorage.setItem('token', token);  // XSS 可以读取！
 
-// ✅ 存在 httpOnly Cookie
+// 正确 存在 httpOnly Cookie
 res.cookie('token', token, {
   httpOnly: true,   // JS 无法读取
   secure: true,
@@ -519,9 +519,9 @@ res.cookie('token', token, {
 
 // 3. 防范 Token 泄露（Referer / 日志）
 // Access Token 不要放在 URL 中（会被 Referer 泄露）
-// ❌
+// 错误
 fetch(`/api/user?token=${token}`);
-// ✅
+// 正确
 fetch('/api/user', { headers: { Authorization: `Bearer ${token}` } });
 
 // 4. 速率限制（防暴力破解）
@@ -540,10 +540,10 @@ app.use('/login', limiter);
 
 | 存储位置 | XSS 风险 | CSRF 风险 | 适用场景 |
 |----------|----------|-----------|----------|
-| httpOnly Cookie | ✅ 安全 | ⚠️ 需 sameSite | 传统 Web 应用 |
-| localStorage | ❌ 不安全 | ✅ 安全 | 仅 SPA（需配合 CSP） |
-| sessionStorage | ⚠️ 中等 | ✅ 安全 | 临时存储（关闭标签页清除） |
-| 内存（React state） | ⚠️ 中等 | ✅ 安全 | SPA（刷新丢失，需重新获取） |
+| httpOnly Cookie | 正确 安全 | 注意 需 sameSite | 传统 Web 应用 |
+| localStorage | 错误 不安全 | 正确 安全 | 仅 SPA（需配合 CSP） |
+| sessionStorage | 注意 中等 | 正确 安全 | 临时存储（关闭标签页清除） |
+| 内存（React state） | 注意 中等 | 正确 安全 | SPA（刷新丢失，需重新获取） |
 
 ---
 
@@ -605,24 +605,24 @@ SPA + 独立后端 API：
 认证机制选型速查：
 ─────────────────────────────────
 Session + Cookie：
-  ✅ 传统 Web 应用、高安全性要求
-  ❌ 移动端、跨域场景
+  正确 传统 Web 应用、高安全性要求
+  错误 移动端、跨域场景
 
 JWT（Access + Refresh Token）：
-  ✅ SPA、移动端、微服务
-  ❌ 需要主动注销的场景
+  正确 SPA、移动端、微服务
+  错误 需要主动注销的场景
 
 OAuth 2.0 + PKCE：
-  ✅ 第三方授权、社交登录
-  ❌ 第一方应用（过度复杂）
+  正确 第三方授权、社交登录
+  错误 第一方应用（过度复杂）
 
 OpenID Connect（OIDC）：
-  ✅ 第三方登录、企业 SSO
-  ❌ 简单应用（过度复杂）
+  正确 第三方登录、企业 SSO
+  错误 简单应用（过度复杂）
 
 Passkeys / WebAuthn：
-  ✅ 高安全需求、用户体验优先
-  ❌ 旧浏览器不支持（需降级方案）
+  正确 高安全需求、用户体验优先
+  错误 旧浏览器不支持（需降级方案）
 ```
 
 ```
@@ -638,6 +638,6 @@ Passkeys / WebAuthn：
 □ Content Security Policy（防 XSS）
 ```
 
-认证是安全的第一道防线，选对方案、做好防护，才能让用户数据真正安全 🔐
+认证是安全的第一道防线，选对方案、做好防护，才能让用户数据真正安全
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

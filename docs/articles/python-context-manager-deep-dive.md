@@ -7,7 +7,7 @@ date: 2026-07-06
 
 > 文件用完要关闭、锁用完要释放、事务用完要提交或回滚——这些资源管理代码最容易出错，也最难调试。Python 的 `with` 语句和上下文管理器协议让这一切变得优雅而安全。本文深入解析 `__enter__` 和 `__exit__` 协议、`contextlib` 标准库工具、异步上下文管理器，以及在 FastAPI/数据库连接/文件操作中的实际应用。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要上下文管理器？
 
@@ -407,12 +407,12 @@ async def handle_request(request_id: str):
     await save_to_db(request_id)
     await send_notification(request_id)
 
-# ❌ 传统方式：参数逐层传递
+# 错误 传统方式：参数逐层传递
 async def process_data(request_id: str):
     await validate(request_id)
     await transform(request_id)
 
-# ✅ contextvars 方式：自动传播
+# 正确 contextvars 方式：自动传播
 ```
 
 ### contextvars 基础用法
@@ -575,13 +575,13 @@ class BadManager:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        return True  # ❌ 永远抑制异常！所有异常都被吞掉
+        return True  # 错误 永远抑制异常！所有异常都被吞掉
 
 with BadManager():
     raise ValueError("这个异常被吞掉了")
     # 程序继续执行，没有任何错误提示
 
-# ✅ 正确：只在特定情况下抑制
+# 正确 正确：只在特定情况下抑制
 class GoodManager:
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is FileNotFoundError:
@@ -601,7 +601,7 @@ def bad_manager():
     yield
     print("退出")  # 如果 yield 抛异常，这行不会执行
 
-# ✅ 正确：用 try-finally
+# 正确 正确：用 try-finally
 @contextmanager
 def good_manager():
     print("进入")
@@ -610,7 +610,7 @@ def good_manager():
     finally:
         print("退出（无论是否异常）")
 
-# ✅ 正确：捕获并处理异常
+# 正确 正确：捕获并处理异常
 @contextmanager
 def transaction_manager():
     conn = get_connection()
@@ -636,7 +636,7 @@ class BadFile:
     def __exit__(self, *args):
         self.file.close()  # self.file 可能是 None → AttributeError
 
-# ✅ 正确：在 __init__ 中初始化，或在 __exit__ 中检查
+# 正确 正确：在 __init__ 中初始化，或在 __exit__ 中检查
 class GoodFile:
     def __init__(self, path):
         self.path = path
@@ -654,7 +654,7 @@ class GoodFile:
 ### 陷阱 4：异步上下文管理器混用
 
 ```python
-# ❌ 错误：同步上下文管理器用于异步函数
+# 错误 错误：同步上下文管理器用于异步函数
 class SyncManager:
     def __enter__(self):
         return self
@@ -663,10 +663,10 @@ class SyncManager:
         pass
 
 async def bad_usage():
-    with SyncManager() as sm:  # ✅ 语法正确
+    with SyncManager() as sm:  # 正确 语法正确
         await asyncio.sleep(1)  # 但在 with 块中使用 await 可能有风险
 
-# ✅ 正确：异步函数使用异步上下文管理器
+# 正确 正确：异步函数使用异步上下文管理器
 class AsyncManager:
     async def __aenter__(self):
         return self
@@ -846,14 +846,14 @@ with 语句执行流程：
 ```
 最佳实践：
 ─────────────────────────────────
-✅ 资源管理优先用 with 语句
-✅ 使用 @contextmanager 简化定义
-✅ __exit__ 中谨慎处理异常
-✅ 异步代码使用 async with
-✅ 上下文传播使用 contextvars
-✅ 多个资源使用 ExitStack
+正确 资源管理优先用 with 语句
+正确 使用 @contextmanager 简化定义
+正确 __exit__ 中谨慎处理异常
+正确 异步代码使用 async with
+正确 上下文传播使用 contextvars
+正确 多个资源使用 ExitStack
 ```
 
-上下文管理器是 Python 资源管理的基石——`with` 语句让资源释放成为自动行为，`contextlib` 让定义变得简洁，`contextvars` 让上下文在异步中安全传播。掌握这些，你就能写出健壮且优雅的资源管理代码 🦐
+上下文管理器是 Python 资源管理的基石——`with` 语句让资源释放成为自动行为，`contextlib` 让定义变得简洁，`contextvars` 让上下文在异步中安全传播。掌握这些，你就能写出健壮且优雅的资源管理代码
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

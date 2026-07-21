@@ -7,12 +7,12 @@ date: 2026-06-01
 
 > 你是否厌倦了 `try/catch` 满天飞？是否因为 `Promise` 的错误类型总是 `unknown` 而头疼？Effect 用一套基于 Fiber 的并发模型和严格的类型安全，把函数式编程的精华带到了 TypeScript。它是 `Effect-TS` 生态的核心，被 GitPod、Trigger.dev 等公司在生产中使用。本文从零到实战，带你掌握 Effect。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 你遇到过这些痛点吗？
 
 ```typescript
-// ❌ Promise 的错误类型丢失
+// 错误 Promise 的错误类型丢失
 async function fetchUser(id: string): Promise<User> {
   const res = await fetch(`/api/users/${id}`);
   if (!res.ok) throw new Error("请求失败");
@@ -20,7 +20,7 @@ async function fetchUser(id: string): Promise<User> {
 }
 // 调用方不知道会抛什么错误！只能 any/unknown
 
-// ❌ try/catch 无法类型约束
+// 错误 try/catch 无法类型约束
 try {
   const data = JSON.parse(input);  // 可能抛 SyntaxError
   const user = await fetchUser("123");  // 可能抛网络错误
@@ -29,7 +29,7 @@ try {
   if (e instanceof Error) { ... }
 }
 
-// ❌ 并发、取消、超时需要手写大量模板代码
+// 错误 并发、取消、超时需要手写大量模板代码
 ```
 
 **Effect 的答案：所有错误都是类型的一部分，所有副作用都被追踪。**
@@ -73,11 +73,11 @@ pnpm add effect
 import { Effect, Console } from "effect";
 
 // 定义一个 Effect（不会立即执行！）
-const program = Console.log("Hello, Effect! 🦐");
+const program = Console.log("Hello, Effect! ");
 
 // 运行 Effect
 Effect.runSync(program);  // 同步运行（无错误、无异步）
-// 输出：Hello, Effect! 🦐
+// 输出：Hello, Effect!
 ```
 
 > **核心概念**：Effect 是**描述**，不是**执行**。就像 React 组件描述 UI，Effect 描述副作用。
@@ -491,8 +491,8 @@ const result = Schema.decodeUnknownSync(User)({
 ### 误区一：Effect 太复杂，不适合业务项目
 
 ```
-❌ 误解：Effect 只能用于底层库
-✅ 真相：业务逻辑用 Effect.gen 就够了，API 和 Promise 差不多
+错误 误解：Effect 只能用于底层库
+正确 真相：业务逻辑用 Effect.gen 就够了，API 和 Promise 差不多
 ```
 
 ```typescript
@@ -509,8 +509,8 @@ const program = Effect.gen(function* () {
 ### 误区二：Effect 性能差
 
 ```
-❌ 误解：函数式编程 = 慢
-✅ 真相：Effect 的 Fiber（协程）比操作系统线程轻量 1000 倍
+错误 误解：函数式编程 = 慢
+正确 真相：Effect 的 Fiber（协程）比操作系统线程轻量 1000 倍
 ```
 
 Effect 的并发模型是基于 **Fiber**（协程），不是操作系统线程：
@@ -523,7 +523,7 @@ Effect Fiber：  创建 ~4KB 内存，GC 管理，可百万级并发
 ### 误区三：Effect 生态不成熟
 
 ```
-✅ Effect 已被以下公司在生产使用：
+正确 Effect 已被以下公司在生产使用：
 - GitPod（云端 IDE）
 - Trigger.dev（任务队列）
 - Effect-TS 官方示例项目
@@ -596,11 +596,11 @@ Effect 的核心价值：**让 TypeScript 的的类型系统覆盖副作用（�
 
 ```
 传统 TypeScript：                 Effect：
-✅ 类型安全（数据）              ✅ 类型安全（数据 + 错误 + 依赖）
-❌ 错误类型 unknown              ✅ 错误类型是联合类型
-❌ 异步代码难测试               ✅ 依赖注入，Mock 简单
-❌ 并发/取消/超时手写          ✅ 内置 Fiber 并发模型
-❌ try/catch 破坏代码流         ✅ Effect.gen 保持线性代码流
+正确 类型安全（数据）              正确 类型安全（数据 + 错误 + 依赖）
+错误 错误类型 unknown              正确 错误类型是联合类型
+错误 异步代码难测试               正确 依赖注入，Mock 简单
+错误 并发/取消/超时手写          正确 内置 Fiber 并发模型
+错误 try/catch 破坏代码流         正确 Effect.gen 保持线性代码流
 ```
 
 **学习路径：**
@@ -610,6 +610,6 @@ Effect 的核心价值：**让 TypeScript 的的类型系统覆盖副作用（�
 4. 学习 `Context.Tag` 做依赖注入
 5. 探索 `@effect/schema` 替代 Zod
 
-Effect 不是"另一个异步库"，而是 **TypeScript 类型安全的终极方案** 🌀
+Effect 不是"另一个异步库"，而是 **TypeScript 类型安全的终极方案**
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

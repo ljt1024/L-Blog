@@ -7,7 +7,7 @@ date: 2026-07-01
 
 > 富文本编辑器是 Web 应用中最复杂的组件之一。从简单的文本输入到支持格式化、多媒体、协作编辑的复杂编辑器，每一步都需要精心的架构设计。Draft.js 是 Facebook 推出的 React 富文本编辑器框架，以 Immutable.js 为核心，提供了强大的可扩展性。本文深入解析 Draft.js 的架构设计、核心 API、实战技巧与常见陷阱。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要 Draft.js？
 
@@ -17,23 +17,23 @@ date: 2026-07-01
 传统方案的问题：
 ─────────────────────────────────
 contenteditable（浏览器原生）：
-  ❌ API 复杂（document.execCommand 已废弃）
-  ❌ 浏览器行为不一致
-  ❌ 状态管理困难（DOM 即状态）
-  ❌ XSS 安全风险高
+  错误 API 复杂（document.execCommand 已废弃）
+  错误 浏览器行为不一致
+  错误 状态管理困难（DOM 即状态）
+  错误 XSS 安全风险高
 
 其他框架（Quill、Summernote）：
-  ❌ 非 React 原生（操作 DOM）
-  ❌ 定制化受限
-  ❌ 状态与视图耦合
+  错误 非 React 原生（操作 DOM）
+  错误 定制化受限
+  错误 状态与视图耦合
 
 Draft.js 的设计理念：
 ─────────────────────────────────
 "让编辑器像 React 组件一样工作"
-  ✅ 状态即数据（EditorState = ContentState + SelectionState）
-  ✅ Immutable.js 数据模型（不可变、方便撤销/重做）
-  ✅ React 渲染（组件化的自定义渲染）
-  ✅ 丰富的 API（快捷键、装饰器、拼写检查）
+  正确 状态即数据（EditorState = ContentState + SelectionState）
+  正确 Immutable.js 数据模型（不可变、方便撤销/重做）
+  正确 React 渲染（组件化的自定义渲染）
+  正确 丰富的 API（快捷键、装饰器、拼写检查）
 ```
 
 ### Draft.js vs Slate.js
@@ -782,35 +782,35 @@ export default function EditorPage() {
 ### 常见错误
 
 ```tsx
-// ❌ 错误 1：在装饰器中使用 props.children 为 undefined
+// 错误 错误 1：在装饰器中使用 props.children 为 undefined
 const MyComponent = (props) => {
   // Draft.js 的 Decorator 组件
   // 如果直接在 RenderFn 中使用，必须返回 children
   return <span className="mention">{props.children}</span>;
 };
 
-// ❌ 错误 2：EditorState 引用相等性问题
+// 错误 错误 2：EditorState 引用相等性问题
 function handleChange(editorState: EditorState) {
-  // ❌ 不要这样做：每次都创建新引用
+  // 错误 不要这样做：每次都创建新引用
   setEditorState({ ...editorState });
 
-  // ✅ 正确做法：直接传入
+  // 正确 正确做法：直接传入
   setEditorState(editorState);
 }
 
-// ❌ 错误 3：Decorator 匹配导致性能问题
+// 错误 错误 3：Decorator 匹配导致性能问题
 // 大量匹配（URL、Hashtag）时，正则要优化
 const hashtagStrategy = (contentBlock, callback) => {
-  // ❌ 不要这样：每次都创建新正则
+  // 错误 不要这样：每次都创建新正则
   const regex = new RegExp(/#[a-zA-Z0-9_]+/g);
 
-  // ✅ 正确：在组件外定义正则
+  // 正确 正确：在组件外定义正则
 };
 
-// ❌ 错误 4：focusEditor 后光标位置错乱
+// 错误 错误 4：focusEditor 后光标位置错乱
 function focusEditor() {
   editorRef.current.focus();
-  // ✅ 强制将 Selection 设置到末尾
+  // 正确 强制将 Selection 设置到末尾
   const newState = EditorState.moveFocusToEnd(editorState);
   setEditorState(newState);
 }
@@ -874,24 +874,24 @@ Draft.js 工作流程：
 ```
 选型建议：
 ─────────────────────────────────
-✅ 选 Draft.js：
+正确 选 Draft.js：
   → React 技术栈
   → 需要撤销/重做（内置）
   → 需要 Entity 存储复杂元数据
   → 需要 Decorator 自定义高亮
   → 内容需要持久化（JSON 存储）
 
-✅ 选 Slate.js：
+正确 选 Slate.js：
   → 需要更灵活的架构
   → 需要自定义规范（JSON 自己定义）
   → 需要插件化扩展
   → 项目较新（Draft.js 维护较慢）
 
-❌ 不选两者：
+错误 不选两者：
   → 简单场景：contentEditable + Tiptap
   → 非 React：Quill / Prosemirror / TipTap
 ```
 
-Draft.js 是 React 富文本编辑器的经典方案——Immutable 数据模型、内置撤销重做、Decorator 灵活渲染，是构建内容平台、博客编辑器的坚实基础 🦐
+Draft.js 是 React 富文本编辑器的经典方案——Immutable 数据模型、内置撤销重做、Decorator 灵活渲染，是构建内容平台、博客编辑器的坚实基础
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

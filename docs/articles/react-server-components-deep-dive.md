@@ -7,7 +7,7 @@ date: 2026-04-23
 
 > 传统的 SSR 是"整页"渲染，RSC 是"组件级"服务端渲染——组件本身可以在服务器上运行，直接访问数据库、文件系统、密钥，产出的只是序列化后的 React 树，客户端再"接手"交互逻辑。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要 Server Components？
 
@@ -91,7 +91,7 @@ RSC 把组件明确划分为两类：
 // app/users/page.tsx - Server Component（默认）
 // 可以 import 服务器专属模块
 import { db } from '@/lib/database';
-import crypto from 'crypto';  // ✅ Node.js 模块随便用
+import crypto from 'crypto';  // 正确 Node.js 模块随便用
 
 async function UsersPage() {
   const users = await db.select().from(usersTable);
@@ -125,7 +125,7 @@ function LikeButton({ userId, initialCount }: { userId: string; initialCount: nu
 
   return (
     <button onClick={handleLike}>
-      {liked ? '❤️' : '🤍'} {initialCount + (liked ? 1 : 0)}
+      {liked ? '' : ''} {initialCount + (liked ? 1 : 0)}
     </button>
   );
 }
@@ -136,19 +136,19 @@ function LikeButton({ userId, initialCount }: { userId: string; initialCount: nu
 Server Component 可以**嵌套** Client Component，但：
 
 ```
-Server Component → Client Component → Client Component  ✅
-Client Component → Server Component                     ❌（不能反向）
-Server Component → Server Component（async）           ✅
+Server Component → Client Component → Client Component  正确
+Client Component → Server Component                     错误（不能反向）
+Server Component → Server Component（async）           正确
 ```
 
 **关键规则**：Client Component 内部不能 import Server Component，但可以通过 `children` prop 传递：
 
 ```tsx
-// ❌ 错误：Client 不能 import Server
+// 错误 错误：Client 不能 import Server
 'use client';
 import ServerChild from './ServerChild'; // 禁止！
 
-// ✅ 正确：通过 children prop 传递
+// 正确 正确：通过 children prop 传递
 'use client';
 export function ClientWrapper({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -451,18 +451,18 @@ async function BlogIndex() {
 
 ### 什么时候用 Server Component？
 
-- ✅ 数据获取逻辑紧耦合的展示组件
-- ✅ 需要访问服务端资源（DB、文件系统、密钥）
-- ✅ 纯展示、无交互的 UI（卡片、列表、文章详情）
-- ✅ SEO 敏感页面（服务端直接渲染 HTML）
+- 正确 数据获取逻辑紧耦合的展示组件
+- 正确 需要访问服务端资源（DB、文件系统、密钥）
+- 正确 纯展示、无交互的 UI（卡片、列表、文章详情）
+- 正确 SEO 敏感页面（服务端直接渲染 HTML）
 
 ### 什么时候用 Client Component？
 
-- ✅ 有 useState / useReducer 的状态管理
-- ✅ 有 useEffect 的副作用逻辑
-- ✅ 需要浏览器 API（localStorage、Geolocation）
-- ✅ 有事件处理器（onClick、onChange）
-- ✅ 需要第三方库（图表库、动画库）
+- 正确 有 useState / useReducer 的状态管理
+- 正确 有 useEffect 的副作用逻辑
+- 正确 需要浏览器 API（localStorage、Geolocation）
+- 正确 有事件处理器（onClick、onChange）
+- 正确 需要第三方库（图表库、动画库）
 
 ### 黄金法则
 

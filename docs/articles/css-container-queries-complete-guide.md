@@ -56,7 +56,7 @@
 
 | 值 | 含义 | 使用场景 |
 |---|------|---------|
-| `inline-size` | 仅根据**行内方向**（水平方向）建立容器 | 绝大多数场景 ✅ |
+| `inline-size` | 仅根据**行内方向**（水平方向）建立容器 | 绝大多数场景 正确 |
 | `size` | 同时限制**行内 + 块级方向**（宽高都限制） | 复杂网格组件 |
 | `normal` | 默认值，不建立容器 | 清除容器 |
 
@@ -198,7 +198,7 @@
 }
 ```
 
-> ⚠️ 目前浏览器支持度较低（Chrome 111+ 开始支持），属实验性功能，生产环境慎用。
+> 注意 目前浏览器支持度较低（Chrome 111+ 开始支持），属实验性功能，生产环境慎用。
 
 ## Container Queries 的实战场景
 
@@ -452,17 +452,17 @@ Container Queries 不是替代媒体查询，而是**互补**：
 ## 性能注意事项
 
 ```css
-/* ✅ 好的做法：明确容器名，避免过度嵌套 */
+/* 正确 好的做法：明确容器名，避免过度嵌套 */
 .card-container {
   container: card / inline-size;
 }
 
-/* ⚠️ 注意：container-type: size 会创建新的堆叠上下文 */
+/* 注意 注意：container-type: size 会创建新的堆叠上下文 */
 .card-container {
   container-type: size; /* 可能影响内部 absolute 定位的元素的基准 */
 }
 
-/* ✅ 大多数场景用 inline-size 即可 */
+/* 正确 大多数场景用 inline-size 即可 */
 .card-container {
   container-type: inline-size;
 }
@@ -493,12 +493,12 @@ Container Queries 不是替代媒体查询，而是**互补**：
 
 | 浏览器 | 支持版本 | 备注 |
 |--------|---------|------|
-| Chrome | 105+ | ✅ 完整支持 |
-| Edge | 105+ | ✅ 完整支持 |
-| Safari | 16+ | ✅ 完整支持 |
-| Firefox | 110+ | ✅ 完整支持 |
-| iOS Safari | 16+ | ✅ 完整支持 |
-| IE 11 | ❌ 不支持 | 已废弃 |
+| Chrome | 105+ | 正确 完整支持 |
+| Edge | 105+ | 正确 完整支持 |
+| Safari | 16+ | 正确 完整支持 |
+| Firefox | 110+ | 正确 完整支持 |
+| iOS Safari | 16+ | 正确 完整支持 |
+| IE 11 | 错误 不支持 | 已废弃 |
 
 > Container Queries 是现代 CSS 的基础能力，全球浏览器支持率已超过 **95%**，完全可以放心在生产环境使用。
 
@@ -513,4 +513,4 @@ Container Queries 的出现，让"组件化响应式"真正成为可能：
 
 结合 CSS 变量、CSS Subgrid 等现代特性，CSS 的组件化能力已经到达了前所未有的高度。
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

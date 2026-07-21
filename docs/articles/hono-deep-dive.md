@@ -7,7 +7,7 @@ date: 2026-06-12
 
 > Hono（意为"炎"）是一个超轻量的 Web 框架，核心 ~14KB，支持 Cloudflare Workers、Deno、Bun、Node.js、Vercel Edge Functions 等所有主流运行时。它提供了类似 Express 的 API，但原生支持 TypeScript + 中间件 + 校验 + OpenAPI，是 Edge Runtime 时代的最佳选择。本文系统解析 Hono 的设计哲学、核心 API、中间件生态，以及与 Express / Fastify / Elysia 的对比。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要 Hono？
 
@@ -16,20 +16,20 @@ date: 2026-06-12
 ```
 传统 Node.js 框架（Express / Fastify / Nest）：
 ─────────────────────────────────
-❌ 依赖 Node.js API（fs、net、process 等）
-❌ 包体积大（Express ~200KB，Fastify ~500KB）
-❌ 不支持 Edge Runtime（Cloudflare Workers、Deno Deploy）
-❌ 冷启动慢（需要加载大量依赖）
+错误 依赖 Node.js API（fs、net、process 等）
+错误 包体积大（Express ~200KB，Fastify ~500KB）
+错误 不支持 Edge Runtime（Cloudflare Workers、Deno Deploy）
+错误 冷启动慢（需要加载大量依赖）
 ```
 
 ```
 Edge Runtime 的特点：
 ─────────────────────────────────
-✅ 无文件系统（没有 fs 模块）
-✅ 无网络 socket（没有 net 模块）
-✅ 无 Node.js 全局变量
-✅ 极速冷启动（< 10ms）
-✅ 全球分布式（靠近用户）
+正确 无文件系统（没有 fs 模块）
+正确 无网络 socket（没有 net 模块）
+正确 无 Node.js 全局变量
+正确 极速冷启动（< 10ms）
+正确 全球分布式（靠近用户）
 ```
 
 ### Hono 的答案
@@ -77,7 +77,7 @@ import { Hono } from 'hono';
 const app = new Hono();
 
 app.get('/', (c) => {
-  return c.text('Hello Hono! 🔥');
+  return c.text('Hello Hono! ');
 });
 
 app.get('/api/hello/:name', (c) => {
@@ -624,12 +624,12 @@ Fastify（Node）：       不支持 Edge
 | 功能 | Hono | Express | Fastify | Elysia |
 |------|------|---------|---------|--------|
 | 包体积 | ~14KB | ~200KB | ~500KB | ~20KB |
-| 跨运行时 | ✅ 全部 | ❌ 仅 Node | ❌ 仅 Node | ⚠️ Bun/Deno |
-| TypeScript | ✅ 原生 | ⚠️ @types | ✅ | ✅ 原生 |
-| 中间件生态 | ⚠️ 中等 | ✅ 丰富 | ✅ 丰富 | ⚠️ 中等 |
-| OpenAPI | ✅ 内置 | ❌ 需插件 | ✅ 插件 | ✅ 内置 |
+| 跨运行时 | 正确 全部 | 错误 仅 Node | 错误 仅 Node | 注意 Bun/Deno |
+| TypeScript | 正确 原生 | 注意 @types | 正确 | 正确 原生 |
+| 中间件生态 | 注意 中等 | 正确 丰富 | 正确 丰富 | 注意 中等 |
+| OpenAPI | 正确 内置 | 错误 需插件 | 正确 插件 | 正确 内置 |
 | 学习曲线 | ⭐⭐（简单） | ⭐（最简单） | ⭐⭐⭐（中等） | ⭐⭐（简单） |
-| Edge 支持 | ✅ 原生 | ❌ | ❌ | ⚠️ 部分 |
+| Edge 支持 | 正确 原生 | 错误 | 错误 | 注意 部分 |
 
 ---
 
@@ -705,13 +705,13 @@ export default app;
 ```
 可以，但有取舍：
 ─────────────────────────────────
-✅ 优势：
+正确 优势：
   - 更轻量（14KB vs 200KB）
   - 更好的 TypeScript 支持
   - 支持 Edge Runtime
   - 内置 OpenAPI
 
-⚠️ 劣势：
+注意 劣势：
   - 中间件生态不如 Express 丰富
   - 大量现有 Express 中间件无法直接使用
   - 社区规模较小
@@ -725,14 +725,14 @@ export default app;
 
 ```
 Hono：
-  ✅ 跨运行时（Cloudflare / Deno / Bun / Node）
-  ✅ 生态更成熟
-  ✅ 文档更完善
+  正确 跨运行时（Cloudflare / Deno / Bun / Node）
+  正确 生态更成熟
+  正确 文档更完善
 
 Elysia：
-  ✅ Bun 原生性能（~2ms 延迟）
-  ✅ 更优雅的 TypeScript 类型推断
-  ✅ 内置端到端类型安全（Eden）
+  正确 Bun 原生性能（~2ms 延迟）
+  正确 更优雅的 TypeScript 类型推断
+  正确 内置端到端类型安全（Eden）
 
 选型建议：
   需要跨运行时 → Hono
@@ -765,18 +765,18 @@ Hono 的核心价值：
 ```
 适用场景：
 ─────────────────────────────────
-✅ Cloudflare Workers / Deno Deploy（Edge Runtime）
-✅ Bun 全栈应用
-✅ 需要跨运行时的 API 服务
-✅ 需要 OpenAPI 文档的 RESTful API
-✅ 新项目（无历史包袱）
+正确 Cloudflare Workers / Deno Deploy（Edge Runtime）
+正确 Bun 全栈应用
+正确 需要跨运行时的 API 服务
+正确 需要 OpenAPI 文档的 RESTful API
+正确 新项目（无历史包袱）
 
-⚠️ 不太适合：
+注意 不太适合：
   - 已有大型 Express 项目（迁移成本高）
   - 依赖大量 Express 中间件
   - 需要复杂 ORM 集成的场景
 ```
 
-Hono 正在成为 Edge Runtime 时代的最佳选择——轻量、快速、跨平台，是 Cloudflare Workers / Bun / Deno 全栈场景的完美搭配 🔥
+Hono 正在成为 Edge Runtime 时代的最佳选择——轻量、快速、跨平台，是 Cloudflare Workers / Bun / Deno 全栈场景的完美搭配
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

@@ -362,17 +362,17 @@ db.users.aggregate([{$indexStats: {}}])
 db.orders.aggregate([
   // 匹配条件
   {$match: {status: "completed"}},
-  
+
   // 分组统计
   {$group: {
     _id: "$customerId",
     totalAmount: {$sum: "$amount"},
     orderCount: {$sum: 1}
   }},
-  
+
   // 排序
   {$sort: {totalAmount: -1}},
-  
+
   // 限制结果
   {$limit: 10}
 ])

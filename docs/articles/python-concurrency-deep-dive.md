@@ -7,7 +7,7 @@ date: 2026-07-14
 
 > asyncio 解决了 I/O 密集型问题，但 CPU 密集型任务呢？多线程为什么没有想象中那么快？GIL 到底是什么？本文系统覆盖 Python 并发的三条路线——`threading` 线程、`multiprocessing` 多进程、`concurrent.futures` 高级抽象，以及它们的适用场景、常见陷阱与选型决策。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 并发的本质：为什么需要并发？
 
@@ -153,7 +153,7 @@ def outer():
         print("outer")
         inner()  # RLock 允许在同一线程中递归获取
 
-outer()  # ✅ RLock 允许嵌套；如果是 Lock 会死锁
+outer()  # 正确 RLock 允许嵌套；如果是 Lock 会死锁
 
 # 3. Semaphore：信号量（控制并发数量）
 semaphore = threading.Semaphore(3)  # 最多 3 个线程同时访问
@@ -274,7 +274,7 @@ p.start()
 p.join()
 
 # 方式 2：Pool + map（最常用）
-if __name__ == "__main__":  # ⚠️ 必须！Windows 上 multiprocessing 需要
+if __name__ == "__main__":  # 注意 必须！Windows 上 multiprocessing 需要
     with multiprocessing.Pool(processes=4) as pool:
         # map：阻塞，直到所有结果返回
         results = pool.map(cpu_task, [("B", 1), ("C", 2), ("D", 0.5)])
@@ -464,8 +464,8 @@ with ProcessPoolExecutor(max_workers=4) as executor:
 process_time = time.perf_counter() - start
 print(f"进程池（4 并行）: {process_time:.2f}s")  # ~单线程时间/4
 
-# ❌ I/O 密集型用 ProcessPoolExecutor：进程创建开销大，不值得
-# ❌ CPU 密集型用 ThreadPoolExecutor：GIL 导致无法并行
+# 错误 I/O 密集型用 ProcessPoolExecutor：进程创建开销大，不值得
+# 错误 CPU 密集型用 ThreadPoolExecutor：GIL 导致无法并行
 
 # 混合型：ProcessPoolExecutor 内嵌套 ThreadPoolExecutor
 # （适合每个进程做 I/O 绑定的场景，如爬虫）
@@ -629,20 +629,20 @@ if __name__ == "__main__":
 ### 陷阱 1：共享状态与 race condition
 
 ```python
-# ❌ 陷阱：全局变量在线程间共享（race condition）
+# 错误 陷阱：全局变量在线程间共享（race condition）
 counter = 0
 
 def increment():
     global counter
     for _ in range(100_000):
-        counter += 1  # ⚠️ 不是原子操作！
+        counter += 1  # 注意 不是原子操作！
 
 threads = [threading.Thread(target=increment) for _ in range(4)]
 for t in threads: t.start()
 for t in threads: t.join()
 print(counter)  # 通常 < 400000（race condition 导致丢失更新）
 
-# ✅ 正确：使用锁
+# 正确 正确：使用锁
 counter = 0
 lock = threading.Lock()
 
@@ -652,7 +652,7 @@ def increment_safe():
         with lock:
             counter += 1
 
-# ✅ 或者：使用线程安全的数据结构
+# 正确 或者：使用线程安全的数据结构
 from collections import Counter
 counter = Counter()  # 线程安全
 
@@ -664,7 +664,7 @@ def increment_counter():
 ### 陷阱 2：死锁
 
 ```python
-# ❌ 陷阱：Lock 顺序不同导致死锁
+# 错误 陷阱：Lock 顺序不同导致死锁
 import threading
 
 lock_a = threading.Lock()
@@ -673,16 +673,16 @@ lock_b = threading.Lock()
 def task1():
     with lock_a:
         time.sleep(0.1)
-        with lock_b:  # ⚠️ 可能死锁
+        with lock_b:  # 注意 可能死锁
             print("task1")
 
 def task2():
     with lock_b:
         time.sleep(0.1)
-        with lock_a:  # ⚠️ 与 task1 顺序相反，死锁！
+        with lock_a:  # 注意 与 task1 顺序相反，死锁！
             print("task2")
 
-# ✅ 正确：所有线程按相同顺序获取锁
+# 正确 正确：所有线程按相同顺序获取锁
 def task1_fixed():
     with lock_a:
         time.sleep(0.1)
@@ -690,23 +690,23 @@ def task1_fixed():
             print("task1")
 
 def task2_fixed():
-    with lock_a:  # ✅ 同样的顺序
+    with lock_a:  # 正确 同样的顺序
         time.sleep(0.1)
         with lock_b:
             print("task2")
 
-# ✅ 或者：使用 RLock（避免同一线程的锁重入问题）
+# 正确 或者：使用 RLock（避免同一线程的锁重入问题）
 ```
 
 ### 陷阱 3：进程池中的可序列化问题
 
 ```python
-# ❌ 陷阱：进程池中传递不可序列化对象
+# 错误 陷阱：进程池中传递不可序列化对象
 import multiprocessing
 
 class Unserializable:
     def __init__(self):
-        self.callback = lambda: print("callback")  # ⚠️ lambda 不能 pickle
+        self.callback = lambda: print("callback")  # 注意 lambda 不能 pickle
 
 def bad_task(obj: Unserializable) -> str:
     return "ok"
@@ -714,29 +714,29 @@ def bad_task(obj: Unserializable) -> str:
 if __name__ == "__main__":
     pool = multiprocessing.Pool(2)
     try:
-        pool.map(bad_task, [Unserializable()])  # ❌ PicklingError
+        pool.map(bad_task, [Unserializable()])  # 错误 PicklingError
     except Exception as e:
         print(f"序列化错误: {e}")
 
-# ✅ 正确：只传递可序列化数据
+# 正确 正确：只传递可序列化数据
 def good_task(data: dict) -> str:
     return f"处理 {data['id']}"
 
 with multiprocessing.Pool(2) as pool:
-    results = pool.map(good_task, [{"id": 1}, {"id": 2}])  # ✅
+    results = pool.map(good_task, [{"id": 1}, {"id": 2}])  # 正确
 ```
 
 ### 陷阱 4：进程 vs 线程的混淆
 
 ```python
-# ❌ 混淆：CPU 密集型任务用 threading（GIL 导致无效）
+# 错误 混淆：CPU 密集型任务用 threading（GIL 导致无效）
 def cpu_heavy():
     return sum(i * i for i in range(10_000_000))
 
 threads = [threading.Thread(target=cpu_heavy) for _ in range(4)]
 # 结果：几乎无加速，甚至更慢
 
-# ✅ 正确：CPU 密集型用 multiprocessing
+# 正确 正确：CPU 密集型用 multiprocessing
 processes = [multiprocessing.Process(target=cpu_heavy) for _ in range(4)]
 # 结果：约 4x 加速（利用多核）
 ```
@@ -795,16 +795,16 @@ future.done() / future.exception() 检查状态
 ```
 最佳实践：
 ─────────────────────────────────
-✅ I/O 密集型：asyncio > ThreadPoolExecutor > threading
-✅ CPU 密集型：ProcessPoolExecutor > multiprocessing.Pool
-✅ 多进程入口：使用 if __name__ == "__main__" 保护
-✅ 进程间通信：优先用 Pipe / Queue / Manager
-✅ 共享状态：最小化，用队列代替锁
-✅ 池大小：CPU 密集 = CPU核心数；I/O 密集 = 2×CPU核心数 + 1
-✅ 异常处理：用 future.exception() 而非直接 get()
-✅ 避免：在线程/进程间共享可变对象
+正确 I/O 密集型：asyncio > ThreadPoolExecutor > threading
+正确 CPU 密集型：ProcessPoolExecutor > multiprocessing.Pool
+正确 多进程入口：使用 if __name__ == "__main__" 保护
+正确 进程间通信：优先用 Pipe / Queue / Manager
+正确 共享状态：最小化，用队列代替锁
+正确 池大小：CPU 密集 = CPU核心数；I/O 密集 = 2×CPU核心数 + 1
+正确 异常处理：用 future.exception() 而非直接 get()
+正确 避免：在线程/进程间共享可变对象
 ```
 
-并发是 Python 性能优化的重要课题——理解 GIL 的本质是选型的前提，I/O 密集用 asyncio/线程池，CPU 密集用多进程。`concurrent.futures` 是现代 Python 并发的最佳抽象，`ProcessPoolExecutor` 和 `ThreadPoolExecutor` 覆盖了绝大多数场景 🦐
+并发是 Python 性能优化的重要课题——理解 GIL 的本质是选型的前提，I/O 密集用 asyncio/线程池，CPU 密集用多进程。`concurrent.futures` 是现代 Python 并发的最佳抽象，`ProcessPoolExecutor` 和 `ThreadPoolExecutor` 覆盖了绝大多数场景
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

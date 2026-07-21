@@ -18,8 +18,8 @@ IndexedDB 是一个运行在浏览器中的**事务型对象数据库**，属于
 |------|-------------|-----------|--------|
 | 容量 | ~5-10MB | 数百MB甚至GB | ~4KB |
 | 数据类型 | 仅字符串 | 结构化克隆（对象/文件/Blob） | 仅字符串 |
-| 索引 | ❌ | ✅ | ❌ |
-| 事务 | ❌ | ✅ | ❌ |
+| 索引 | 错误 | 正确 | 错误 |
+| 事务 | 错误 | 正确 | 错误 |
 | 异步 | 同步 | 异步 | 同步 |
 | 性能 | 小数据快 | 大数据高效 | 每次请求都携带 |
 
@@ -321,7 +321,7 @@ function badTransactionExample(db) {
   const tx = db.transaction('users', 'readwrite')
   const store = tx.objectStore('users')
 
-  // ❌ 错误：tx 在 .get() 的 onsuccess 回调之前就已经自动提交了！
+  // 错误 错误：tx 在 .get() 的 onsuccess 回调之前就已经自动提交了！
   // 因为 JavaScript 是单线程的，事件循环中 tx 没有被"保持活跃"
   store.add({ name: 'Alice' })
   store.add({ name: 'Bob' })
@@ -337,7 +337,7 @@ function goodTransactionExample(db) {
   const tx = db.transaction('users', 'readwrite')
   const store = tx.objectStore('users')
 
-  // ✅ 正确：保持对 tx 的引用
+  // 正确 正确：保持对 tx 的引用
   const add1 = store.add({ name: 'Alice' })
   const add2 = store.add({ name: 'Bob' })
 
@@ -686,14 +686,14 @@ channel.onmessage = (event) => {
 ### 5.1 批量写入优化
 
 ```typescript
-// ❌ 慢：逐条 add，每次都创建一个事务
+// 错误 慢：逐条 add，每次都创建一个事务
 async function importNotesSlow(notes: Note[]) {
   for (const note of notes) {
     await db.add('notes', note) // 每次一个事务！
   }
 }
 
-// ✅ 快：一个事务中批量写入
+// 正确 快：一个事务中批量写入
 async function importNotesFast(notes: Note[]) {
   const tx = db.transaction('notes', 'readwrite')
   const store = tx.objectStore('notes')
@@ -920,7 +920,7 @@ IDBDatabase.prototype.transaction = function (...args) {
 ### 9.1 版本迁移失败导致数据丢失
 
 ```typescript
-// ✅ 使用事务确保原子性
+// 正确 使用事务确保原子性
 upgrade(db, oldVersion) {
   if (oldVersion < 2) {
     // 重命名 Object Store（IndexedDB 不支持直接重命名）
@@ -932,7 +932,7 @@ upgrade(db, oldVersion) {
   }
 }
 
-// ✅ 安全迁移：先读后写
+// 正确 安全迁移：先读后写
 async upgradeWithMigration(db: IDBPDatabase, oldVersion: number) {
   if (oldVersion < 2) {
     // 阶段 1：在 onupgradeneeded 中创建新 store
@@ -989,7 +989,7 @@ IndexedDB 使用 Structured Clone Algorithm，以下类型**不支持**：
 - `WeakMap`/`WeakSet`
 
 ```typescript
-// ✅ 存储前清理不支持的类型
+// 正确 存储前清理不支持的类型
 function sanitizeForStorage(obj: unknown): unknown {
   if (obj === null || typeof obj !== 'object') return obj
 
@@ -1040,4 +1040,4 @@ IndexedDB 是浏览器中唯一能够满足**复杂离线数据存储**需求的
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

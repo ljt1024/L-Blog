@@ -7,7 +7,7 @@ date: 2026-05-21
 
 > TypeScript 不只是给 JS 加类型注解——它的类型系统是图灵完备的，可以在编译期做计算、做推导、做转换。掌握高级类型编程，你的代码不仅更安全，还能把大量运行时逻辑提前到编译期。本文从基础类型操作出发，逐步深入条件类型、映射类型、模板字面量类型，最后挑战几个经典类型体操题。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 基础工具类型
 
@@ -42,9 +42,9 @@ function getProp<T, K extends keyof T>(obj: T, key: K): T[K] {
 }
 
 const user: User = { name: 'Alice', age: 25, email: 'a@b.com' };
-const name = getProp(user, 'name');  // string ✅
-const age = getProp(user, 'age');    // number ✅
-// getProp(user, 'phone');           // ❌ 编译报错
+const name = getProp(user, 'name');  // string 正确
+const age = getProp(user, 'age');    // number 正确
+// getProp(user, 'phone');           // 错误 编译报错
 ```
 
 ### 索引访问类型
@@ -160,12 +160,12 @@ class TypedEventEmitter {
 const emitter = new TypedEventEmitter();
 
 emitter.on('click', (e) => {
-  console.log(e.x, e.y);   // ✅ 类型正确
-  // console.log(e.key);    // ❌ click 没有 key 属性
+  console.log(e.x, e.y);   // 正确 类型正确
+  // console.log(e.key);    // 错误 click 没有 key 属性
 });
 
-emitter.emit('click', { x: 100, y: 200 });  // ✅
-// emitter.emit('click', { key: 'a' });       // ❌ 类型不匹配
+emitter.emit('click', { x: 100, y: 200 });  // 正确
+// emitter.emit('click', { key: 'a' });       // 错误 类型不匹配
 ```
 
 ## 映射类型
@@ -614,8 +614,8 @@ type LoginValidation = ValidationRule<typeof loginForm>;
 // 超过会报 "Type instantiation is excessively deep"
 
 // 循环引用会导致编译错误
-// type A = { b: B }; type B = { a: A };  // ✅ 接口可以
-// type A = B; type B = A;                 // ❌ 类型别名不行
+// type A = { b: B }; type B = { a: A };  // 正确 接口可以
+// type A = B; type B = A;                 // 错误 类型别名不行
 
 // 复杂类型推导会拖慢编译速度
 // 大型项目中，过于复杂的条件类型和递归类型是编译瓶颈之一
@@ -642,6 +642,6 @@ type LoginValidation = ValidationRule<typeof loginForm>;
 4. 挑战模板字面量类型和递归类型
 5. 去Type Challenges 做题巩固
 
-类型体操的终极目标不是写出最炫的类型，而是让使用你代码的人获得**最精确的类型提示和最少的类型断言**。好的类型定义就像好的 API——用起来自然，不需要翻文档 🎯
+类型体操的终极目标不是写出最炫的类型，而是让使用你代码的人获得**最精确的类型提示和最少的类型断言**。好的类型定义就像好的 API——用起来自然，不需要翻文档
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

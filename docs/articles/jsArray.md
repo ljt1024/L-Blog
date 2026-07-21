@@ -1,4 +1,4 @@
-***1. every*** 
+***1. every***
 
 ```javascript
  Array.prototype.myEvery = function(fn) {
@@ -35,7 +35,7 @@ Array.prototype.myFind = function(callback) {
         if (res) break
      }
      return res
-} 
+}
 ```
 
 ***4.reduce***

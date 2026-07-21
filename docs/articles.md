@@ -2,7 +2,7 @@
 
 这里记录了我发布的所有技术文章，方便查阅和回顾。
 
-## 📚 JavaScript 核心
+##  JavaScript 核心
 
 - [手写js常用数组方法](/articles/jsArray)
 - [手写promise](/articles/jsPromise)
@@ -11,14 +11,14 @@
 - [深入理解 JavaScript 事件循环机制](/articles/js-event-loop-deep-dive)
 - [JavaScript 设计模式：从单例到观察者，写出优雅架构](/articles/javascript-design-patterns)
 
-## 🎨 Vue 生态
+##  Vue 生态
 
 - [vue3总结](/articles/vue3Summary)
 - [vue3自定义指令](/articles/vue3-custom-directives)
 - [Vue 3 响应式原理深度解析：从 Proxy 到 effect](/articles/vue3-reactivity-deep-dive)
 - [Vue Vapor Mode 深度解析：编译时优化消除 Virtual DOM](/articles/vue-vapor-mode-deep-dive)
 
-## ⚛️ React 生态
+##  React 生态
 
 - [Next.js 15 App Router 深度解析：从入门到实战](/articles/nextjs-15-app-router-deep-dive)
 - [React Server Components 深入解析：下一代 React 渲染范式](/articles/react-server-components-deep-dive)
@@ -39,20 +39,20 @@
 - [Astro 深度解析：内容驱动网站的终极选择](/articles/astro-framework-deep-dive)
 - [HTMX 深度解析：超媒体 API 的现代 Web 回归，HTML 才是最好的 UI 描述语言](/articles/htmx-deep-dive)
 
-## 🚀 新兴框架
+##  新兴框架
 
 - [Solid.js 深度解析：React 语法，Vue 性能的细粒度响应式框架](/articles/solidjs-deep-dive)
 - [Svelte 5 深度解析：Runes 响应式系统，编译时优化的终极形态](/articles/svelte5-deep-dive)
 - [Signals 生态深度解析：从 Solid.js 到全框架通用的响应式状态](/articles/signals-ecology-deep-dive)
 
-## 📱 跨端开发
+##  跨端开发
 
 - [uniapp微信小程序新版本获取用户的头像和昵称，手机号](/articles/uniappGetUserInfo)
 - [uniapp微信小程序导航栏透明度渐变](/articles/uniappNavCss)
 - [Web Components 完全指南：构建可复用的原生组件系统](/articles/web-components-complete-guide)
 - [微前端架构深入解析：设计模式、实战技巧与避坑指南](/articles/micro-frontend-architecture-deep-dive)
 
-## 🤖 AI & LLM
+##  AI & LLM
 
 - [AI智能体基础概念详解](/articles/ai-agent-basics)
 - [AI智能体技术架构深度解析](/articles/ai-agent-architecture)
@@ -64,7 +64,7 @@
 - [手把手实现企业级 RAG 系统：分片 → 向量化 → 召回 → 重排 → 回答](/articles/rag-ts-implementation-complete-guide)
 - [Claude Code 完整使用教程：从安装到高效开发](/articles/claude-code-complete-tutorial)
 
-## 🛠️ TypeScript & 工程化
+##  TypeScript & 工程化
 
 - [pnpm 包管理器深度解析：为什么越来越多人用它](/articles/pnpm-package-manager-deep-dive)
 - [TypeScript 类型体操：从基础到高级类型编程](/articles/typescript-type-gymnastics)
@@ -91,7 +91,7 @@
 - [Zod 运行时类型校验完全指南：TypeScript 优先的数据校验方案](/articles/zod-runtime-type-validation-deep-dive)
 - [CSS Cascade Layers 深度解析：掌控样式优先级的新一代武器](/articles/css-cascade-layers-deep-dive)
 
-## 🐍 Python
+##  Python
 
 - [Python 基础完全指南：从零构建坚实的编程地基](/articles/python-basic-guide)
 - [Python 类型系统完全指南：从基础类型提示到高级泛型编程](/articles/python-type-system-deep-dive)
@@ -114,7 +114,7 @@
 - [Modern Auth 深度解析：从 Session 到 Passkeys 的现代认证机制](/articles/modern-auth-deep-dive)
 - [FastAPI Web 开发实战：从入门到生产部署](/articles/fastapi-python-web-development)
 
-## 🎯 前端性能 & 浏览器
+##  前端性能 & 浏览器
 
 - [CSS 动画性能优化：让页面丝滑流畅的终极指南](/articles/css-animation-performance-optimization)
 - [View Transitions API 深度解析：实现原生丝滑的页面切换动画](/articles/view-transitions-api-deep-dive)

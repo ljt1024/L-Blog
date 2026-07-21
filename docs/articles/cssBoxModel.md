@@ -1,5 +1,5 @@
 1.标准盒模型：content = width + padding*2 +border*2
-2.IE盒模型：触发条件： box-sizing: border-box;   
+2.IE盒模型：触发条件： box-sizing: border-box;
 					当宽度大于  border*2 + padding *2    content = width
 		 		     当宽度小于  border + padding  content = border*2 + padding *2
 ```html

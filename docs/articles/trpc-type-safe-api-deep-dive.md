@@ -27,7 +27,7 @@ tRPC（TypeScript Remote Procedure Call）是一个用于构建端到端类型�
 在传统的 REST 或 GraphQL 开发中，前端需要手动定义接口返回类型：
 
 ```typescript
-// ❌ 传统方式：手动维护类型，容易过期
+// 错误 传统方式：手动维护类型，容易过期
 interface User {
   id: number;
   email: string;
@@ -41,7 +41,7 @@ const user: User = await res.json(); // 类型不安全！
 使用 tRPC：
 
 ```typescript
-// ✅ tRPC：类型自动同步
+// 正确 tRPC：类型自动同步
 const user = await trpc.user.findById.query({ id: 1 });
 // user 的类型自动推导，后端改了字段，前端编译直接报错
 ```
@@ -546,7 +546,7 @@ const appRouter = router({
 
 | 特性 | tRPC | GraphQL | REST + OpenAPI |
 |------|------|---------|----------------|
-| 类型安全 | ✅ 端到端 | ✅ 通过代码生成 | ⚠️ 手动维护 |
+| 类型安全 | 正确 端到端 | 正确 通过代码生成 | 注意 手动维护 |
 | 学习曲线 | 低（只需 TypeScript） | 高（需要学习 SDL） | 中 |
 | 文档 | 自动生成 | 需要额外工具 | 需要维护 |
 | 适用场景 | TypeScript 全栈 | 多语言、公开 API | 传统前后端分离 |
@@ -555,13 +555,13 @@ const appRouter = router({
 
 tRPC 为 TypeScript 全栈应用提供了一流的开发体验：
 
-- ✅ **类型安全**：从数据库到前端组件的完整类型链
-- ✅ **开发效率**：不需要维护 Schema、不需要生成代码
-- ✅ **灵活性**：与任何前端框架、任何后端部署方式兼容
-- ✅ **性能**：自动批处理、可选的响应压缩
+- 正确 **类型安全**：从数据库到前端组件的完整类型链
+- 正确 **开发效率**：不需要维护 Schema、不需要生成代码
+- 正确 **灵活性**：与任何前端框架、任何后端部署方式兼容
+- 正确 **性能**：自动批处理、可选的响应压缩
 
 如果你的项目是 TypeScript 全栈，tRPC 几乎是必选方案。它让你专注于业务逻辑，而不是 API 契约维护。
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

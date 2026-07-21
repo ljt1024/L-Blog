@@ -7,7 +7,7 @@ date: 2026-07-03
 
 > 装饰器是 Python 最强大的语法特性之一，但也是最容易被误解的特性。`@` 符号背后隐藏着什么？为什么要用 `functools.wraps`？装饰器如何影响函数的元数据？本文从零解析装饰器的本质，涵盖基础用法、进阶模式、实战场景与常见陷阱，让你在项目中优雅地使用装饰器。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 装饰器是什么？
 
@@ -198,13 +198,13 @@ def my_decorator(func):
 ### 问题：如何给装饰器传参数？
 
 ```python
-# ❌ 错误：装饰器不能直接接受参数
+# 错误 错误：装饰器不能直接接受参数
 @decorator_with_args(arg1, arg2)   # 这会被解释为：
 def func():
     pass
 # func = decorator_with_args(arg1, arg2)(func)   # 需要三层调用！
 
-# ✅ 正确：装饰器工厂函数（返回装饰器的函数）
+# 正确 正确：装饰器工厂函数（返回装饰器的函数）
 def repeat(times):                 # 第一层：接受装饰器参数
     def decorator(func):            # 第二层：接受被装饰函数
         @functools.wraps(func)
@@ -592,7 +592,7 @@ class Cat(Animal):
     def speak(self) -> str:
         return "喵喵！"
 
-# ❌ 无法实例化抽象类
+# 错误 无法实例化抽象类
 # animal = Animal("动物")  # TypeError
 
 dog = Dog("旺财")
@@ -818,16 +818,16 @@ def debug(func: Callable[P, R]) -> Callable[P, R]:
 ### 陷阱 1：装饰器改变函数签名
 
 ```python
-# ❌ 问题：wrapper 的签名不包含原函数参数
+# 错误 问题：wrapper 的签名不包含原函数参数
 def bad_decorator(func):
     def wrapper(*args, **kwargs):
         return func(*args, **kwargs)
     return wrapper
 
-# ❌ 问题：类型检查工具无法识别参数
+# 错误 问题：类型检查工具无法识别参数
 # mypy 会对上述代码发出警告
 
-# ✅ 正确：保留函数签名
+# 正确 正确：保留函数签名
 import functools
 import inspect
 
@@ -840,18 +840,18 @@ def good_decorator(func):
     # functools.wraps 已经处理了大部分情况
     return wrapper
 
-# ✅ 更完善的方案：使用 typing 和 ParamSpec
+# 正确 更完善的方案：使用 typing 和 ParamSpec
 ```
 
 ### 陷阱 2：装饰器与类方法混用
 
 ```python
 class MyClass:
-    @timer  # ❌ 直接用会出问题：第一个参数 self 被当成 args[0]
+    @timer  # 错误 直接用会出问题：第一个参数 self 被当成 args[0]
     def method(self, x: int) -> int:
         return x * 2
 
-# ✅ 正确：检查是否是方法
+# 正确 正确：检查是否是方法
 def smart_timer(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -868,28 +868,28 @@ def smart_timer(func):
     return wrapper
 
 class MyClass:
-    @smart_timer  # ✅ 正确处理
+    @smart_timer  # 正确 正确处理
     def method(self, x: int) -> int:
         return x * 2
 
-# ✅ 更优雅：使用 descriptors
+# 正确 更优雅：使用 descriptors
 ```
 
 ### 陷阱 3：装饰器遮蔽异常
 
 ```python
-# ❌ 错误：装饰器捕获异常后不重新抛出
+# 错误 错误：装饰器捕获异常后不重新抛出
 def bad_retry(func):
     def wrapper(*args, **kwargs):
         for _ in range(3):
             try:
                 return func(*args, **kwargs)
             except Exception:
-                pass  # ❌ 异常被吞掉了！
+                pass  # 错误 异常被吞掉了！
         return None  # 返回 None 而不是抛出异常
     return wrapper
 
-# ✅ 正确：保留异常传播
+# 正确 正确：保留异常传播
 def good_retry(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -901,7 +901,7 @@ def good_retry(func):
                 last_exception = e
                 import time
                 time.sleep(0.5 * (i + 1))
-        raise last_exception  # ✅ 重新抛出异常
+        raise last_exception  # 正确 重新抛出异常
     return wrapper
 ```
 
@@ -938,18 +938,18 @@ def good_retry(func):
 ```
 装饰器使用场景：
 ─────────────────────────────────
-✅ 日志记录（@log）
-✅ 性能计时（@timer）
-✅ 缓存（@lru_cache / @Memoize）
-✅ 重试（@Retry）
-✅ 权限验证（@require_auth）
-✅ 参数验证（@validate）
-✅ 路由注册（FastAPI / Flask / Django）
-✅ 测试 fixtures（pytest）
-✅ 自动生成方法（@dataclass / @attr.s）
-✅ 性能优化（@lru_cache）
+正确 日志记录（@log）
+正确 性能计时（@timer）
+正确 缓存（@lru_cache / @Memoize）
+正确 重试（@Retry）
+正确 权限验证（@require_auth）
+正确 参数验证（@validate）
+正确 路由注册（FastAPI / Flask / Django）
+正确 测试 fixtures（pytest）
+正确 自动生成方法（@dataclass / @attr.s）
+正确 性能优化（@lru_cache）
 ```
 
-装饰器是 Python 最优雅的元编程工具——用 `@` 符号就能在不修改原函数代码的情况下，为其添加横切关注点（cross-cutting concerns）。掌握装饰器，你就掌握了 Python 框架的半壁江山 🦐
+装饰器是 Python 最优雅的元编程工具——用 `@` 符号就能在不修改原函数代码的情况下，为其添加横切关注点（cross-cutting concerns）。掌握装饰器，你就掌握了 Python 框架的半壁江山
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

@@ -34,21 +34,21 @@ package main
 
 import (
     "net/http"
-    
+
     "github.com/gin-gonic/gin"
 )
 
 func main() {
     // 创建默认路由引擎
     r := gin.Default()
-    
+
     // 定义路由
     r.GET("/", func(c *gin.Context) {
         c.JSON(http.StatusOK, gin.H{
             "message": "Hello, Gin!",
         })
     })
-    
+
     // 启动HTTP服务器
     r.Run(":8080") // 默认监听在0.0.0.0:8080
 }
@@ -68,28 +68,28 @@ go run main.go
 ```go
 func main() {
     r := gin.Default()
-    
+
     // GET请求
     r.GET("/ping", func(c *gin.Context) {
         c.JSON(200, gin.H{
             "message": "pong",
         })
     })
-    
+
     // POST请求
     r.POST("/user", func(c *gin.Context) {
         c.JSON(200, gin.H{
             "message": "create user",
         })
     })
-    
+
     // 支持所有HTTP方法
     r.Any("/test", func(c *gin.Context) {
         c.JSON(200, gin.H{
             "method": c.Request.Method,
         })
     })
-    
+
     r.Run()
 }
 ```
@@ -99,7 +99,7 @@ func main() {
 ```go
 func main() {
     r := gin.Default()
-    
+
     // 路径参数
     r.GET("/user/:id", func(c *gin.Context) {
         id := c.Param("id")
@@ -107,30 +107,30 @@ func main() {
             "id": id,
         })
     })
-    
+
     // 查询参数
     r.GET("/welcome", func(c *gin.Context) {
         firstname := c.DefaultQuery("firstname", "Guest")
         lastname := c.Query("lastname") // 如果不存在则返回空字符串
-        
+
         c.JSON(200, gin.H{
             "firstname": firstname,
             "lastname":  lastname,
         })
     })
-    
+
     // 表单参数
     r.POST("/form_post", func(c *gin.Context) {
         message := c.PostForm("message")
         nick := c.DefaultPostForm("nick", "anonymous")
-        
+
         c.JSON(200, gin.H{
             "status":  "posted",
             "message": message,
             "nick":    nick,
         })
     })
-    
+
     r.Run()
 }
 ```
@@ -143,27 +143,27 @@ func main() {
 func main() {
     // 创建不包含Logger和Recovery中间件的路由引擎
     // r := gin.New()
-    
+
     // 创建包含Logger和Recovery中间件的路由引擎
     r := gin.Default()
-    
+
     // 添加自定义全局中间件
     r.Use(func(c *gin.Context) {
         // 请求前
         t := time.Now()
-        
+
         // 处理请求
         c.Next()
-        
+
         // 请求后
         latency := time.Since(t)
         log.Print(latency)
     })
-    
+
     r.GET("/test", func(c *gin.Context) {
         c.JSON(200, gin.H{"message": "test"})
     })
-    
+
     r.Run()
 }
 ```
@@ -179,7 +179,7 @@ func AuthRequired() gin.HandlerFunc {
             c.AbortWithStatusJSON(401, gin.H{"error": "未授权"})
             return
         }
-        
+
         // 继续处理请求
         c.Next()
     }
@@ -187,20 +187,20 @@ func AuthRequired() gin.HandlerFunc {
 
 func main() {
     r := gin.Default()
-    
+
     // 仅为特定路由添加中间件
     authorized := r.Group("/admin", AuthRequired())
     {
         authorized.POST("/users", func(c *gin.Context) {
             c.JSON(200, gin.H{"message": "创建用户"})
         })
-        
+
         authorized.DELETE("/users/:id", func(c *gin.Context) {
             id := c.Param("id")
             c.JSON(200, gin.H{"message": "删除用户", "id": id})
         })
     }
-    
+
     r.Run()
 }
 ```
@@ -217,43 +217,43 @@ type Login struct {
 
 func main() {
     r := gin.Default()
-    
+
     // JSON绑定
     r.POST("/loginJSON", func(c *gin.Context) {
         var login Login
-        
+
         // 绑定JSON
         if err := c.ShouldBindJSON(&login); err != nil {
             c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
             return
         }
-        
+
         if login.User != "manu" || login.Password != "123" {
             c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
             return
         }
-        
+
         c.JSON(http.StatusOK, gin.H{"status": "you are logged in"})
     })
-    
+
     // 表单绑定
     r.POST("/loginForm", func(c *gin.Context) {
         var login Login
-        
+
         // 绑定表单数据
         if err := c.ShouldBind(&login); err != nil {
             c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
             return
         }
-        
+
         if login.User != "manu" || login.Password != "123" {
             c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
             return
         }
-        
+
         c.JSON(http.StatusOK, gin.H{"status": "you are logged in"})
     })
-    
+
     r.Run(":8080")
 }
 ```
@@ -263,22 +263,22 @@ func main() {
 ```go
 func main() {
     r := gin.Default()
-    
+
     // JSON
     r.GET("/someJSON", func(c *gin.Context) {
         c.JSON(http.StatusOK, gin.H{"message": "hey", "status": http.StatusOK})
     })
-    
+
     // XML
     r.GET("/moreXML", func(c *gin.Context) {
         c.XML(http.StatusOK, gin.H{"message": "hey", "status": http.StatusOK})
     })
-    
+
     // YAML
     r.GET("/someYAML", func(c *gin.Context) {
         c.YAML(http.StatusOK, gin.H{"message": "hey", "status": http.StatusOK})
     })
-    
+
     r.Run(":8080")
 }
 ```
@@ -288,31 +288,31 @@ func main() {
 ```go
 func main() {
     r := gin.Default()
-    
+
     // 单文件上传
     r.POST("/upload", func(c *gin.Context) {
         file, _ := c.FormFile("file")
         log.Println(file.Filename)
-        
+
         // 保存文件
         c.SaveUploadedFile(file, "./uploads/"+file.Filename)
-        
+
         c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
     })
-    
+
     // 多文件上传
     r.POST("/uploadMultiple", func(c *gin.Context) {
         form, _ := c.MultipartForm()
         files := form.File["upload[]"]
-        
+
         for _, file := range files {
             log.Println(file.Filename)
             c.SaveUploadedFile(file, "./uploads/"+file.Filename)
         }
-        
+
         c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
     })
-    
+
     r.Run(":8080")
 }
 ```

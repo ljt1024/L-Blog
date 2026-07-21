@@ -7,7 +7,7 @@ date: 2026-07-08
 
 > Python 的 for 循环为什么能遍历任何对象？列表推导式和生成器表达式有什么区别？为什么说生成器是 Python 最优雅的设计？本文从迭代器协议出发，完整解析生成器的原理、用法、实战场景，以及与 async/await 的内在联系——让你彻底掌握 Python 最精妙的特性之一。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 迭代器协议：Python for 循环的真相
 
@@ -73,8 +73,8 @@ while True:
 # 列表是可迭代对象，不是迭代器
 my_list = [1, 2, 3]
 print(dir(my_list))
-# ['__iter__', ...] ✅ 有 __iter__
-# ['__next__', ...] ❌ 没有 __next__ → 不是迭代器
+# ['__iter__', ...] 正确 有 __iter__
+# ['__next__', ...] 错误 没有 __next__ → 不是迭代器
 
 # iter() 作用于列表，返回列表迭代器
 list_iter = iter(my_list)
@@ -82,7 +82,7 @@ print(type(list_iter))  # list_iterator
 
 # 列表迭代器是真正的迭代器
 print(dir(list_iter))
-# ['__iter__', '__next__', ...] ✅ 两者都有
+# ['__iter__', '__next__', ...] 正确 两者都有
 
 # 一个对象可以同时是迭代器和可迭代对象
 # 但通常：可迭代对象 __iter__ 返回新迭代器，迭代器 __iter__ 返回 self
@@ -200,7 +200,7 @@ def flatten(nested):
         for item in sublist:
             yield item   # 双重循环，繁琐
 
-# ✅ 正确方案：yield from（Python 3.3+）
+# 正确 正确方案：yield from（Python 3.3+）
 def flatten(nested):
     for sublist in nested:
         yield from sublist  # yield from = 委托给子迭代器
@@ -340,18 +340,18 @@ first_10 = [next(gen) for _ in range(10)]  # 只计算前 10 个
 选择指南：
 ─────────────────────────────────
 用列表推导式 []：
-  ✅ 需要多次遍历
-  ✅ 需要 len() / 索引访问
-  ✅ 需要排序 / 反转
-  ✅ 数据集较小（< 10000）
-  ✅ 需要立即看到全部结果
+  正确 需要多次遍历
+  正确 需要 len() / 索引访问
+  正确 需要排序 / 反转
+  正确 数据集较小（< 10000）
+  正确 需要立即看到全部结果
 
 用生成器表达式 ()：
-  ✅ 只遍历一次（流式数据）
-  ✅ 数据集非常大或无限
-  ✅ 内存敏感场景
-  ✅ 只需要前 N 个元素
-  ✅ 管道处理（多个生成器串联）
+  正确 只遍历一次（流式数据）
+  正确 数据集非常大或无限
+  正确 内存敏感场景
+  正确 只需要前 N 个元素
+  正确 管道处理（多个生成器串联）
 ```
 
 ---
@@ -777,7 +777,7 @@ class UserModel(BaseModel):
 ### 陷阱 1：生成器只能消费一次
 
 ```python
-# ❌ 错误：多次遍历已耗尽的生成器
+# 错误 错误：多次遍历已耗尽的生成器
 def numbers():
     yield 1
     yield 2
@@ -786,7 +786,7 @@ gen = numbers()
 print(list(gen))  # [1, 2]
 print(list(gen))  # []  ← 生成器已耗尽，第二次遍历为空
 
-# ✅ 正确：每次需要新生成器时重新调用函数
+# 正确 正确：每次需要新生成器时重新调用函数
 def numbers():
     yield 1
     yield 2
@@ -794,7 +794,7 @@ def numbers():
 print(list(numbers()))  # [1, 2]
 print(list(numbers()))  # [1, 2]
 
-# ✅ 正确：用 itertools.tee 复制生成器
+# 正确 正确：用 itertools.tee 复制生成器
 def numbers():
     yield 1
     yield 2
@@ -820,7 +820,7 @@ try:
 except StopIteration as e:
     print(f"返回值: {e.value}")  # done
 
-# ✅ 用 send() 获取返回值（协程方式）
+# 正确 用 send() 获取返回值（协程方式）
 def gen():
     yield 1
     yield 2
@@ -838,24 +838,24 @@ except StopIteration as e:
 ### 陷阱 3：生成器与异常处理
 
 ```python
-# ❌ 错误：在 finally 中使用 yield
+# 错误 错误：在 finally 中使用 yield
 def bad_generator():
     try:
         yield 1
         yield 2
     finally:
-        yield 99  # ❌ RuntimeError: generator raised StopIteration
+        yield 99  # 错误 RuntimeError: generator raised StopIteration
 
-# ✅ 正确：finally 只做清理，不做 yield
+# 正确 正确：finally 只做清理，不做 yield
 def good_generator():
     resource = acquire_resource()
     try:
         yield 1
         yield 2
     finally:
-        release_resource(resource)  # ✅ 清理代码在 finally 中
+        release_resource(resource)  # 正确 清理代码在 finally 中
 
-# ✅ 用 contextmanager 封装资源
+# 正确 用 contextmanager 封装资源
 from contextlib import contextmanager
 
 @contextmanager
@@ -927,20 +927,20 @@ groupby(iterable, key)：分组
 ```
 使用场景指南：
 ─────────────────────────────────
-✅ 用生成器的场景：
+正确 用生成器的场景：
   → 处理大数据集（内存友好）
   → 无限序列（count, cycle, repeat）
   → 数据管道（多个处理步骤串联）
   → 流式数据（HTTP 流、文件流、实时数据）
   → 按需计算（惰性求值）
 
-✅ 用列表的场景：
+正确 用列表的场景：
   → 需要多次遍历
   → 需要索引 / len()
   → 数据量较小
   → 需要排序 / 反转
 ```
 
-Python 的生成器是惰性计算的完美体现——它让"按需生产"成为可能，让内存使用降到最低，让流式处理变得优雅。配合 itertools 标准库和异步生成器，Python 的迭代器体系构成了现代 Python 高性能编程的基石 🦐
+Python 的生成器是惰性计算的完美体现——它让"按需生产"成为可能，让内存使用降到最低，让流式处理变得优雅。配合 itertools 标准库和异步生成器，Python 的迭代器体系构成了现代 Python 高性能编程的基石
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

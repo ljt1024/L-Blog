@@ -7,7 +7,7 @@ date: 2026-07-15
 
 > 异常不是"出错时才碰的东西"——它是 Python 控制流的一等公民。从内置异常层级到自定义异常设计，从 `try/except/else/finally` 的完整语义到 Python 3.11 的 `ExceptionGroup`，从异常链 `raise ... from` 到 `@contextmanager` 异常传递，本文系统覆盖 Python 异常处理的每一个重要细节。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 异常的本质：不只是"出错了"
 
@@ -91,14 +91,14 @@ except KeyError as e:
 # Exception：常规异常的基类（应该捕获）
 # BaseException：包括 SystemExit/KeyboardInterrupt（不应该随意捕获）
 
-# ❌ 危险：捕获 BaseException
+# 错误 危险：捕获 BaseException
 try:
     while True:
         pass
 except BaseException:  # 连 Ctrl+C 都捕获了！
     print("永远停不下来")
 
-# ✅ 正确：只捕获 Exception
+# 正确 正确：只捕获 Exception
 try:
     do_something()
 except Exception as e:
@@ -159,7 +159,7 @@ print(safe_divide(10, 0))
 ```python
 # else 块的作用：避免意外捕获
 
-# ❌ 没有 else：else 中的代码异常也会被 except 捕获
+# 错误 没有 else：else 中的代码异常也会被 except 捕获
 def bad_example():
     try:
         data = load_data()
@@ -170,7 +170,7 @@ def bad_example():
 # 问题：process() 的错误被误当成 load_data() 的错误
 # 解决：用 else 分离
 
-# ✅ 有 else：只捕获 try 中的异常
+# 正确 有 else：只捕获 try 中的异常
 def good_example():
     try:
         data = load_data()
@@ -216,7 +216,7 @@ def bad_return():
     try:
         return "try"
     finally:
-        return "finally"  # ⚠️ 覆盖了 try 的返回值！
+        return "finally"  # 注意 覆盖了 try 的返回值！
 
 print(bad_return())  # finally（不是 try！）
 
@@ -284,14 +284,14 @@ except SomeError as e:
 ```python
 # 原则：当内置异常无法精确描述业务错误时
 
-# ❌ 不好的做法：用内置异常表达业务逻辑
+# 错误 不好的做法：用内置异常表达业务逻辑
 def withdraw(account, amount):
     if amount > account.balance:
         raise ValueError("余额不足")  # 语义不清晰
     if amount < 0:
         raise ValueError("金额不能为负")  # 无法区分
 
-# ✅ 好的做法：自定义异常层级
+# 正确 好的做法：自定义异常层级
 class BankError(Exception):
     """银行系统异常基类"""
     pass
@@ -844,19 +844,19 @@ with ResourceManager() as rm:
 ### 陷阱 1：过宽的异常捕获
 
 ```python
-# ❌ 过宽：捕获所有异常（隐藏 bug）
+# 错误 过宽：捕获所有异常（隐藏 bug）
 try:
     result = process(data)
 except:  # 裸 except，捕获一切（包括 KeyboardInterrupt！）
     result = None
 
-# ❌ 捕获 Exception 但不做任何处理
+# 错误 捕获 Exception 但不做任何处理
 try:
     result = process(data)
 except Exception:
     pass  # 静默吞掉异常（问题被隐藏）
 
-# ✅ 正确：捕获具体异常
+# 正确 正确：捕获具体异常
 try:
     result = process(data)
 except (ValueError, KeyError) as e:
@@ -870,23 +870,23 @@ except Exception as e:
 ### 陷阱 2：异常控制流滥用
 
 ```python
-# ❌ 滥用：用异常代替条件判断
+# 错误 滥用：用异常代替条件判断
 try:
     value = data[key]
 except KeyError:
     value = default
 
-# ✅ 正确：用 get() 方法
+# 正确 正确：用 get() 方法
 value = data.get(key, default)
 
-# ❌ 滥用：用异常做循环退出
+# 错误 滥用：用异常做循环退出
 while True:
     try:
         item = next(iterator)
     except StopIteration:
         break
 
-# ✅ 正确：用 for 循环
+# 正确 正确：用 for 循环
 for item in iterator:
     ...
 
@@ -899,19 +899,19 @@ for item in iterator:
 ### 陷阱 3：丢失 traceback
 
 ```python
-# ❌ 丢失 traceback：重新创建异常
+# 错误 丢失 traceback：重新创建异常
 try:
     do_something()
 except SomeError as e:
     raise SomeError(f"包装: {e}")  # 原始 traceback 丢失！
 
-# ✅ 保留 traceback：使用 from
+# 正确 保留 traceback：使用 from
 try:
     do_something()
 except SomeError as e:
     raise SomeError(f"包装: {e}") from e  # 保留原始异常链
 
-# ✅ 或者直接 raise
+# 正确 或者直接 raise
 try:
     do_something()
 except SomeError:
@@ -965,18 +965,18 @@ raise NewError from None    抑制链（不暴露原始异常）
 ```
 最佳实践：
 ─────────────────────────────────
-✅ 捕获具体异常，不要裸 except
-✅ 自定义异常继承 Exception（不是 BaseException）
-✅ 建立业务异常层级（基类 → 领域 → 具体错误）
-✅ 异常携带结构化数据（不只是消息字符串）
-✅ 用 raise ... from 保留异常链
-✅ logger.exception() 记录完整 traceback
-✅ else 块分离"可能出错"和"后续处理"
-✅ finally 块做资源清理（或用 with 语句）
-✅ ExceptionGroup 处理并发多错误（Python 3.11+）
-✅ 避免用异常代替条件判断
+正确 捕获具体异常，不要裸 except
+正确 自定义异常继承 Exception（不是 BaseException）
+正确 建立业务异常层级（基类 → 领域 → 具体错误）
+正确 异常携带结构化数据（不只是消息字符串）
+正确 用 raise ... from 保留异常链
+正确 logger.exception() 记录完整 traceback
+正确 else 块分离"可能出错"和"后续处理"
+正确 finally 块做资源清理（或用 with 语句）
+正确 ExceptionGroup 处理并发多错误（Python 3.11+）
+正确 避免用异常代替条件判断
 ```
 
-异常处理是软件可靠性的基石——好的异常设计让错误可见、可追踪、可恢复，坏的异常设计让 bug 隐藏、调试困难、系统脆弱。掌握 Python 异常体系的完整图景，从内置层级到自定义设计，从 `try/except/else/finally` 到 `ExceptionGroup`，你的代码将拥有生产级的健壮性 🦐
+异常处理是软件可靠性的基石——好的异常设计让错误可见、可追踪、可恢复，坏的异常设计让 bug 隐藏、调试困难、系统脆弱。掌握 Python 异常体系的完整图景，从内置层级到自定义设计，从 `try/except/else/finally` 到 `ExceptionGroup`，你的代码将拥有生产级的健壮性
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

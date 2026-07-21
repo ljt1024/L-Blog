@@ -386,10 +386,10 @@ AI 能力层：Vercel AI SDK / LangChain.js
 
 ```javascript
 // 不要把 Prompt 硬编码在业务逻辑里
-// ❌ 错误做法
+// 错误 错误做法
 const response = await llm.invoke('你是一个助手，帮我...')
 
-// ✅ 正确做法：Prompt 模板化
+// 正确 正确做法：Prompt 模板化
 import { ChatPromptTemplate } from '@langchain/core/prompts'
 
 const prompt = ChatPromptTemplate.fromMessages([
@@ -536,4 +536,4 @@ const result = await chain.invoke(input, {
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

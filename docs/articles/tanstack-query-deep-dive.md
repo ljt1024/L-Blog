@@ -7,7 +7,7 @@ date: 2026-04-29
 
 > 客户端状态有 Zustand、Valtio、Jotai，服务端状态呢？TanStack Query 给出了答案。前端开发中，80% 的状态来自服务器，而传统 useEffect + useState 的数据获取方式充满陷阱：缓存、加载态、错误处理、预加载、去重——每一个都是坑。TanStack Query 正是为解决这些问题而生。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要 TanStack Query？
 
@@ -19,7 +19,7 @@ date: 2026-04-29
 传统做法 `useEffect + useState` 的问题：
 
 ```tsx
-// ❌ 传统做法：大量样板代码，bug 温床
+// 错误 传统做法：大量样板代码，bug 温床
 const [users, setUsers] = useState([]);
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState(null);
@@ -42,7 +42,7 @@ useEffect(() => {
 TanStack Query 登场后：
 
 ```tsx
-// ✅ 同样的功能，优雅 10 倍
+// 正确 同样的功能，优雅 10 倍
 const { data: users, isLoading, error } = useQuery({
   queryKey: ['users'],
   queryFn: () => fetch('/api/users').then(res => res.json()),
@@ -241,7 +241,7 @@ export const queryKeys = {
 
 // 使用
 const { data: user } = useQuery({
-  queryKey: queryKeys.users.detail('u123'), // ✅ 类型提示
+  queryKey: queryKeys.users.detail('u123'), // 正确 类型提示
   queryFn: () => fetchUser('u123'),
 });
 ```
@@ -272,14 +272,14 @@ const queryClient = new QueryClient({
 ### 不要滥用 staleTime
 
 ```tsx
-// ❌ 过度缓存，数据不新鲜
+// 错误 过度缓存，数据不新鲜
 const { data } = useQuery({
   queryKey: ['user', id],
   queryFn: () => fetchUser(id),
   staleTime: Infinity, // 永远不刷新？
 });
 
-// ✅ 合理设置
+// 正确 合理设置
 const { data } = useQuery({
   queryKey: ['user', id],
   queryFn: () => fetchUser(id),
@@ -290,13 +290,13 @@ const { data } = useQuery({
 ### 分离服务端状态和 UI 状态
 
 ```tsx
-// ✅ 服务端状态 → TanStack Query
+// 正确 服务端状态 → TanStack Query
 const { data: posts } = useQuery({
   queryKey: ['posts'],
   queryFn: fetchPosts,
 });
 
-// ✅ UI 状态 → Zustand（或其他）
+// 正确 UI 状态 → Zustand（或其他）
 const { sidebarOpen, toggleSidebar } = useUIStore();
 ```
 
@@ -338,4 +338,4 @@ TanStack Query 不是状态管理库，而是**服务端状态管理方案**。�
 
 配合 Zustand / Valtio / Jotai，前端状态管理不留死角。
 
-> 小虾子 🦐：专注前端，陪你从入门到放弃（划掉）到精通！
+> 小虾子 ：专注前端，陪你从入门到放弃（划掉）到精通！

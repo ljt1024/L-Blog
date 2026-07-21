@@ -7,7 +7,7 @@ date: 2026-07-21
 
 > FastAPI 文章里的数据库操作只是冰山一角。从 SQLAlchemy 的 Core 与 ORM 双引擎，到 Session 的生命周期管理；从一对多、多对多关系映射，到 JOIN 查询与子查询；从 Alembic 数据库迁移，到连接池调优——本文系统覆盖 Python 数据库操作的全部核心技能。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要 ORM？
 
@@ -16,7 +16,7 @@ date: 2026-07-21
 ```python
 import sqlite3
 
-# ❌ 原生 SQL 的问题
+# 错误 原生 SQL 的问题
 
 # 1. SQL 注入风险
 user_input = "' OR '1'='1"
@@ -45,7 +45,7 @@ user_email = row[2]
 ### ORM 的优势
 
 ```python
-# ✅ SQLAlchemy ORM 的解决方案
+# 正确 SQLAlchemy ORM 的解决方案
 
 # 1. 参数化查询，自动防注入
 User.filter(name=user_input)  # 自动转义
@@ -363,14 +363,14 @@ with SessionLocal() as session:
     print(user.name)
 # 自动 close()
 
-# ❌ 手动管理（容易忘记 close）
+# 错误 手动管理（容易忘记 close）
 def bad_example():
     session = SessionLocal()
     user = session.get(User, 1)
     session.close()  # 容易漏掉
     return user
 
-# ✅ 上下文管理器（推荐）
+# 正确 上下文管理器（推荐）
 def good_example():
     with SessionLocal() as session:
         user = session.get(User, 1)
@@ -968,19 +968,19 @@ def transfer(db: Session, from_id: int, to_id: int, amount: int):
 ### 陷阱 1：Session 泄露
 
 ```python
-# ❌ 陷阱：Session 没有关闭
+# 错误 陷阱：Session 没有关闭
 def get_user(user_id):
     session = SessionLocal()
     user = session.get(User, user_id)
     return user  # Session 未关闭，连接泄漏！
 
-# ✅ 正确：上下文管理器
+# 正确 正确：上下文管理器
 def get_user(user_id):
     with SessionLocal() as session:
         user = session.get(User, user_id)
         return user
 
-# ✅ FastAPI 依赖注入
+# 正确 FastAPI 依赖注入
 def get_db():
     db = SessionLocal()
     try:
@@ -992,11 +992,11 @@ def get_db():
 ### 陷阱 2：autoflush 导致的奇怪行为
 
 ```python
-# ❌ 陷阱：autoflush=True 导致的意外查询
+# 错误 陷阱：autoflush=True 导致的意外查询
 session.query(User).filter(User.name == "Alice").all()
 # 在这之前执行了 autoflush，未提交的变更被查出来
 
-# ✅ 正确：理解 autoflush
+# 正确 正确：理解 autoflush
 session = SessionLocal(autoflush=True)  # 默认
 # flush = 把 pending 变更发送到数据库（但不 commit）
 # autoflush = 在 query 前自动 flush
@@ -1014,11 +1014,11 @@ session.query(User).all()
 ### 陷阱 3：循环导入
 
 ```python
-# ❌ 陷阱：models.py 互相导入
+# 错误 陷阱：models.py 互相导入
 # models/user.py
 from models.post import Post  # 循环导入！
 
-# ✅ 正确：用字符串引用（SQLAlchemy 支持）
+# 正确 正确：用字符串引用（SQLAlchemy 支持）
 class User(Base):
     __tablename__ = "users"
     posts = relationship("Post", back_populates="author")
@@ -1079,23 +1079,23 @@ relationship lazy 策略速查：
 ```
 最佳实践：
 ─────────────────────────────────
-✅ 使用 SessionLocal + 上下文管理器或 FastAPI 依赖注入
-✅ 一对多用 selectinload，多对一用 joinedload
-✅ 用 session.get() 按主键查，用 query().filter() 按条件查
-✅ Alembic 管理数据库迁移（不要手动改表）
-✅ 生产环境配置连接池（pool_pre_ping=True）
-✅ 乐观锁处理并发写入
-✅ 显式事务控制（begin/commit/rollback）
-✅ 用 Pydantic Schema 做 API 输入输出验证
-✅ 连接字符串放环境变量，不硬编码
-✅ autoflush=False 更可控，明确 session.flush()
-✅ 使用 Mapped 类型注解（SQLAlchemy 2.0 推荐）
-✅ unique index 在字段定义时指定（email=True）
-✅ foreign_key 定义在子表一侧
-✅ cascade="all, delete-orphan" 删除主表时级联删子表
+正确 使用 SessionLocal + 上下文管理器或 FastAPI 依赖注入
+正确 一对多用 selectinload，多对一用 joinedload
+正确 用 session.get() 按主键查，用 query().filter() 按条件查
+正确 Alembic 管理数据库迁移（不要手动改表）
+正确 生产环境配置连接池（pool_pre_ping=True）
+正确 乐观锁处理并发写入
+正确 显式事务控制（begin/commit/rollback）
+正确 用 Pydantic Schema 做 API 输入输出验证
+正确 连接字符串放环境变量，不硬编码
+正确 autoflush=False 更可控，明确 session.flush()
+正确 使用 Mapped 类型注解（SQLAlchemy 2.0 推荐）
+正确 unique index 在字段定义时指定（email=True）
+正确 foreign_key 定义在子表一侧
+正确 cascade="all, delete-orphan" 删除主表时级联删子表
 ─────────────────────────────────
 ```
 
-SQLAlchemy 是 Python 数据库操作的瑞士军刀——Core 层处理复杂查询，ORM 层表达业务逻辑，Alembic 管理数据库迁移。三者配合使用，让你的 Python 应用拥有生产级的数据库能力 🦐
+SQLAlchemy 是 Python 数据库操作的瑞士军刀——Core 层处理复杂查询，ORM 层表达业务逻辑，Alembic 管理数据库迁移。三者配合使用，让你的 Python 应用拥有生产级的数据库能力
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

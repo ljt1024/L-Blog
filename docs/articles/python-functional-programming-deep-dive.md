@@ -7,7 +7,7 @@ date: 2026-07-13
 
 > Python 不是 Haskell，但 Python 的函数式特性远比你想的丰富。当你在列表推导式和 for 循环之间选择时，你其实已经在函数式和命令式之间做权衡了。本文从一等函数、高阶函数出发，系统覆盖 `map`/`filter`/`reduce`、`functools` 完整工具集、偏函数与函数组合、闭包的工程应用，以及如何在 Python 中写出既 Pythonic 又函数式的优雅代码。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 函数式编程的核心思想
 
@@ -95,10 +95,10 @@ def impure_increment():
 # 4. 抛出异常
 
 # 为什么纯函数更好？
-# ✅ 可测试（不需要 mock）
-# ✅ 可缓存（同样的输入 → 同样的输出）
-# ✅ 可并行（无共享状态冲突）
-# ✅ 可组合（输出可以直接作为下一个函数的输入）
+# 正确 可测试（不需要 mock）
+# 正确 可缓存（同样的输入 → 同样的输出）
+# 正确 可并行（无共享状态冲突）
+# 正确 可组合（输出可以直接作为下一个函数的输入）
 
 # Python 函数式编程的目标不是"不用 for 循环"
 # 而是减少副作用、提高函数的组合性
@@ -228,7 +228,7 @@ result = reduce(
     ),
     0
 )
-print(result)  # 220 = 2²+4²+6²+8²+10²
+print(result)  # 220 = 2+4+6+8+10
 
 # 写成函数组合形式（更优雅）
 def pipe(*functions):
@@ -285,11 +285,11 @@ api_call.cache_info()  # CacheInfo(hits=0, misses=0, ...)
 
 # 注意：参数必须可哈希（hashable）
 @lru_cache
-def bad_func(items: list) -> int:  # ❌ TypeError: unhashable type 'list'
+def bad_func(items: list) -> int:  # 错误 TypeError: unhashable type 'list'
     return sum(items)
 
 @lru_cache
-def good_func(*items) -> int:  # ✅ 元组可哈希
+def good_func(*items) -> int:  # 正确 元组可哈希
     return sum(items)
 ```
 
@@ -545,9 +545,9 @@ def create_counters():
     return counters
 
 c0, c1, c2 = create_counters()
-print(c0(), c1(), c2())  # 2, 2, 2 ❌ 全部是 2！
+print(c0(), c1(), c2())  # 2, 2, 2 错误 全部是 2！
 
-# ✅ 正确：使用默认参数捕获值
+# 正确 正确：使用默认参数捕获值
 def create_counters_fixed():
     counters = []
     for i in range(3):
@@ -557,7 +557,7 @@ def create_counters_fixed():
     return counters
 
 c0, c1, c2 = create_counters_fixed()
-print(c0(), c1(), c2())  # 0, 1, 2 ✅
+print(c0(), c1(), c2())  # 0, 1, 2 正确
 
 # 或者用 partial
 from functools import partial
@@ -624,11 +624,11 @@ print(list(filter(lambda x: x > 2, range(5))))  # [3, 4]
 # 2. 不能有赋值语句（不能 func(x) = 5）
 # 3. 复杂逻辑用 def，不要用 Lambda
 
-# ❌ 滥用 Lambda
+# 错误 滥用 Lambda
 # 错误：将 Lambda 赋值给变量（使用 def 更清晰）
-square = lambda x: x ** 2  # ❌ 应该用 def square(x): ...
+square = lambda x: x ** 2  # 错误 应该用 def square(x): ...
 
-# ✅ Lambda 的正确场景：作为参数传递（回调）
+# 正确 Lambda 的正确场景：作为参数传递（回调）
 sorted_words = sorted(words, key=lambda w: len(w))
 ```
 
@@ -876,25 +876,25 @@ print(result)  # ValidationResult(valid=False, errors=['长度至少 3', '格式
 ### 陷阱 1：Lambda 捕获可变对象
 
 ```python
-# ❌ 陷阱：Lambda 捕获循环变量的引用
+# 错误 陷阱：Lambda 捕获循环变量的引用
 funcs = [lambda: i for i in range(5)]
-print([f() for f in funcs])  # [4, 4, 4, 4, 4] ❌
+print([f() for f in funcs])  # [4, 4, 4, 4, 4] 错误
 
-# ✅ 正确：用默认参数捕获值
+# 正确 正确：用默认参数捕获值
 funcs = [lambda i=i: i for i in range(5)]
-print([f() for f in funcs])  # [0, 1, 2, 3, 4] ✅
+print([f() for f in funcs])  # [0, 1, 2, 3, 4] 正确
 ```
 
 ### 陷阱 2：map/filter vs 列表推导式
 
 ```python
-# ❌ 过度使用 map/filter（不够 Pythonic）
+# 错误 过度使用 map/filter（不够 Pythonic）
 result = list(map(lambda x: x ** 2, filter(lambda x: x % 2 == 0, data)))
 
-# ✅ 优先用列表推导式（更直观）
+# 正确 优先用列表推导式（更直观）
 result = [x ** 2 for x in data if x % 2 == 0]
 
-# ✅ map/filter 的合适场景：需要与其他高阶函数组合时
+# 正确 map/filter 的合适场景：需要与其他高阶函数组合时
 from functools import reduce
 
 result = reduce(
@@ -910,10 +910,10 @@ result = reduce(
 ### 陷阱 3：函数组合的可读性
 
 ```python
-# ❌ 过度抽象导致代码难以理解
+# 错误 过度抽象导致代码难以理解
 result = compose(compose(double, square), add_ten)(5)
 
-# ✅ 适度使用：保持代码可读性
+# 正确 适度使用：保持代码可读性
 # 简单逻辑用列表推导式
 # 复杂管道（>3步）用 pipe/compose
 # 数据密集型处理用 functools 工具
@@ -953,13 +953,13 @@ partial(fn, x)(y) = fn(x, y)  → 固定部分参数
 ```
 函数式 vs 命令式选型：
 ─────────────────────────────────
-✅ 函数式适合：
+正确 函数式适合：
   → 数据转换管道（map/filter/reduce）
   → 纯计算（无副作用）
   → 并行化需求
   → 组合多个简单操作
 
-✅ 命令式适合：
+正确 命令式适合：
   → 有副作用的操作（I/O）
   → 复杂控制流
   → 需要调试的代码
@@ -967,14 +967,14 @@ partial(fn, x)(y) = fn(x, y)  → 固定部分参数
 
 最佳实践：
 ─────────────────────────────────
-✅ 纯函数优先（无副作用）
-✅ 不可变数据结构（dataclass frozen / tuple / frozenset）
-✅ 小函数组合（大函数拆成小函数）
-✅ 列表推导式优先（简单场景）
-✅ functools 工具（复杂场景）
-✅ 类型注解（函数式代码更依赖类型）
+正确 纯函数优先（无副作用）
+正确 不可变数据结构（dataclass frozen / tuple / frozenset）
+正确 小函数组合（大函数拆成小函数）
+正确 列表推导式优先（简单场景）
+正确 functools 工具（复杂场景）
+正确 类型注解（函数式代码更依赖类型）
 ```
 
-Python 的函数式特性不是 Haskell 的替代品，而是一种强大的补充——`map`/`filter`/`reduce` 让数据处理管道化，`functools` 让函数可组合、可缓存、可泛型，`partial` 让参数部分绑定成为可能。掌握函数式思维，你的 Python 代码将更加简洁、更加可测试、更加优雅 🦐
+Python 的函数式特性不是 Haskell 的替代品，而是一种强大的补充——`map`/`filter`/`reduce` 让数据处理管道化，`functools` 让函数可组合、可缓存、可泛型，`partial` 让参数部分绑定成为可能。掌握函数式思维，你的 Python 代码将更加简洁、更加可测试、更加优雅
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

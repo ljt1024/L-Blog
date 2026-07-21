@@ -15,7 +15,7 @@ var globalVar = "我是全局变量";
 function outerFunction() {
     // 函数作用域
     var outerVar = "我是外层函数变量";
-    
+
     function innerFunction() {
         // 内层函数可以访问外层函数和全局作用域的变量
         var innerVar = "我是内层函数变量";
@@ -23,7 +23,7 @@ function outerFunction() {
         console.log(outerVar);  // 访问外层函数变量
         console.log(innerVar);  // 访问自身变量
     }
-    
+
     innerFunction();
 }
 
@@ -36,7 +36,7 @@ outerFunction();
 // 1. 数据私有化
 function createCounter() {
     let count = 0; // 私有变量
-    
+
     return {
         increment: function() {
             count++;
@@ -106,7 +106,7 @@ class Animal {
     constructor(name) {
         this.name = name;
     }
-    
+
     speak() {
         console.log(`${this.name} 发出声音`);
     }
@@ -117,12 +117,12 @@ class Dog extends Animal {
         super(name);
         this.breed = breed;
     }
-    
+
     speak() {
         super.speak();
         console.log(`${this.name} 汪汪叫`);
     }
-    
+
     wagTail() {
         console.log(`${this.name} 摇尾巴`);
     }
@@ -187,10 +187,10 @@ async function fetchUserData() {
     try {
         const userData = await fetchData("https://api.example.com/user");
         console.log(userData);
-        
+
         const userPermissions = await fetchData(`https://api.example.com/user/${userData.id}/permissions`);
         console.log(userPermissions);
-        
+
         return { user: userData, permissions: userPermissions };
     } catch (error) {
         console.error("获取用户数据失败:", error.message);
@@ -214,7 +214,7 @@ async function fetchMultipleData() {
             fetchData("https://api.example.com/data2"),
             fetchData("https://api.example.com/data3")
         ]);
-        
+
         return { data1, data2, data3 };
     } catch (error) {
         console.error("获取数据失败:", error.message);
@@ -346,11 +346,11 @@ class DatabaseConnection {
         if (DatabaseConnection.instance) {
             return DatabaseConnection.instance;
         }
-        
+
         this.connection = null;
         DatabaseConnection.instance = this;
     }
-    
+
     connect() {
         if (!this.connection) {
             // 模拟建立数据库连接
@@ -360,7 +360,7 @@ class DatabaseConnection {
             console.log("已经存在数据库连接");
         }
     }
-    
+
     disconnect() {
         if (this.connection) {
             this.connection = null;
@@ -387,18 +387,18 @@ class Subject {
     constructor() {
         this.observers = [];
     }
-    
+
     addObserver(observer) {
         this.observers.push(observer);
     }
-    
+
     removeObserver(observer) {
         const index = this.observers.indexOf(observer);
         if (index > -1) {
             this.observers.splice(index, 1);
         }
     }
-    
+
     notify(data) {
         this.observers.forEach(observer => observer.update(data));
     }
@@ -408,7 +408,7 @@ class Observer {
     constructor(name) {
         this.name = name;
     }
-    
+
     update(data) {
         console.log(`${this.name} 收到通知: ${data}`);
     }
@@ -423,7 +423,7 @@ const observer2 = new Observer("观察者2");
 subject.addObserver(observer1);
 subject.addObserver(observer2);
 
-subject.notify("数据更新了"); 
+subject.notify("数据更新了");
 // 观察者1 收到通知: 数据更新了
 // 观察者2 收到通知: 数据更新了
 
@@ -444,14 +444,14 @@ class EventEmitter {
     constructor() {
         this.events = {};
     }
-    
+
     on(event, callback) {
         if (!this.events[event]) {
             this.events[event] = [];
         }
         this.events[event].push(callback);
     }
-    
+
     off(event, callback) {
         if (this.events[event]) {
             const index = this.events[event].indexOf(callback);
@@ -460,13 +460,13 @@ class EventEmitter {
             }
         }
     }
-    
+
     emit(event, data) {
         if (this.events[event]) {
             this.events[event].forEach(callback => callback(data));
         }
     }
-    
+
     // 清理所有事件监听器，防止内存泄漏
     destroy() {
         this.events = {};
@@ -480,7 +480,7 @@ class MyClass {
     constructor(data) {
         privateData.set(this, data);
     }
-    
+
     getData() {
         return privateData.get(this);
     }
@@ -510,13 +510,13 @@ function efficientFilter(items, condition) {
 // 2. 使用文档片段减少DOM操作
 function addItemsToList(items) {
     const fragment = document.createDocumentFragment();
-    
+
     items.forEach(item => {
         const li = document.createElement('li');
         li.textContent = item;
         fragment.appendChild(li);
     });
-    
+
     document.getElementById('myList').appendChild(fragment);
 }
 

@@ -7,7 +7,7 @@ date: 2026-05-12
 
 > 你有没有想过，为什么 CSS 能做的事情总是有天花板？为什么圆角渐变复杂了就会卡？为什么自定义布局永远做不过 native？CSS Houdini 的出现，就是为了打破这堵墙。它不是 CSS 的新功能，而是**给 CSS 打补丁的能力**——让开发者可以直接和浏览器的渲染引擎对话，在 CSS 和 JavaScript 之间架起一座桥梁。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## CSS 的历史遗留问题
 
@@ -79,10 +79,10 @@ CSS Houdini 是 W3C 的一组规范，目标是**让开发者可以编写代码�
 ### 当前浏览器支持
 
 ```
-Paint API:       Chrome 65+ ✅  Firefox 117+ ✅  Safari 16.4+ ✅
-Layout API:      Chrome 65+ ✅  (其他浏览器实验性)
-Animation Worklet: Chrome 76+ ✅  (其他浏览器实验性)
-Typed OM:        Chrome 66+ ✅  Firefox 128+ ✅  Safari 16.4+ ✅
+Paint API:       Chrome 65+ 正确  Firefox 117+ 正确  Safari 16.4+ 正确
+Layout API:      Chrome 65+ 正确  (其他浏览器实验性)
+Animation Worklet: Chrome 76+ 正确  (其他浏览器实验性)
+Typed OM:        Chrome 66+ 正确  Firefox 128+ 正确  Safari 16.4+ 正确
 ```
 
 ## Paint API：自定义图案填充
@@ -235,11 +235,11 @@ registerPaint('gradient-grid', GradientGrid);
 ### 实际应用场景
 
 ```
-✅ 数据可视化背景（动态图表网格）
-✅ 复杂纹理（金属、木纹、大理石）
-✅ 边框图案（自定义虚线、点阵）
-✅ loading 动画背景（脉动网格）
-✅ 深色模式自动切换（通过 CSS 变量）
+正确 数据可视化背景（动态图表网格）
+正确 复杂纹理（金属、木纹、大理石）
+正确 边框图案（自定义虚线、点阵）
+正确 loading 动画背景（脉动网格）
+正确 深色模式自动切换（通过 CSS 变量）
 ```
 
 ## Layout API：自定义布局算法
@@ -396,10 +396,10 @@ if (typeof registerProperty !== 'undefined') {
 
 /* 1. 语法校验 */
 .el {
-  --rotation: hello;       /* ❌ 无效值，忽略 */
-  --rotation: 45deg;      /* ✅ 正确 */
-  --card-size: -100px;     /* ❌ 范围限制，排除 */
-  --card-size: 300px;      /* ✅ */
+  --rotation: hello;       /* 错误 无效值，忽略 */
+  --rotation: 45deg;      /* 正确 正确 */
+  --card-size: -100px;     /* 错误 范围限制，排除 */
+  --card-size: 300px;      /* 正确 */
 }
 
 /* 2. 平滑动画 */
@@ -674,4 +674,4 @@ CSS Houdini 代表了浏览器渲染能力的一次重大开放：
 
 Houdini 的愿景是：CSS 不再是一个只能等待浏览器更新的静态规范，而是一个**可以由开发者持续扩展的平台**。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

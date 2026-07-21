@@ -417,27 +417,27 @@ elements.forEach((el, i) => {
 | 特性 | Motion One | GSAP | Framer Motion | Anime.js |
 |------|-----------|------|---------------|-----------|
 | 体积 | **3.8KB** | ~60KB | ~30KB | ~30KB |
-| 原生 Waapi | ✅ 基于 Waapi | ❌ 自研 | ❌ 自研 | ❌ 自研 |
-| 弹簧动画 | ✅ 原生支持 | ✅ 插件 | ✅ 内置 | ✅ 内置 |
-| React 集成 | ✅ 官方支持 | ⚠️ 需插件 | ✅ 官方首选 | ⚠️ 第三方 |
-| 时间线 | ✅ 声明式 | ✅ 强大 | ⚠️ 简单 | ✅ |
+| 原生 Waapi | 正确 基于 Waapi | 错误 自研 | 错误 自研 | 错误 自研 |
+| 弹簧动画 | 正确 原生支持 | 正确 插件 | 正确 内置 | 正确 内置 |
+| React 集成 | 正确 官方支持 | 注意 需插件 | 正确 官方首选 | 注意 第三方 |
+| 时间线 | 正确 声明式 | 正确 强大 | 注意 简单 | 正确 |
 | 学习曲线 | 低 | 中 | 中 | 低 |
 | 许可证 | MIT | 商业/免费 | 商业 | MIT |
 
 ## 性能最佳实践
 
 ```typescript
-// ✅ 始终使用 transform 和 opacity（GPU 加速）
+// 正确 始终使用 transform 和 opacity（GPU 加速）
 animate(element, { transform: ["translateX(0)", "translateX(200px)"], opacity: [1, 0] });
 
-// ⚠️ 避免动画 width、height、top、left（触发布局重排）
-// ❌ 不要这样做：
+// 注意 避免动画 width、height、top、left（触发布局重排）
+// 错误 不要这样做：
 animate(element, { width: [0, 200], height: [0, 100] });
 
-// ✅ 替代方案：用 scale + transform
+// 正确 替代方案：用 scale + transform
 animate(element, { scaleX: [0, 1], scaleY: [0, 1] });
 
-// ✅ 使用 will-change 提示浏览器优化
+// 正确 使用 will-change 提示浏览器优化
 element.style.willChange = "transform";
 animate(element, { x: 200 });
 element.style.willChange = "auto";  // 动画结束后清除
@@ -455,4 +455,4 @@ Motion One 的核心价值：
 
 对于现代 Web 应用，Motion One 几乎可以替代所有 CSS 动画和 jQuery 动画，且性能更好、控制更强。
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

@@ -204,7 +204,7 @@ window.addEventListener('micro-app-event', (e) => {
 // 主应用
 function App() {
   const [sharedState, setSharedState] = useState({});
-  
+
   return (
     <MicroAppContainer sharedState={sharedState} />
   );
@@ -219,14 +219,14 @@ class MicroEventBus {
   constructor() {
     this.listeners = {};
   }
-  
+
   on(event, callback) {
     if (!this.listeners[event]) {
       this.listeners[event] = [];
     }
     this.listeners[event].push(callback);
   }
-  
+
   emit(event, data) {
     if (this.listeners[event]) {
       this.listeners[event].forEach(cb => cb(data));
@@ -355,10 +355,10 @@ output: {
 export async function unmount(props) {
   // 清除所有事件监听
   window.removeEventListener('resize', handleResize);
-  
+
   // 清理定时器
   timers.forEach(clearTimeout);
-  
+
   // React 卸载
   ReactDOM.createRoot(props.container).unmount();
 }
@@ -453,4 +453,4 @@ registerMicroApps([
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

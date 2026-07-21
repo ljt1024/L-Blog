@@ -9,7 +9,7 @@
 JavaScript 从诞生之初就是单线程语言。这个设计源于它的主要用途：处理用户交互和 DOM 操作。单线程意味着：
 
 ```javascript
-// ❌ 这段代码会阻塞主线程
+// 错误 这段代码会阻塞主线程
 function heavyComputation() {
   let result = 0
   for (let i = 0; i < 10000000000; i++) {
@@ -100,12 +100,12 @@ worker.onerror = function(error) {
 // worker.js
 self.onmessage = function(e) {
   const { type, data } = e.message
-  
+
   if (type === 'calculate') {
     const { numbers } = data
     const sum = numbers.reduce((a, b) => a + b, 0)
     const avg = sum / numbers.length
-    
+
     // 发送结果回主线程
     self.postMessage({
       type: 'result',
@@ -128,10 +128,10 @@ function createInlineWorker(workerFunction) {
   })
   const url = URL.createObjectURL(blob)
   const worker = new Worker(url)
-  
+
   // 清理 URL（Worker 仍然可用）
   // URL.revokeObjectURL(url)
-  
+
   return worker
 }
 
@@ -160,10 +160,10 @@ for (let i = 0; i < largeArray.length; i++) {
 
 const worker = new Worker('worker.js')
 
-// ❌ 普通传输：数据会被序列化/反序列化（耗时）
+// 错误 普通传输：数据会被序列化/反序列化（耗时）
 // worker.postMessage(largeArray)
 
-// ✅ Transferable 传输：所有权转移，零拷贝
+// 正确 Transferable 传输：所有权转移，零拷贝
 worker.postMessage(largeArray, [largeArray.buffer])
 
 // 注意：传输后，largeArray 在主线程中变为空！
@@ -213,14 +213,14 @@ const sorted = await parallelSort(largeArray)
 // sort-worker.js
 self.onmessage = function(e) {
   const array = e.data
-  
+
   // 快速排序实现
   function quickSort(arr, left = 0, right = arr.length - 1) {
     if (left >= right) return
-    
+
     const pivot = arr[Math.floor((left + right) / 2)]
     let i = left, j = right
-    
+
     while (i <= j) {
       while (arr[i] < pivot) i++
       while (arr[j] > pivot) j--
@@ -230,11 +230,11 @@ self.onmessage = function(e) {
         j--
       }
     }
-    
+
     quickSort(arr, left, j)
     quickSort(arr, i, right)
   }
-  
+
   quickSort(array)
   self.postMessage(array, [array.buffer])
 }
@@ -267,14 +267,14 @@ document.querySelector('canvas').getContext('2d').drawImage(processed, 0, 0)
 // image-worker.js
 self.onmessage = function(e) {
   const { image, filter } = e.data
-  
+
   const canvas = new OffscreenCanvas(image.width, image.height)
   const ctx = canvas.getContext('2d')
   ctx.drawImage(image, 0, 0)
-  
+
   const imageData = ctx.getImageData(0, 0, image.width, image.height)
   const data = imageData.data
-  
+
   if (filter === 'grayscale') {
     for (let i = 0; i < data.length; i += 4) {
       const avg = (data[i] + data[i + 1] + data[i + 2]) / 3
@@ -287,9 +287,9 @@ self.onmessage = function(e) {
       data[i + 2] = 255 - data[i + 2]
     }
   }
-  
+
   ctx.putImageData(imageData, 0, 0)
-  
+
   // 返回处理后的 ImageBitmap
   canvas.convertToBlob().then(blob => {
     createImageBitmap(blob).then(bitmap => {
@@ -320,7 +320,7 @@ self.onmessage = function(e) {
 // main.js
 async function parseJSONInWorker(jsonString) {
   const worker = new Worker('json-worker.js')
-  
+
   return new Promise((resolve, reject) => {
     worker.onmessage = (e) => {
       worker.terminate()
@@ -350,18 +350,18 @@ class WorkerPool {
     this.workers = []
     this.taskQueue = []
     this.availableWorkers = []
-    
+
     for (let i = 0; i < poolSize; i++) {
       const worker = new Worker(workerScript)
       this.workers.push(worker)
       this.availableWorkers.push(worker)
     }
   }
-  
+
   execute(data, transferList) {
     return new Promise((resolve, reject) => {
       const task = { data, transferList, resolve, reject }
-      
+
       if (this.availableWorkers.length > 0) {
         this.runTask(task)
       } else {
@@ -369,24 +369,24 @@ class WorkerPool {
       }
     })
   }
-  
+
   runTask(task) {
     const worker = this.availableWorkers.pop()
-    
+
     const handler = (e) => {
       worker.removeEventListener('message', handler)
       this.availableWorkers.push(worker)
       task.resolve(e.data)
-      
+
       if (this.taskQueue.length > 0) {
         this.runTask(this.taskQueue.shift())
       }
     }
-    
+
     worker.addEventListener('message', handler)
     worker.postMessage(task.data, task.transferList)
   }
-  
+
   terminate() {
     this.workers.forEach(w => w.terminate())
   }
@@ -395,7 +395,7 @@ class WorkerPool {
 // 使用示例
 const pool = new WorkerPool('compute-worker.js', 8)
 
-const tasks = largeDataArray.map(data => 
+const tasks = largeDataArray.map(data =>
   pool.execute(data)
 )
 
@@ -433,7 +433,7 @@ const connections = []
 self.onconnect = function(e) {
   const port = e.ports[0]
   connections.push(port)
-  
+
   port.onmessage = function(e) {
     // 广播给所有连接
     connections.forEach(p => p.postMessage(e.data))
@@ -480,7 +480,7 @@ Chrome 开发者工具支持 Worker 调试：
 // 性能测试函数
 async function benchmark(task, data, useWorker = false) {
   const start = performance.now()
-  
+
   if (useWorker) {
     await new Promise(resolve => {
       const worker = new Worker('worker.js')
@@ -493,7 +493,7 @@ async function benchmark(task, data, useWorker = false) {
   } else {
     task(data)
   }
-  
+
   return performance.now() - start
 }
 
@@ -514,24 +514,24 @@ class SafeWorker {
     this.worker = new Worker(scriptURL)
     this.messageId = 0
     this.pending = new Map()
-    
+
     this.worker.onmessage = (e) => {
       const { id, result, error } = e.data
       const { resolve, reject } = this.pending.get(id)
       this.pending.delete(id)
-      
+
       if (error) {
         reject(new Error(error))
       } else {
         resolve(result)
       }
     }
-    
+
     this.worker.onerror = (e) => {
       console.error('Worker error:', e)
     }
   }
-  
+
   execute(data, transferList) {
     return new Promise((resolve, reject) => {
       const id = this.messageId++
@@ -539,7 +539,7 @@ class SafeWorker {
       this.worker.postMessage({ id, data }, transferList)
     })
   }
-  
+
   terminate() {
     this.worker.terminate()
     this.pending.forEach(({ reject }) => {
@@ -581,7 +581,7 @@ class ComputeEngine {
       this.worker = new Worker('compute-worker.js')
     }
   }
-  
+
   async compute(data) {
     if (this.useWorker) {
       return new Promise(resolve => {
@@ -593,7 +593,7 @@ class ComputeEngine {
       return this.computeInChunks(data)
     }
   }
-  
+
   async computeInChunks(data, chunkSize = 1000) {
     const results = []
     for (let i = 0; i < data.length; i += chunkSize) {
@@ -618,36 +618,36 @@ function useWorker(workerScript, initialState) {
   const [result, setResult] = useState(initialState)
   const [error, setError] = useState(null)
   const workerRef = useRef(null)
-  
+
   useEffect(() => {
     workerRef.current = new Worker(workerScript)
-    
+
     workerRef.current.onmessage = (e) => {
       setResult(e.data)
     }
-    
+
     workerRef.current.onerror = (e) => {
       setError(e.message)
     }
-    
+
     return () => workerRef.current?.terminate()
   }, [workerScript])
-  
+
   const postMessage = (data, transferList) => {
     workerRef.current?.postMessage(data, transferList)
   }
-  
+
   return { result, error, postMessage }
 }
 
 // 使用
 function DataProcessor() {
   const { result, postMessage } = useWorker('/workers/data-processor.js', null)
-  
+
   const handleProcess = (data) => {
     postMessage(data)
   }
-  
+
   return (
     <div>
       <button onClick={() => handleProcess(largeData)}>处理数据</button>
@@ -667,28 +667,28 @@ export function useWorker(workerScript) {
   const result = ref(null)
   const error = ref(null)
   const isWorking = ref(false)
-  
+
   const worker = new Worker(workerScript)
-  
+
   worker.onmessage = (e) => {
     result.value = e.data
     isWorking.value = false
   }
-  
+
   worker.onerror = (e) => {
     error.value = e.message
     isWorking.value = false
   }
-  
+
   const postMessage = (data, transferList) => {
     isWorking.value = true
     worker.postMessage(data, transferList)
   }
-  
+
   onUnmounted(() => {
     worker.terminate()
   })
-  
+
   return { result, error, isWorking, postMessage }
 }
 ```
@@ -733,12 +733,12 @@ const processData = () => {
 ### 8.2 通信优化
 
 ```javascript
-// ❌ 频繁发送小数据
+// 错误 频繁发送小数据
 for (let i = 0; i < 10000; i++) {
   worker.postMessage({ index: i, value: data[i] })
 }
 
-// ✅ 批量发送
+// 正确 批量发送
 const batchSize = 1000
 for (let i = 0; i < data.length; i += batchSize) {
   const batch = data.slice(i, i + batchSize)
@@ -753,7 +753,7 @@ for (let i = 0; i < data.length; i += batchSize) {
 self.onmessage = function(e) {
   const result = process(e.data)
   self.postMessage(result)
-  
+
   // 清理大对象
   e.data = null
 }
@@ -789,4 +789,4 @@ Web Workers 是前端性能优化的重要工具，掌握它能让你：
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

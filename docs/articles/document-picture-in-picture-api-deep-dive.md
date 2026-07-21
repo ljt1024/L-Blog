@@ -15,10 +15,10 @@ video.requestPictureInPicture();
 ```
 
 缺点显而易见：
-- ❌ 只能处理 video 元素
-- ❌ 画中画内容完全由浏览器控制
-- ❌ 无法自定义交互界面
-- ❌ 无法显示视频以外的内容
+- 错误 只能处理 video 元素
+- 错误 画中画内容完全由浏览器控制
+- 错误 无法自定义交互界面
+- 错误 无法显示视频以外的内容
 
 ## 二、Document PiP 的核心突破
 
@@ -41,8 +41,8 @@ const supportsDocPiP = () => {
 |--------|---------|
 | Chrome | 116+ |
 | Edge | 116+ |
-| Safari | ❌ |
-| Firefox | ❌ |
+| Safari | 错误 |
+| Firefox | 错误 |
 
 ## 三、基本用法
 
@@ -84,7 +84,7 @@ pipWindow.document.body.innerHTML = `
       cursor: pointer;
     }
   </style>
-  <h2>🎵 音乐控制器</h2>
+  <h2> 音乐控制器</h2>
   <button id="playBtn">播放 / 暂停</button>
 `;
 
@@ -99,22 +99,22 @@ console.log('内容已写入 PiP 窗口');
 async function moveToPip(elementId) {
   // 1. 获取元素引用
   const el = document.getElementById(elementId);
-  
+
   // 2. 打开 PiP 窗口
   const pipWindow = await documentPictureInPicture.requestWindow({
     width: 400,
     height: 300,
   });
-  
+
   // 3. 将元素移入新窗口的 document
   pipWindow.document.body.appendChild(el);
-  
+
   // 4. 把样式也一并移过去（避免样式丢失）
   const styles = document.querySelectorAll('style, link[rel="stylesheet"]');
   styles.forEach(style => {
     pipWindow.document.head.appendChild(style.cloneNode(true));
   });
-  
+
   return pipWindow;
 }
 
@@ -138,7 +138,7 @@ const pip = await moveToPip('my-widget');
   </div>
   <div class="controls">
     <button id="prevBtn">⏮</button>
-    <button id="playBtn">▶️</button>
+    <button id="playBtn">▶</button>
     <button id="nextBtn">⏭</button>
   </div>
 </div>
@@ -151,17 +151,17 @@ async function enterPip() {
     width: 320,
     height: 80,
   });
-  
+
   // 把播放器移入 PiP
   pip.document.body.appendChild(player);
-  
+
   // 自动播放音频（PiP 窗口激活时）
   pip.document.addEventListener('click', (e) => {
     if (e.target.id === 'playBtn') {
       audio.play();
     }
   });
-  
+
   // 同步更新主页面状态
   player.addEventListener('play', () => {
     audio.play();
@@ -177,7 +177,7 @@ document.getElementById('pipBtn').addEventListener('click', enterPip);
 AI 助手常驻画中画，随时响应：
 
 ```html
-<button id="openChatPip">💬 悬浮助手</button>
+<button id="openChatPip"> 悬浮助手</button>
 
 <script>
 document.getElementById('openChatPip').addEventListener('click', async () => {
@@ -185,7 +185,7 @@ document.getElementById('openChatPip').addEventListener('click', async () => {
     width: 380,
     height: 520,
   });
-  
+
   // 写入聊天界面
   pip.document.body.innerHTML = `
     <style>
@@ -257,7 +257,7 @@ document.getElementById('openChatPip').addEventListener('click', async () => {
         font-size: 14px;
       }
     </style>
-    <div class="header">🤖 AI 助手</div>
+    <div class="header"> AI 助手</div>
     <div class="messages" id="messages">
       <div class="msg ai">你好！有什么可以帮你的？</div>
     </div>
@@ -266,34 +266,34 @@ document.getElementById('openChatPip').addEventListener('click', async () => {
       <button class="send-btn" id="pipSend">发送</button>
     </div>
   `;
-  
+
   // PiP 窗口中的交互
   const input = pip.document.getElementById('pipInput');
   const sendBtn = pip.document.getElementById('pipSend');
   const messages = pip.document.getElementById('messages');
-  
+
   const sendMessage = async () => {
     const text = input.value.trim();
     if (!text) return;
-    
+
     // 添加用户消息
     const userMsg = pip.document.createElement('div');
     userMsg.className = 'msg user';
     userMsg.textContent = text;
     messages.appendChild(userMsg);
     input.value = '';
-    
+
     // 模拟 AI 回复
     const aiMsg = pip.document.createElement('div');
     aiMsg.className = 'msg ai';
     aiMsg.textContent = '正在思考中...';
     messages.appendChild(aiMsg);
     messages.scrollTop = messages.scrollHeight;
-    
+
     // 调用主窗口的 AI 服务
     pip.window.postMessage({ type: 'chat', text }, '*');
   };
-  
+
   sendBtn.addEventListener('click', sendMessage);
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendMessage();
@@ -311,7 +311,7 @@ async function openReadingMode(articleId) {
     width: 600,
     height: 800,
   });
-  
+
   // 写入阅读样式和内容
   pip.document.head.innerHTML = `
     <style>
@@ -329,7 +329,7 @@ async function openReadingMode(articleId) {
       p { margin-bottom: 16px; }
     </style>
   `;
-  
+
   pip.document.body.innerHTML = article.innerHTML;
 }
 ```
@@ -343,7 +343,7 @@ async function openReadingMode(articleId) {
 window.addEventListener('message', (e) => {
   if (e.data.type === 'chat') {
     console.log('收到 PiP 发送的消息:', e.data.text);
-    
+
     // 调用 AI API 并发送回复回 PiP
     const aiReply = await callAI(e.data.text);
     e.source.postMessage({ type: 'reply', text: aiReply }, '*');
@@ -396,7 +396,7 @@ const pip = await documentPictureInPicture.requestWindow();
 // ...
 const closeHandler = () => {
   const btn = document.createElement('button');
-  btn.textContent = '↗️ 重新打开';
+  btn.textContent = '↗ 重新打开';
   btn.dataset.action = 'reopen-pip';
   btn.style.cssText = 'position:fixed;top:8px;right:8px;';
   pip.document.body.appendChild(btn);
@@ -414,13 +414,13 @@ Document PiP 中的样式默认**独立于主页面**，但可以通过以下方
 async function moveWithStyles(elementId) {
   const el = document.getElementById(elementId);
   const pip = await documentPictureInPicture.requestWindow();
-  
+
   // 克隆计算样式
   const computedStyles = el.getAttribute('style') || '';
-  
+
   // 移动元素
   pip.document.body.appendChild(el);
-  
+
   // 添加必要的样式表
   const style = pip.document.createElement('style');
   style.textContent = `
@@ -450,17 +450,17 @@ const openInDocPiP = async (elementId) => {
     alert('您的浏览器不支持 Document PiP，请使用 Chrome 116+');
     return;
   }
-  
+
   const el = document.getElementById(elementId);
   const originalParent = el.parentElement;
-  
+
   try {
     const pip = await documentPictureInPicture.requestWindow({
       width: 400,
       height: 300,
     });
     pip.document.body.appendChild(el);
-    
+
     // 窗口关闭时恢复元素
     pip.addEventListener('pagehide', () => {
       originalParent.appendChild(el);
@@ -487,17 +487,17 @@ const openInDocPiP = async (elementId) => {
     <li>回复邮件</li>
     <li>整理本周笔记</li>
   </ul>
-  <button id="pipBtn">📌 悬浮 Todo</button>
-  
+  <button id="pipBtn"> 悬浮 Todo</button>
+
   <script>
     const todoList = document.getElementById('todoList');
-    
+
     document.getElementById('pipBtn').addEventListener('click', async () => {
       const pip = await documentPictureInPicture.requestWindow({
         width: 300,
         height: 400,
       });
-      
+
       pip.document.body.innerHTML = `
         <style>
           body { margin: 0; padding: 16px; background: #1e1e2e; color: #fff; }
@@ -505,10 +505,10 @@ const openInDocPiP = async (elementId) => {
           li { padding: 6px 0; cursor: pointer; list-style: none; }
           li.done { text-decoration: line-through; opacity: 0.5; }
         </style>
-        <h3>📌 Todo</h3>
+        <h3> Todo</h3>
         <ul>${todoList.innerHTML}</ul>
       `;
-      
+
       // PiP 中点击切换完成状态
       pip.document.querySelectorAll('li').forEach((item, i) => {
         item.addEventListener('click', () => {
@@ -529,16 +529,16 @@ Document Picture-in-Picture API 彻底解放了画中画的能力上限：
 
 | 能力 | 传统 Video PiP | Document PiP |
 |------|:-------------:|:------------:|
-| 任意 HTML 内容 | ❌ | ✅ |
-| 自定义样式 | ❌ | ✅ |
-| 完整交互能力 | ❌ | ✅ |
-| 与主页面通信 | ❌ | ✅ |
-| 悬浮工具栏 | ❌ | ✅ |
-| 阅读模式 | ❌ | ✅ |
-| 聊天助手 | ❌ | ✅ |
+| 任意 HTML 内容 | 错误 | 正确 |
+| 自定义样式 | 错误 | 正确 |
+| 完整交互能力 | 错误 | 正确 |
+| 与主页面通信 | 错误 | 正确 |
+| 悬浮工具栏 | 错误 | 正确 |
+| 阅读模式 | 错误 | 正确 |
+| 聊天助手 | 错误 | 正确 |
 
 这是一个让 Web 应用体验逼近原生应用的强大 API，值得在产品中积极探索。
 
 ---
 
-*小虾子 🦐 — 2026 年 6 月 26 日*
+*小虾子  — 2026 年 6 月 26 日*

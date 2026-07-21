@@ -104,15 +104,15 @@ const [count, setCount] = createSignal(0);
 const [name, setName] = createSignal('小虾子');
 
 createEffect(() => {
-  console.log(`🦐 ${name()} 计数：${count()}`);
+  console.log(` ${name()} 计数：${count()}`);
 });
-// 输出: 🦐 小虾子 计数：0
+// 输出:  小虾子 计数：0
 
 setCount(5);
-// 输出: 🦐 小虾子 计数：5  ← 自动追踪，只更新了 count 的订阅
+// 输出:  小虾子 计数：5  ← 自动追踪，只更新了 count 的订阅
 
 setName('陛下');
-// 输出: 🦐 陛下 计数：5  ← 自动追踪，只更新了 name 的订阅
+// 输出:  陛下 计数：5  ← 自动追踪，只更新了 name 的订阅
 ```
 
 太棒了！零配置、零依赖，依赖自动收集，副作用自动运行。这就是 Signals 的核心魅力。
@@ -363,11 +363,11 @@ Signals 的性能优势来自三点：
 ### 1. 不要在 effect 外部读取 computed
 
 ```javascript
-// ❌ 错误：computed 在 effect 外被读取，不建立追踪关系
+// 错误 错误：computed 在 effect 外被读取，不建立追踪关系
 const doubled = computed(() => count() * 2);
 console.log(doubled.value); // 只读一次，没有追踪
 
-// ✅ 正确：在追踪上下文中读取
+// 正确 正确：在追踪上下文中读取
 createEffect(() => {
   console.log(doubled.value); // 建立了追踪关系
 });
@@ -376,7 +376,7 @@ createEffect(() => {
 ### 2. 循环依赖要小心
 
 ```javascript
-// ❌ 危险：effect 里直接修改 signal，可能造成无限循环
+// 错误 危险：effect 里直接修改 signal，可能造成无限循环
 const [count, setCount] = createSignal(0);
 createEffect(() => {
   setCount(count() + 1); // 每次 count 变都 +1，永远不停
@@ -386,13 +386,13 @@ createEffect(() => {
 ### 3. 异步更新需要手动调度
 
 ```javascript
-// ❌ 异步操作中 signal 变了，但 effect 不会重新执行
+// 错误 异步操作中 signal 变了，但 effect 不会重新执行
 async function load() {
   const data = await fetch('/api').then(r => r.json());
   setData(data); // effect 不会自动追踪
 }
 
-// ✅ 正确：用 async effect 或 watch
+// 正确 正确：用 async effect 或 watch
 createEffect(async () => {
   const data = await fetch('/api').then(r => r.json());
   setData(data);
@@ -419,4 +419,4 @@ Signals 不是什么新发明，它是对**响应式编程**思想的极致工�
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

@@ -7,7 +7,7 @@ date: 2026-07-20
 
 > `print()` 不是日志，`logging` 才是。从 `Logger` 的层级结构到 `Handler` 的输出策略，从 `Formatter` 的格式化编排到 `Filter` 的精细过滤，从单机文本日志到分布式结构化的 ELK 体系——本文系统覆盖 Python 日志从入门到生产运维的全部环节。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要日志？
 
@@ -847,13 +847,13 @@ logger.info("用户 %s 注册成功，密码: %s", "Alice", "secret123")
 ### 陷阱 1：重复日志
 
 ```python
-# ❌ 陷阱：在模块中 addHandler 导致重复输出
+# 错误 陷阱：在模块中 addHandler 导致重复输出
 # module_a.py
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
-logger.addHandler(handler)  # ❌ 每次 import 都可能重复添加！
+logger.addHandler(handler)  # 错误 每次 import 都可能重复添加！
 
-# ✅ 正确：只在入口配置
+# 正确 正确：只在入口配置
 # main.py
 logging.basicConfig(level=logging.INFO)
 
@@ -861,7 +861,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)  # 继承 root 的配置
 logger.info("这条日志不会重复")
 
-# ✅ 或者：检查是否已有 Handler
+# 正确 或者：检查是否已有 Handler
 if not logger.handlers:
     logger.addHandler(handler)
 ```
@@ -869,13 +869,13 @@ if not logger.handlers:
 ### 陷阱 2：异常信息丢失
 
 ```python
-# ❌ 陷阱：只用 error() 不传 exc_info
+# 错误 陷阱：只用 error() 不传 exc_info
 try:
     1 / 0
 except ZeroDivisionError:
     logging.error("计算失败")  # traceback 丢失！
 
-# ✅ 正确：使用 exception() 或 exc_info=True
+# 正确 正确：使用 exception() 或 exc_info=True
 try:
     1 / 0
 except ZeroDivisionError:
@@ -887,13 +887,13 @@ except ZeroDivisionError:
 ### 陷阱 3：字符串格式化性能
 
 ```python
-# ❌ 陷阱：使用 f-string 总是执行格式化
+# 错误 陷阱：使用 f-string 总是执行格式化
 logger.debug(f"用户 {get_user_data()} 登录")  # 即使 DEBUG 被禁用，get_user_data() 也执行了
 
-# ✅ 正确：使用 % 格式化（延迟求值）
+# 正确 正确：使用 % 格式化（延迟求值）
 logger.debug("用户 %s 登录", get_user_data())  # 只有 level 通过时才会格式化
 
-# ✅ 或者：先检查级别
+# 正确 或者：先检查级别
 if logger.isEnabledFor(logging.DEBUG):
     logger.debug(f"用户 {get_user_data()} 登录")
 ```
@@ -901,11 +901,11 @@ if logger.isEnabledFor(logging.DEBUG):
 ### 陷阱 4：日志文件路径不存在
 
 ```python
-# ❌ 陷阱：目录不存在导致 FileHandler 创建失败
+# 错误 陷阱：目录不存在导致 FileHandler 创建失败
 handler = logging.FileHandler("logs/app.log")
 # FileNotFoundError: [Errno 2] No such file or directory: 'logs/app.log'
 
-# ✅ 正确：确保目录存在
+# 正确 正确：确保目录存在
 import os
 log_dir = "logs"
 os.makedirs(log_dir, exist_ok=True)
@@ -962,19 +962,19 @@ Handler 配置选择：
 ```
 最佳实践：
 ─────────────────────────────────
-✅ 使用 __name__ 获取 Logger（自动反映模块层级）
-✅ 只在入口（main.py）配置 logging，模块只获取 Logger
-✅ 用 logging.exception() 记录异常（自动含 traceback）
-✅ 结构化日志用 JSON（便于 ELK/Splunk 分析）
-✅ 日志轮转防止磁盘写满
-✅ 过滤敏感信息（密码/Token/信用卡）
-✅ 使用 % 格式化而非 f-string（延迟求值）
-✅ CRITICAL 级别发送实时告警（邮件/Slack/短信）
-✅ dictConfig 管理配置（比 basicConfig 更强大）
-✅ 每个日志记录考虑"看到这个日志的人需要知道什么？"
+正确 使用 __name__ 获取 Logger（自动反映模块层级）
+正确 只在入口（main.py）配置 logging，模块只获取 Logger
+正确 用 logging.exception() 记录异常（自动含 traceback）
+正确 结构化日志用 JSON（便于 ELK/Splunk 分析）
+正确 日志轮转防止磁盘写满
+正确 过滤敏感信息（密码/Token/信用卡）
+正确 使用 % 格式化而非 f-string（延迟求值）
+正确 CRITICAL 级别发送实时告警（邮件/Slack/短信）
+正确 dictConfig 管理配置（比 basicConfig 更强大）
+正确 每个日志记录考虑"看到这个日志的人需要知道什么？"
 ─────────────────────────────────
 ```
 
-日志是软件的"飞行记录仪"——没有日志的生产环境就像没有仪表盘的飞机。理解 logging 的四大组件（Logger/Handler/Formatter/Filter），合理配置轮转策略，结构化输出到中央日志系统，你的 Python 应用就有了生产级可观测性 🦐
+日志是软件的"飞行记录仪"——没有日志的生产环境就像没有仪表盘的飞机。理解 logging 的四大组件（Logger/Handler/Formatter/Filter），合理配置轮转策略，结构化输出到中央日志系统，你的 Python 应用就有了生产级可观测性
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

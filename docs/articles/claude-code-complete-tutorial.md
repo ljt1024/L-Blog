@@ -41,7 +41,7 @@ curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del in
 brew install --cask claude-code
 ```
 
-> ⚠️ Homebrew 安装不会自动更新，需手动执行 `brew upgrade claude-code`
+> 注意 Homebrew 安装不会自动更新，需手动执行 `brew upgrade claude-code`
 
 ### WinGet（Windows）
 
@@ -426,10 +426,10 @@ claude -p "list all TODO comments" --output-format json
 ### 技巧 1：给出足够的上下文
 
 ```text
-# ❌ 太模糊
+# 错误 太模糊
 fix the bug
 
-# ✅ 提供完整上下文
+# 正确 提供完整上下文
 When a user tries to login with an expired token, the app crashes with:
 "TypeError: Cannot read property 'exp' of undefined"
 This happens in src/middleware/auth.ts line 23.
@@ -441,10 +441,10 @@ Please fix this and add proper error handling.
 
 ```text
 # 不要一次性要求太多
-# ❌ 一次性要求
+# 错误 一次性要求
 build a complete e-commerce system with cart, checkout, payment, and admin panel
 
-# ✅ 分步骤
+# 正确 分步骤
 Step 1: Create the product listing page with search and filter
 # 完成后再继续
 Step 2: Add shopping cart functionality
@@ -503,7 +503,7 @@ claude "review the changes in the last commit for:
 ### 场景 3：批量重构
 
 ```bash
-claude "find all places where we use the old API client and migrate them to the new one. 
+claude "find all places where we use the old API client and migrate them to the new one.
 Old: import api from '../utils/api'
 New: import { apiClient } from '../lib/api-client'"
 ```
@@ -538,13 +538,13 @@ claude "upgrade all dependencies to their latest stable versions, run tests afte
 
 | 功能 | Claude Code | GitHub Copilot | Cursor |
 |------|------------|----------------|--------|
-| 代码补全 | ✅ | ✅✅ | ✅✅ |
-| 整个代码库理解 | ✅✅ | ✅ | ✅✅ |
-| 自主执行任务 | ✅✅ | ❌ | ✅ |
-| 终端集成 | ✅✅ | ❌ | ❌ |
-| MCP 外部工具 | ✅✅ | ❌ | ❌ |
-| Git 操作 | ✅✅ | ❌ | ✅ |
-| 多文件编辑 | ✅✅ | ✅ | ✅✅ |
+| 代码补全 | 正确 | 正确正确 | 正确正确 |
+| 整个代码库理解 | 正确正确 | 正确 | 正确正确 |
+| 自主执行任务 | 正确正确 | 错误 | 正确 |
+| 终端集成 | 正确正确 | 错误 | 错误 |
+| MCP 外部工具 | 正确正确 | 错误 | 错误 |
+| Git 操作 | 正确正确 | 错误 | 正确 |
+| 多文件编辑 | 正确正确 | 正确 | 正确正确 |
 
 ---
 
@@ -562,4 +562,4 @@ Claude Code 的核心优势在于**自主性**——它不只是回答问题，�
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

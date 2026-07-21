@@ -7,14 +7,14 @@ date: 2026-07-16
 
 > 每个 Python 项目的第一步不是写代码——而是搞清楚依赖怎么管。从 `venv` 到 `virtualenv`，从 `pip` 到 `poetry`，从 `requirements.txt` 到 `pyproject.toml`，从 `pip-tools` 到 `uv`，Python 生态的依赖管理方案多到让人困惑。本文系统梳理每条路线的定位、优劣与选型决策，帮你为项目选对工具。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要虚拟环境？
 
 ### 全局安装的灾难
 
 ```bash
-# ❌ 全局安装的后果
+# 错误 全局安装的后果
 pip install requests==2.28.0
 pip install flask  # flask 依赖 requests>=2.30，pip 自动升级了 requests
 # 现在 requests 是 2.32+，你之前测试的 2.28.0 代码可能出问题
@@ -75,7 +75,7 @@ source .venv/bin/activate        # Linux/macOS
 
 # 激活后提示符变化
 (.venv) $ which python
-/Users/project/.venv/bin/python  # ✅ 指向虚拟环境
+/Users/project/.venv/bin/python  # 正确 指向虚拟环境
 
 # 退出
 deactivate
@@ -610,17 +610,17 @@ omit = ["tests/*"]
 ```
 功能              venv+pip   pip-tools   poetry     uv
 ─────────────────────────────────────────────────────
-虚拟环境          ✅          ✅          ✅          ✅
-依赖安装          ✅          ✅          ✅          ✅
-依赖锁定          ❌          ✅          ✅          ✅
-依赖声明          ❌          ❌          ✅          ✅
-依赖树可视化      ❌          ❌          ✅          ✅
-pyproject.toml   ❌          ❌          ✅          ✅
+虚拟环境          正确          正确          正确          正确
+依赖安装          正确          正确          正确          正确
+依赖锁定          错误          正确          正确          正确
+依赖声明          错误          错误          正确          正确
+依赖树可视化      错误          错误          正确          正确
+pyproject.toml   错误          错误          正确          正确
 版本约束语法      ==          ==          ^ ~ >=      ^ ~ >=
 速度              慢          慢          中          极快
 学习成本          低          中          高          低
-Rust 编写         ❌          ❌          ❌          ✅
-全局缓存          ❌          ❌          ❌          ✅
+Rust 编写         错误          错误          错误          正确
+全局缓存          错误          错误          错误          正确
 ```
 
 ---
@@ -636,8 +636,8 @@ venv/
 env/
 
 # 但要提交依赖声明文件
-# ✅ 提交：pyproject.toml, requirements.in, uv.lock, poetry.lock
-# ❌ 不提交：requirements.txt（如果是 freeze 生成的）
+# 正确 提交：pyproject.toml, requirements.in, uv.lock, poetry.lock
+# 错误 不提交：requirements.txt（如果是 freeze 生成的）
 
 # uv
 # uv.lock 要提交（锁定文件）
@@ -863,12 +863,12 @@ uv run --package api python -m api.main
 ### 陷阱 1：虚拟环境提交到 Git
 
 ```bash
-# ❌ 把 .venv 提交到 Git
+# 错误 把 .venv 提交到 Git
 git add .venv/
 git commit -m "add venv"
 # .venv 可能有几百 MB，而且不可移植（路径不同）
 
-# ✅ 只提交依赖声明
+# 正确 只提交依赖声明
 echo ".venv/" >> .gitignore
 git add pyproject.toml uv.lock .gitignore
 git commit -m "add project config"
@@ -880,13 +880,13 @@ uv sync  # 或 poetry install, 或 pip install -r requirements.txt
 ### 陷阱 2：版本不锁定
 
 ```bash
-# ❌ requirements.txt 只写包名，不写版本
+# 错误 requirements.txt 只写包名，不写版本
 # requests
 # flask
 # numpy
 # 问题：每次安装可能得到不同版本，不可复现
 
-# ✅ 用 lock 文件锁定
+# 正确 用 lock 文件锁定
 # uv.lock / poetry.lock / requirements.txt（pip-compile 生成）
 # 包含所有依赖（含间接依赖）的精确版本
 ```
@@ -894,10 +894,10 @@ uv sync  # 或 poetry install, 或 pip install -r requirements.txt
 ### 陷阱 3：开发依赖混入生产
 
 ```bash
-# ❌ 开发依赖和生产依赖混在一起
+# 错误 开发依赖和生产依赖混在一起
 pip install pytest  # 生产环境也会有 pytest
 
-# ✅ 分组管理
+# 正确 分组管理
 # pyproject.toml
 [project.optional-dependencies]
 dev = ["pytest", "black", "ruff"]
@@ -945,18 +945,18 @@ uv.lock               uv 锁定文件
 ```
 最佳实践：
 ─────────────────────────────────
-✅ 每个项目一个虚拟环境（不要全局安装）
-✅ 用 pyproject.toml 作为项目配置中心
-✅ 提交 lock 文件（确保可复现）
-✅ 不要提交 .venv/ 目录
-✅ 分离开发依赖和生产依赖
-✅ 新项目首选 uv（最快、最现代）
-✅ 已有 poetry 项目可以迁移到 uv
-✅ CI/CD 用 uv sync --frozen 保证一致性
-✅ Docker 中用 uv 减少构建时间
-✅ 用 .python-version 声明 Python 版本
+正确 每个项目一个虚拟环境（不要全局安装）
+正确 用 pyproject.toml 作为项目配置中心
+正确 提交 lock 文件（确保可复现）
+正确 不要提交 .venv/ 目录
+正确 分离开发依赖和生产依赖
+正确 新项目首选 uv（最快、最现代）
+正确 已有 poetry 项目可以迁移到 uv
+正确 CI/CD 用 uv sync --frozen 保证一致性
+正确 Docker 中用 uv 减少构建时间
+正确 用 .python-version 声明 Python 版本
 ```
 
-Python 依赖管理经历了从 `pip + requirements.txt` 到 `poetry + pyproject.toml` 再到 `uv + uv.lock` 的演进——venv 做隔离，pip/poetry/uv 做管理，pyproject.toml 做配置，lock 文件做锁定。理解这条工具链的每个环节，你的项目基建就稳了 🦐
+Python 依赖管理经历了从 `pip + requirements.txt` 到 `poetry + pyproject.toml` 再到 `uv + uv.lock` 的演进——venv 做隔离，pip/poetry/uv 做管理，pyproject.toml 做配置，lock 文件做锁定。理解这条工具链的每个环节，你的项目基建就稳了
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

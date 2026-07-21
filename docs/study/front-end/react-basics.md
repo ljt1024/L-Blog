@@ -188,7 +188,7 @@ React中的条件渲染与JavaScript中的条件语句类似：
 ```jsx
 function Greeting(props) {
   const isLoggedIn = props.isLoggedIn;
-  
+
   if (isLoggedIn) {
     return <UserGreeting />;
   }

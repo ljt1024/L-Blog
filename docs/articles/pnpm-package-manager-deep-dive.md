@@ -12,7 +12,7 @@ pnpm（ performant npm）自 2017 年发布以来，已成为前端生态中增�
 | 再次安装速度 | 慢 | 中 | 极快 |
 | 磁盘空间占用 | 大 | 很大 | 极小 |
 | node_modules 结构 | 扁平嵌套 | 扁平嵌套 | 虚拟存储 |
-| 幽灵依赖 | ❌ 有 | ❌ 有 | ✅ 严格管控 |
+| 幽灵依赖 | 错误 有 | 错误 有 | 正确 严格管控 |
 | lockfile | package-lock.json | yarn.lock | pnpm-lock.yaml |
 | 幽灵依赖 | 允许访问未声明依赖 | 允许访问未声明依赖 | 禁止访问未声明依赖 |
 
@@ -95,7 +95,7 @@ pnpm 不用普通符号链接，而用**目录符号链接**（directory symlink
 // npm/yarn 下这段代码能跑（幽灵依赖）
 import Vue from 'vue'  // 来自 element-ui 的 node_modules
 
-// pnpm 下：❌ 报错，找不到 vue
+// pnpm 下：错误 报错，找不到 vue
 // 必须显式声明在根 package.json 的 dependencies 里
 ```
 
@@ -329,4 +329,4 @@ pnpm import
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

@@ -18,10 +18,10 @@ import "fmt"
 func main() {
     // 声明一个整型变量
     var x int = 42
-    
+
     // 获取变量的内存地址
     var p *int = &x
-    
+
     // 输出变量的值和地址
     fmt.Printf("变量x的值: %d\n", x)
     fmt.Printf("变量x的地址: %p\n", &x)
@@ -82,10 +82,10 @@ func incrementPointer(x *int) {
 
 func main() {
     num := 10
-    
+
     incrementValue(num)
     fmt.Println("值传递后num的值:", num)  // 输出: 10
-    
+
     incrementPointer(&num)
     fmt.Println("指针传递后num的值:", num)  // 输出: 11
 }
@@ -125,7 +125,7 @@ Go语言在指针使用上做了很多安全限制：
 func main() {
     var p *int  // nil指针
     // fmt.Println(*p)  // 运行时错误：invalid memory address
-    
+
     // 正确的做法是先检查指针是否为nil
     if p != nil {
         fmt.Println(*p)
@@ -573,10 +573,10 @@ import (
 func main() {
     result := utils.Add(3, 5)
     fmt.Println("3 + 5 =", result)
-    
+
     product := utils.Multiply(4, 6)
     fmt.Println("4 * 6 =", product)
-    
+
     reversed := utils.Reverse("hello")
     fmt.Println("reverse('hello') =", reversed)
 }
@@ -732,7 +732,7 @@ func PrintShapeInfo(s Shape) {
 func main() {
     rect := Rectangle{Width: 10, Height: 5}
     circle := Circle{Radius: 3}
-    
+
     PrintShapeInfo(rect)
     PrintShapeInfo(circle)
 }
@@ -757,10 +757,10 @@ func Describe(i interface{}) {
 func main() {
     var i interface{} = 42
     Describe(i)  // 类型: int, 值: 42
-    
+
     i = "hello"
     Describe(i)  // 类型: string, 值: hello
-    
+
     i = struct{ Name string }{Name: "张三"}
     Describe(i)  // 类型: struct { Name string }, 值: {张三}
 }
@@ -972,13 +972,13 @@ import (
 
 func main() {
     var x int = 42
-    
+
     // 获取类型信息
     t := reflect.TypeOf(x)
     fmt.Printf("类型: %v\n", t)           // 类型: int
     fmt.Printf("类型名称: %s\n", t.Name()) // 类型名称: int
     fmt.Printf("类型种类: %s\n", t.Kind()) // 类型种类: int
-    
+
     // 获取值信息
     v := reflect.ValueOf(x)
     fmt.Printf("值: %v\n", v)              // 值: 42
@@ -997,10 +997,10 @@ type MyInt int
 func main() {
     var x int = 42
     var y MyInt = 100
-    
+
     tx := reflect.TypeOf(x)
     ty := reflect.TypeOf(y)
-    
+
     fmt.Printf("x的类型: %v, 种类: %v\n", tx, tx.Kind()) // x的类型: int, 种类: int
     fmt.Printf("y的类型: %v, 种类: %v\n", ty, ty.Kind()) // y的类型: main.MyInt, 种类: int
 }
@@ -1042,7 +1042,7 @@ func main() {
     InspectValue(reflect.ValueOf("Hello"))
     InspectValue(reflect.ValueOf(true))
     InspectValue(reflect.ValueOf([]int{1, 2, 3}))
-    
+
     type Person struct {
         Name string
         Age  int
@@ -1063,7 +1063,7 @@ func ModifyValue(v reflect.Value) {
         fmt.Println("值不可设置")
         return
     }
-    
+
     switch v.Kind() {
     case reflect.Int:
         v.SetInt(100)
@@ -1075,11 +1075,11 @@ func ModifyValue(v reflect.Value) {
 func main() {
     x := 42
     fmt.Printf("修改前: %d\n", x)
-    
+
     // 传递指针的反射值
     v := reflect.ValueOf(&x)
     ModifyValue(v.Elem())  // Elem()获取指针指向的值
-    
+
     fmt.Printf("修改后: %d\n", x)  // 修改后: 100
 }
 ```
@@ -1099,25 +1099,25 @@ type User struct {
 func InspectStruct(s interface{}) {
     v := reflect.ValueOf(s)
     t := reflect.TypeOf(s)
-    
+
     // 如果是指针，获取指向的元素
     if v.Kind() == reflect.Ptr {
         v = v.Elem()
         t = t.Elem()
     }
-    
+
     fmt.Printf("结构体类型: %s\n", t.Name())
-    
+
     // 遍历所有字段
     for i := 0; i < v.NumField(); i++ {
         field := v.Field(i)
         fieldType := t.Field(i)
-        
+
         // 只处理可访问的字段
         if field.CanInterface() {
-            fmt.Printf("字段名: %s, 类型: %s, 值: %v\n", 
+            fmt.Printf("字段名: %s, 类型: %s, 值: %v\n",
                 fieldType.Name, fieldType.Type, field.Interface())
-            
+
             // 获取标签
             if tag := fieldType.Tag.Get("json"); tag != "" {
                 fmt.Printf("  JSON标签: %s\n", tag)
@@ -1154,13 +1154,13 @@ func Greet(name string) string {
 
 func CallFunction(fn interface{}, args ...interface{}) []reflect.Value {
     fnValue := reflect.ValueOf(fn)
-    
+
     // 准备参数
     argValues := make([]reflect.Value, len(args))
     for i, arg := range args {
         argValues[i] = reflect.ValueOf(arg)
     }
-    
+
     // 调用函数
     return fnValue.Call(argValues)
 }
@@ -1169,7 +1169,7 @@ func main() {
     // 调用Add函数
     result := CallFunction(Add, 3, 5)
     fmt.Printf("Add(3, 5) = %d\n", result[0].Int())
-    
+
     // 调用Greet函数
     result = CallFunction(Greet, "World")
     fmt.Printf("Greet('World') = %s\n", result[0].String())
@@ -1226,7 +1226,7 @@ func GetElemType(t reflect.Type) reflect.Type {
     if elemType, ok := typeCache[t]; ok {
         return elemType
     }
-    
+
     elemType := t.Elem()
     typeCache[t] = elemType
     return elemType
@@ -1262,7 +1262,7 @@ func main() {
     // 启动Goroutine
     go sayHello("Go")
     go sayHello("World")
-    
+
     // 主Goroutine等待
     time.Sleep(time.Second)
     fmt.Println("Main函数结束")
@@ -1307,18 +1307,18 @@ func worker(id int, jobs <-chan int, results chan<- int) {
 func main() {
     jobs := make(chan int, 5)
     results := make(chan int, 5)
-    
+
     // 启动3个worker
     for i := 1; i <= 3; i++ {
         go worker(i, jobs, results)
     }
-    
+
     // 发送任务
     for j := 1; j <= 5; j++ {
         jobs <- j
     }
     close(jobs)
-    
+
     // 收集结果
     for i := 1; i <= 5; i++ {
         result := <-results
@@ -1332,17 +1332,17 @@ func main() {
 func main() {
     ch1 := make(chan string)
     ch2 := make(chan string)
-    
+
     go func() {
         time.Sleep(time.Second)
         ch1 <- "来自channel 1的消息"
     }()
-    
+
     go func() {
         time.Sleep(time.Second * 2)
         ch2 <- "来自channel 2的消息"
     }()
-    
+
     for i := 0; i < 2; i++ {
         select {
         case msg1 := <-ch1:
@@ -1407,7 +1407,7 @@ func (d *Data) Write(key string, value int) {
 ```go
 func main() {
     var wg sync.WaitGroup
-    
+
     for i := 1; i <= 3; i++ {
         wg.Add(1)
         go func(id int) {
@@ -1416,7 +1416,7 @@ func main() {
             time.Sleep(time.Second)
         }(i)
     }
-    
+
     wg.Wait()
     fmt.Println("所有Goroutine执行完毕")
 }
@@ -1449,12 +1449,12 @@ func main() {
     // 创建带超时的context
     ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
     defer cancel()
-    
+
     // 启动worker
     for i := 1; i <= 3; i++ {
         go worker(ctx, i)
     }
-    
+
     // 等待context完成
     <-ctx.Done()
     fmt.Println("主函数结束")
@@ -1483,13 +1483,13 @@ func consumer(ch <-chan int, id int) {
 
 func main() {
     ch := make(chan int, 5)
-    
+
     go producer(ch, 10)
-    
+
     for i := 1; i <= 3; i++ {
         go consumer(ch, i)
     }
-    
+
     time.Sleep(time.Second * 10)
 }
 ```
@@ -1522,7 +1522,7 @@ func merge(cs ...<-chan int) <-chan int {
     out := make(chan int)
     var wg sync.WaitGroup
     wg.Add(len(cs))
-    
+
     for _, c := range cs {
         go func(ch <-chan int) {
             defer wg.Done()
@@ -1531,25 +1531,25 @@ func merge(cs ...<-chan int) <-chan int {
             }
         }(c)
     }
-    
+
     go func() {
         wg.Wait()
         close(out)
     }()
-    
+
     return out
 }
 
 func main() {
     in := generator(1, 2, 3, 4, 5)
-    
+
     // Fan-out
     c1 := square(in)
     c2 := square(in)
-    
+
     // Fan-in
     out := merge(c1, c2)
-    
+
     for result := range out {
         fmt.Println(result)
     }
@@ -1722,17 +1722,17 @@ func main() {
     // 使用indexOf函数
     ints := []int{1, 2, 3, 4, 5}
     fmt.Println(indexOf(ints, 3)) // 输出: 2
-    
+
     strings := []string{"a", "b", "c", "d"}
     fmt.Println(indexOf(strings, "c")) // 输出: 2
-    
+
     // 使用swap函数
     a, b := swap(1, 2)
     fmt.Println(a, b) // 输出: 2 1
-    
+
     x, y := swap("hello", "world")
     fmt.Println(x, y) // 输出: world hello
-    
+
     // 使用transform函数
     numbers := []int{1, 2, 3, 4, 5}
     squared := transform(numbers, func(n int) int {
@@ -1765,7 +1765,7 @@ func (s *Stack[T]) Pop() (T, bool) {
     if len(s.elements) == 0 {
         return zero, false
     }
-    
+
     index := len(s.elements) - 1
     element := s.elements[index]
     s.elements = s.elements[:index]
@@ -1876,15 +1876,15 @@ Go编译器可以自动推断泛型函数的类型参数：
 func main() {
     // 显式指定类型参数
     result1 := indexOf[int]([]int{1, 2, 3}, 2)
-    
+
     // 类型推断（推荐）
     result2 := indexOf([]int{1, 2, 3}, 2)
-    
+
     // 复杂情况下的类型推断
     stack := NewStack[string]()
     stack.Push("hello")
     stack.Push("world")
-    
+
     if value, ok := stack.Pop(); ok {
         fmt.Println(value) // 输出: world
     }
@@ -1923,7 +1923,7 @@ func average[T Numeric](numbers []T) float64 {
     if len(numbers) == 0 {
         return 0
     }
-    
+
     var sum T
     for _, n := range numbers {
         sum += n

@@ -7,7 +7,7 @@ date: 2026-05-22
 
 > 如果你只知道 useState 和 useEffect，是时候升级你的 React 工具箱了。React 19 引入了 use()、useOptimistic()、useFormStatus() 等一系列新钩子，它们不是简单的语法糖，而是彻底改变了异步数据处理、表单交互和用户体验的方式。本文用实际场景演示每个新钩子的用法，让你今天就能用上。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 一句话说明白新钩子
 
@@ -25,7 +25,7 @@ use() Cache → 把 Promise 结果Cache住，避免重复请求
 ### 以前怎么写？
 
 ```tsx
-// ❌ 以前：useEffect + 状态
+// 错误 以前：useEffect + 状态
 function UserProfile({ userId }: { userId: string }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,7 +49,7 @@ function UserProfile({ userId }: { userId: string }) {
 ### 现在怎么写？
 
 ```tsx
-// ✅ 现在：use() 直接读
+// 正确 现在：use() 直接读
 import { use } from 'react';
 
 function UserProfile({ userId }: { userId: string }) {
@@ -112,12 +112,12 @@ function ThemedButton() {
 
 | 场景 | useEffect | use() |
 |------|-----------|------|
-| 副作用 | ✅ | ❌ 只读数据 |
-| 初始加载 | ✅ | ✅ 更简单 |
-| 条件渲染后才请求 | ✅ | ✅ |
+| 副作用 | 正确 | 错误 只读数据 |
+| 初始加载 | 正确 | 正确 更简单 |
+| 条件渲染后才请求 | 正确 | 正确 |
 | 并行多个请求 | 需手动 Promise.all | 自动 |
-| Suspense 集成 | 需手动 | ✅ 原生 |
-| 错误处理 | 需手动 | ✅ ErrorBoundary |
+| Suspense 集成 | 需手动 | 正确 原生 |
+| 错误处理 | 需手动 | 正确 ErrorBoundary |
 
 ---
 
@@ -126,7 +126,7 @@ function ThemedButton() {
 ### 业务场景：发评论
 
 ```tsx
-// ❌ 以前：局部状态 + 手动回滚
+// 错误 以前：局部状态 + 手动回滚
 function CommentSection() {
   const [comments, setComments] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -140,7 +140,7 @@ function CommentSection() {
       await api.postComment(text);
       // 成功：不处理，用真实数据覆盖
       const newComment = await api.getLatestComment();
-      setComments(prev => prev.map(c => 
+      setComments(prev => prev.map(c =>
         c.id === 'temp' ? newComment : c
       ));
     } catch {
@@ -156,7 +156,7 @@ function CommentSection() {
 ### 现在：useOptimistic()
 
 ```tsx
-// ✅ 现在：一行搞定
+// 正确 现在：一行搞定
 import { useOptimistic } from 'react';
 
 function CommentSection() {
@@ -223,7 +223,7 @@ function LikeButton({ postId, initialLikes, hasLiked }: LikeButtonProps) {
 
   return (
     <button onClick={toggleLike}>
-      ❤️ {optimisticLikes}
+       {optimisticLikes}
       {hasLiked ? ' 已赞' : ' 点赞'}
     </button>
   );
@@ -237,7 +237,7 @@ function LikeButton({ postId, initialLikes, hasLiked }: LikeButtonProps) {
 ### 以前？
 
 ```tsx
-// ❌ 以前：自己写状态
+// 错误 以前：自己写状态
 function SubmitButton() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -260,7 +260,7 @@ function SubmitButton() {
 ### 现在？
 
 ```tsx
-// ✅ 现在：从上下文拿状态
+// 正确 现在：从上下文拿状态
 import { useFormStatus } from 'react';
 
 function SubmitButton() {
@@ -313,7 +313,7 @@ function LoginPage() {
 ### 以前？
 
 ```tsx
-// ❌ 以前：两层嵌套
+// 错误 以前：两层嵌套
 const Input = forwardRef(function Input(props, ref) {
   return <input ref={ref} {...props} />;
 });
@@ -326,7 +326,7 @@ const inputRef = useRef(null);
 ### 现在？
 
 ```tsx
-// ✅ 现在：直接传
+// 正确 现在：直接传
 function Input({ value, ref, ...props }) {
   return <input ref={ref} value={value} {...props} />;
 }
@@ -369,7 +369,7 @@ function UserName({ userId }) {
 ### 解决：React.cache()
 
 ```tsx
-// ✅ 用 cache 包装，只需要请求一次
+// 正确 用 cache 包装，只需要请求一次
 import { cache } from 'react';
 
 const getUser = cache(async (userId: string) => {
@@ -432,7 +432,7 @@ function CommentItem({ comment }: { comment: Comment }) {
   return (
     <li>
       <p>{comment.text}</p>
-      <button onClick={handleLike}>❤️ {optimisticLikes}</button>
+      <button onClick={handleLike}> {optimisticLikes}</button>
     </li>
   );
 }
@@ -533,6 +533,6 @@ React 19 的新钩子不是简单的 API 增量，而是一套**异步数据处�
 4. **cache()** 解决了 React 一直头疼的重复请求问题
 5. **ref as prop** 让函数组件不再需要 forwardRef
 
-这些钩子单独看是小改进，组合在一起就是 React 编写方式的大进化。建议从 use() 开始，先在简单场景试试水 🎯
+这些钩子单独看是小改进，组合在一起就是 React 编写方式的大进化。建议从 use() 开始，先在简单场景试试水
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

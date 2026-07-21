@@ -7,7 +7,7 @@ date: 2026-05-12
 
 > React 19 是 React 历史上最大的版本更新之一，引入了 Actions、use hook、Server Components 增强、Asset Loading 等一系列重磅特性。本文带你完整掌握 React 19 的所有新特性，从核心概念到实战应用，一文搞定。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## React 19 核心新特性概览
 
@@ -306,12 +306,12 @@ npm install @types/react@19 @types/react-dom@19
 #### 1. use hook 只能在组件或 Hook 中使用
 
 ```tsx
-// ❌ 错误
+// 错误 错误
 function fetchData() {
   const data = use(promise); // 不能在普通函数中使用
 }
 
-// ✅ 正确
+// 正确 正确
 function MyComponent() {
   const data = use(promise); // 只能在组件或 Hook 中使用
 }
@@ -320,12 +320,12 @@ function MyComponent() {
 #### 2. Server Actions 需要 'use server'
 
 ```tsx
-// ❌ 忘记标记
+// 错误 忘记标记
 async function createPost(formData) {
   // ...
 }
 
-// ✅ 正确
+// 正确 正确
 'use server';
 async function createPost(formData) {
   // ...
@@ -337,13 +337,13 @@ async function createPost(formData) {
 ### 1. 优先使用 Actions 处理表单
 
 ```tsx
-// ✅ 推荐：使用 Actions
+// 正确 推荐：使用 Actions
 function Form() {
   const [state, action] = useActionState(submitForm, {});
   return <form action={action}>...</form>;
 }
 
-// ❌ 不推荐：传统方式
+// 错误 不推荐：传统方式
 function Form() {
   const [data, setData] = useState();
   const handleSubmit = async (e) => {
@@ -357,13 +357,13 @@ function Form() {
 ### 2. 使用 use hook 简化异步处理
 
 ```tsx
-// ✅ 推荐：use + Suspense
+// 正确 推荐：use + Suspense
 function User({ userId }) {
   const user = use(fetchUser(userId));
   return <div>{user.name}</div>;
 }
 
-// ❌ 不推荐：useEffect + useState
+// 错误 不推荐：useEffect + useState
 function User({ userId }) {
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -377,13 +377,13 @@ function User({ userId }) {
 ### 3. 利用 Server Components 减少客户端 JS
 
 ```tsx
-// ✅ 推荐：服务端获取数据
+// 正确 推荐：服务端获取数据
 async function Posts() {
   const posts = await db.post.findMany(); // 服务端执行
   return <ul>{posts.map(p => <li key={p.id}>{p.title}</li>)}</ul>;
 }
 
-// ❌ 不推荐：客户端获取数据
+// 错误 不推荐：客户端获取数据
 function Posts() {
   const [posts, setPosts] = useState([]);
   useEffect(() => {
@@ -405,4 +405,4 @@ React 19 带来了革命性的变化：
 
 这些特性让 React 开发更加高效、性能更好。
 
-> 小虾子 🦐：React 19 是未来，现在就开始学习吧！
+> 小虾子 ：React 19 是未来，现在就开始学习吧！

@@ -7,7 +7,7 @@ date: 2026-06-18
 
 > Python 入门容易，但精通不易。装饰器、生成器、元编程、并发编程、类型系统、性能优化——这些才是区分 Python 新手和老手的分水岭。本文面向有 Python 基础的读者，深入讲解进阶特性与工程实践，帮助你从"会用"到"用好"。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 装饰器：函数的超级英雄
 
@@ -496,9 +496,9 @@ Number = TypeVar("Number", bound=numbers.Real)  # 必须是 Real 的子类
 def average(nums: list[Number]) -> float:
     return sum(nums) / len(nums)
 
-average([1, 2, 3])      # ✅
-average([1.5, 2.5])     # ✅
-average(["a", "b"])     # ❌ 类型错误
+average([1, 2, 3])      # 正确
+average([1.5, 2.5])     # 正确
+average(["a", "b"])     # 错误 类型错误
 ```
 
 ### NewType 与类型别名
@@ -519,7 +519,7 @@ def get_order(order_id: OrderId) -> dict:
 uid = UserId(1)
 oid = OrderId(1)
 
-get_user(oid)  # ❌ 类型检查器报错：期望 UserId，实际是 OrderId
+get_user(oid)  # 错误 类型检查器报错：期望 UserId，实际是 OrderId
 get_user(UserId(oid))  # 需要显式转换
 
 # 类型别名
@@ -532,8 +532,8 @@ from typing import Literal
 Mode = Literal["r", "w", "a"]
 def open_file(path: str, mode: Mode):
     ...
-open_file("test.txt", "r")  # ✅
-open_file("test.txt", "x")   # ❌ 类型检查器报错
+open_file("test.txt", "r")  # 正确
+open_file("test.txt", "x")   # 错误 类型检查器报错
 ```
 
 ---
@@ -716,32 +716,32 @@ def compute():
 ### 常见性能陷阱与优化
 
 ```python
-# ❌ 陷阱 1：字符串拼接（字符串不可变，每次+都创建新字符串）
+# 错误 陷阱 1：字符串拼接（字符串不可变，每次+都创建新字符串）
 s = ""
 for i in range(10000):
     s += str(i)  # 创建 10000 个字符串对象！
 
-# ✅ 优化：用 list + join
+# 正确 优化：用 list + join
 parts = []
 for i in range(10000):
     parts.append(str(i))
 s = "".join(parts)  # 一次拼接
 
-# ❌ 陷阱 2：列表 contains 检查
+# 错误 陷阱 2：列表 contains 检查
 if item in large_list:  # O(n) 线性查找
     ...
 
-# ✅ 优化：用 set
+# 正确 优化：用 set
 large_set = set(large_list)  # O(1) 查找
 if item in large_set:
     ...
 
-# ❌ 陷阱 3：重复计算
+# 错误 陷阱 3：重复计算
 for i in range(n):
     for j in range(n):
         compute()  # n^2 次计算
 
-# ✅ 优化：缓存重复计算（lru_cache）
+# 正确 优化：缓存重复计算（lru_cache）
 from functools import lru_cache
 
 @lru_cache(maxsize=None)
@@ -750,10 +750,10 @@ def fibonacci(n: int) -> int:
         return n
     return fibonacci(n - 1) + fibonacci(n - 2)  # 缓存后 O(n) 而非 O(2^n)
 
-# ❌ 陷阱 4：创建不必要的中间列表
+# 错误 陷阱 4：创建不必要的中间列表
 squares = [x**2 for x in range(10**6)]  # 一次性创建 10**6 个元素
 
-# ✅ 优化：生成器（惰性）
+# 正确 优化：生成器（惰性）
 squares = (x**2 for x in range(10**6))  # 惰性，不占内存
 ```
 
@@ -880,34 +880,34 @@ emitter.emit("click", {"x": 100, "y": 200})
 Python 进阶技能地图：
 ─────────────────────────────────
 装饰器：
-  ✅ 参数化装饰器、类装饰器、functools.wraps
-  ✅ 常用内置装饰器：@property, @classmethod, @staticmethod
+  正确 参数化装饰器、类装饰器、functools.wraps
+  正确 常用内置装饰器：@property, @classmethod, @staticmethod
 
 生成器与迭代器：
-  ✅ yield、生成器表达式、itertools 组合使用
-  ✅ 大文件惰性处理管道
+  正确 yield、生成器表达式、itertools 组合使用
+  正确 大文件惰性处理管道
 
 上下文管理器：
-  ✅ __enter__/__exit__、@contextmanager
-  ✅ ExitStack、资源组合管理
+  正确 __enter__/__exit__、@contextmanager
+  正确 ExitStack、资源组合管理
 
 元编程：
-  ✅ __getattr__、动态类创建、装饰器元编程
-  ✅ 元类（ModelMeta、ORM 自动注册）
+  正确 __getattr__、动态类创建、装饰器元编程
+  正确 元类（ModelMeta、ORM 自动注册）
 
 类型系统：
-  ✅ Protocol（结构化子类型）、泛型、NewType
-  ✅ TypeGuard、Literal、类型守卫
+  正确 Protocol（结构化子类型）、泛型、NewType
+  正确 TypeGuard、Literal、类型守卫
 
 并发编程：
-  ✅ asyncio + await、协程、队列
-  ✅ threading（I/O）、multiprocessing（CPU）
-  ✅ concurrent.futures
+  正确 asyncio + await、协程、队列
+  正确 threading（I/O）、multiprocessing（CPU）
+  正确 concurrent.futures
 
 性能优化：
-  ✅ cProfile 性能分析、lru_cache 缓存
-  ✅ 避免字符串拼接陷阱、生成器替代列表
-  ✅ Cython、PyPy
+  正确 cProfile 性能分析、lru_cache 缓存
+  正确 避免字符串拼接陷阱、生成器替代列表
+  正确 Cython、PyPy
 ```
 
 ```
@@ -923,6 +923,6 @@ Python 进阶技能地图：
 □ 性能意识：I/O 密集用 asyncio，CPU 密集用 multiprocessing
 ```
 
-Python 的深度在于"用好标准库、用对场景"——装饰器解决横切关注点、生成器解决内存效率、元编程解决框架构建、并发解决性能问题。掌握这些，你就从"会用 Python"进化到了"精通 Python" 🦐
+Python 的深度在于"用好标准库、用对场景"——装饰器解决横切关注点、生成器解决内存效率、元编程解决框架构建、并发解决性能问题。掌握这些，你就从"会用 Python"进化到了"精通 Python"
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

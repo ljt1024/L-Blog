@@ -7,7 +7,7 @@ date: 2026-05-14
 
 > 你有没有做过这种效果：页面滚动时，某个元素跟着滚动位置改变透明度、位移、或者颜色？以前这需要 JavaScript 监听 scroll 事件，频繁触发重排，性能还很差。Scroll-driven Animations API 的出现，让这类效果可以用 CSS 声明式完成——性能好、代码少、还不需要 JavaScript。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 问题的本质：为什么 scroll + JS 很烂？
 
@@ -18,7 +18,7 @@ date: 2026-05-14
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
   const progress = scrollY / (document.body.scrollHeight - window.innerHeight);
-  
+
   // 每个 scroll 事件触发，可能每秒 60-144 次！
   element.style.opacity = progress;
   element.style.transform = `translateY(${scrollY * 0.5}px)`;
@@ -114,7 +114,7 @@ animation-timeline: block;            /* 块方向 */
 .progress-bar {
   width: 0;
   background: linear-gradient(90deg, #667eea, #764ba2);
-  
+
   /* 绑定到滚动时间轴 */
   animation-timeline: scroll();
   animation-name: grow;
@@ -135,7 +135,7 @@ animation-timeline: block;            /* 块方向 */
 .fade-in {
   opacity: 0;
   transform: translateY(20px);
-  
+
   animation-timeline: view();
   animation-name: fade-in;
   animation-fill: both;
@@ -197,7 +197,7 @@ animation-timeline: block;            /* 块方向 */
   background: linear-gradient(90deg, #667eea, #764ba2);
   width: 0;
   transform-origin: left;
-  
+
   animation-timeline: scroll();
   animation-name: read-progress;
   animation-fill: both;
@@ -216,7 +216,7 @@ animation-timeline: block;            /* 块方向 */
   position: sticky;
   top: 0;
   opacity: 0;
-  
+
   animation-timeline: view();
   animation-range: exit-crossing 0%;
   animation-name: show-header;
@@ -257,7 +257,7 @@ animation-timeline: block;            /* 块方向 */
   width: 100%;
   height: 100%;
   z-index: -1;
-  
+
   animation-timeline: scroll();
   animation-name: bg-scroll;
 }
@@ -306,7 +306,7 @@ animation-timeline: block;            /* 块方向 */
   min-height: 100vh;
   opacity: 0;
   transform: scale(0.95);
-  
+
   animation-timeline: view();
   animation-range: entry 25%;
   animation-name: section-enter;
@@ -347,7 +347,7 @@ document.querySelectorAll('.section').forEach(section => {
 .section {
   opacity: 0;
   transform: scale(0.95);
-  
+
   animation-timeline: view();
   animation-range: entry 25%;
   animation-name: fade-in;
@@ -365,9 +365,9 @@ document.querySelectorAll('.section').forEach(section => {
 
 | 方案 | 主线程 | 执行时机 | 流畅度 |
 |------|--------|----------|--------|
-| scroll 事件 + JS | ❌ 阻塞 | 实时 | ❌ 差 |
-| Intersection Observer | ❌ 阻塞 | 阈值触发 | ⚠️ 一般 |
-| Scroll-driven Animations | ✅ GPU | compositor | ✅ 好 |
+| scroll 事件 + JS | 错误 阻塞 | 实时 | 错误 差 |
+| Intersection Observer | 错误 阻塞 | 阈值触发 | 注意 一般 |
+| Scroll-driven Animations | 正确 GPU | compositor | 正确 好 |
 
 ## 与动画库的对比
 
@@ -389,7 +389,7 @@ gsap.to('.progress', {
 ```css
 .progress {
   width: 0;
-  
+
   animation-timeline: scroll();
   animation-name: grow;
   animation-fill: both;
@@ -406,15 +406,15 @@ gsap.to('.progress', {
 | 体积 | ~60KB | 0KB（浏览器原生） |
 | 依赖 | 需要引入库 | 无 |
 | 性能 | 好 | 非常好（GPU） |
-| 精细控制 | ★★★★★ | ★★★★ |
-| 跨浏览器 | ★★★★★ | ★★★☆ |
+| 精细控制 |  |  |
+| 跨浏览器 |  |  |
 
 ## 浏览器支持
 
 ```
-Chrome 115+    ✅  (2023年7月)
-Safari 17.5+   ✅  (2024年5月)
-Firefox 🔲    实验性（需要 flag）
+Chrome 115+    正确  (2023年7月)
+Safari 17.5+   正确  (2024年5月)
+Firefox     实验性（需要 flag）
 
 Polyfill: chrome.com/s Scroll-driven Animations polyfill
 ```
@@ -475,12 +475,12 @@ animation-range: 25% 75%;  /* 滚动的中间 50% */
 ```css
 .specific {
   animation-timeline: view();
-  
+
   /* 元素进入视口前 25% 开始，中心结束 */
   animation-range: entry 25%;
-  
+
   /* 或者组合 */
-  animation-range: 
+  animation-range:
     entry 0% entry 25%,
     contain 25% contain 75%,
     exit 75% exit 100%;
@@ -498,7 +498,7 @@ animation-range: 25% 75%;  /* 滚动的中间 50% */
   height: 4px;
   background: #667eea;
   width: 0;
-  
+
   animation-timeline: scroll();
   animation-name: show-progress;
   animation-fill: both;
@@ -529,17 +529,17 @@ animation-range: 25% 75%;  /* 滚动的中间 50% */
 .complex-animation {
   /* 默认绑定滚动 */
   animation-timeline: scroll();
-  
+
   /* 用 view() 做另一个动画 */
   animation-composition: add;
 }
 
 .complex-animation {
   /* 需要两个动画 */
-  animation: 
+  animation:
     scroll-animation 1s linear both,
     view-animation 1s ease-in-out both;
-  
+
   animation-timeline: scroll(), view();
 }
 
@@ -562,7 +562,7 @@ animation-range: 25% 75%;  /* 滚动的中间 50% */
 .hero-title {
   opacity: 0;
   transform: translateY(30px);
-  
+
   animation-timeline: view();
   animation-range: entry 50%;
   animation-name: hero-enter;
@@ -582,7 +582,7 @@ animation-range: 25% 75%;  /* 滚动的中间 50% */
 img.lazy {
   opacity: 0;
   filter: blur(10px);
-  
+
   animation-timeline: view();
   animation-range: entry 50%;
   animation-name: load-image;
@@ -601,7 +601,7 @@ img.lazy {
 ```css
 nav {
   backdrop-filter: blur(0);
-  
+
   animation-timeline: scroll();
   animation-name: nav-blur;
 }
@@ -631,7 +631,7 @@ Scroll-driven Animations 是一个**性能优先**的解决方案：
   left: 0;
   height: 4px;
   background: linear-gradient(90deg, #667eea, #764ba2);
-  
+
   animation-timeline: scroll();
   animation-name: grow;
   animation-fill: both;
@@ -645,4 +645,4 @@ Scroll-driven Animations 是一个**性能优先**的解决方案：
 
 这不到 20 行 CSS，替代了以前几十行 JavaScript。性能还更好。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

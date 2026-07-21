@@ -95,7 +95,7 @@ app.directive('tooltip', {
     const tooltip = document.createElement('div')
     tooltip.className = 'custom-tooltip'
     tooltip.innerText = binding.value
-    
+
     // 设置样式
     tooltip.style.position = 'absolute'
     tooltip.style.backgroundColor = '#333'
@@ -105,29 +105,29 @@ app.directive('tooltip', {
     tooltip.style.fontSize = '12px'
     tooltip.style.zIndex = '1000'
     tooltip.style.display = 'none'
-    
+
     // 添加到 DOM
     document.body.appendChild(tooltip)
-    
+
     // 鼠标移入显示 tooltip
     el.addEventListener('mouseenter', () => {
       tooltip.style.display = 'block'
-      
+
       // 获取元素位置
       const rect = el.getBoundingClientRect()
       tooltip.style.left = rect.left + 'px'
       tooltip.style.top = (rect.top - 30) + 'px'
     })
-    
+
     // 鼠标移出隐藏 tooltip
     el.addEventListener('mouseleave', () => {
       tooltip.style.display = 'none'
     })
-    
+
     // 保存引用以便清理
     el._tooltip = tooltip
   },
-  
+
   unmounted(el) {
     // 清理工作
     if (el._tooltip) {
@@ -156,7 +156,7 @@ app.directive('debounce', {
       console.warn('[debounce:] 提供的参数必须是一个函数')
       return
     }
-    
+
     let timer = null
     el.addEventListener('click', () => {
       if (timer) clearTimeout(timer)
@@ -204,7 +204,7 @@ app.directive('example', {
     // expression: 字符串形式的指令表达式
     // arg: 传给指令的参数
     // modifiers: 包含修饰符的对象
-    
+
     console.log(binding.name) // example
     console.log(binding.value) // 传递给指令的值
     console.log(binding.expression) // 字符串形式的指令表达式

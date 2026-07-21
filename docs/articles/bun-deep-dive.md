@@ -7,7 +7,7 @@ date: 2026-05-26
 
 > Node.js 统治 JavaScript 运行时十余年后，一个名为 Bun 的挑战者横空出世。它用 Zig 编写，号称比 Node.js 快 4 倍，一站式解决打包、安装和测试问题。2024 年底 Bun 正式发布 1.0，至今已有稳定的生产级表现。本文从实战出发，看看 Bun 到底能给前端开发者带来什么。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## Bun 是什么？
 
@@ -44,14 +44,14 @@ bun --version
 
 ```typescript
 // hello.ts（Bun 原生支持 TypeScript，不需要任何配置！）
-const message: string = "Hello from Bun! 🦐";
+const message: string = "Hello from Bun! ";
 console.log(message);
 console.log(`Bun version: ${Bun.version}`);
 console.log(`Platform: ${Bun.platform.arch} / ${Bun.platform.os}`);
 
 // 运行
 bun run hello.ts
-# Hello from Bun! 🦐
+# Hello from Bun!
 # Bun version: 1.x.x
 # Platform: darwin/arm64
 ```
@@ -80,13 +80,13 @@ Bun 启动更快、HTTP 吞吐更高，尤其在处理大量小文件时优势�
 ### API 兼容性
 
 ```typescript
-// ✅ Node.js 兼容模式（Bun 内置了 Node.js 兼容层）
+// 正确 Node.js 兼容模式（Bun 内置了 Node.js 兼容层）
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
 // Bun 都能跑！大量 npm 包开箱即用
 
-// ✅ Bun 独有 API（Node.js 没有）
+// 正确 Bun 独有 API（Node.js 没有）
 const file = Bun.file("./data.json");
 const text = await file.text();
 const json = await file.json();
@@ -216,7 +216,7 @@ bun build ./src/app.ts --outfile ./dist/app.js --bundle
 # 让 bun install 输出的依赖自动可 import
 ```
 
-> ⚠️ **注意**：Bun 的 Bundler 还在快速迭代中，生产项目建议继续用 **Vite**（基于 Rolldown）。Bun 的打包更适用于：
+> 注意 **注意**：Bun 的 Bundler 还在快速迭代中，生产项目建议继续用 **Vite**（基于 Rolldown）。Bun 的打包更适用于：
 > - CLI 工具打包
 > - Electron 主进程
 > - 简单脚本打包
@@ -256,12 +256,12 @@ const server = Bun.serve({
   },
 });
 
-console.log(`🚀 Server running at http://localhost:${server.port}`);
+console.log(` Server running at http://localhost:${server.port}`);
 ```
 
 ```bash
 bun run server.ts
-# 🚀 Server running at http://localhost:3000
+#  Server running at http://localhost:3000
 ```
 
 ### Bun.file —— 高效文件操作
@@ -353,7 +353,7 @@ const app = new Hono();
 app.use("*", cors());
 
 app.get("/api/hello", (c) =>
-  c.json({ message: "Hello from Bun + Hono! 🦐" })
+  c.json({ message: "Hello from Bun + Hono! " })
 );
 
 app.get("/api/articles", (c) => {
@@ -433,10 +433,10 @@ console.log(articles);
 ### 常见报错
 
 ```typescript
-// ❌ 报错：Node.js 模块未实现
+// 错误 报错：Node.js 模块未实现
 import { someNodeAPI } from "some-node-only-module";
 
-// ✅ 解决：用 Node.js 兼容模式
+// 正确 解决：用 Node.js 兼容模式
 // Bun 默认尝试兼容，但某些模块需要 polyfill
 // 编辑 bunfig.toml：
 [install]
@@ -475,13 +475,13 @@ Bun 很优秀，但并非完美，了解局限性才能合理选型：
 | 场景 | 建议 |
 |------|------|
 | 生产 Node.js 服务 | 继续用 **Node.js**（生态更稳） |
-| Electron 主进程 | ✅ 用 **Bun**（启动快） |
-| CLI 工具开发 | ✅ 用 **Bun**（打包快） |
-| Bun.serve 生产 HTTP | ⚠️ 生态不够成熟，生产用 **Node.js + Fastify** 或 **Deno Deploy** |
-| 包管理器/安装速度 | ✅ **Bun install** 完胜 |
-| 测试速度 | ✅ **Bun test** 完胜（比 Vitest 快） |
-| npm 包兼容性 | ✅ 大多数兼容，极少数需要 polyfill |
-| Windows 支持 | ⚠️ WSL2 内表现最好，原生 Windows 有坑 |
+| Electron 主进程 | 正确 用 **Bun**（启动快） |
+| CLI 工具开发 | 正确 用 **Bun**（打包快） |
+| Bun.serve 生产 HTTP | 注意 生态不够成熟，生产用 **Node.js + Fastify** 或 **Deno Deploy** |
+| 包管理器/安装速度 | 正确 **Bun install** 完胜 |
+| 测试速度 | 正确 **Bun test** 完胜（比 Vitest 快） |
+| npm 包兼容性 | 正确 大多数兼容，极少数需要 polyfill |
+| Windows 支持 | 注意 WSL2 内表现最好，原生 Windows 有坑 |
 
 ---
 
@@ -490,20 +490,20 @@ Bun 很优秀，但并非完美，了解局限性才能合理选型：
 ```
 前端工具链 2026 年的"Bun 策略"：
 
-✅ 用 Bun 安装依赖（bun install）—— 每次快 10-50 倍
-✅ 用 Bun 运行测试（bun test）—— 零配置，毫秒级启动
-✅ 用 Bun 运行脚本（bun run）—— TypeScript 开箱即用
-✅ 用 Bun 写 CLI 工具 —— 打包小而快
-✅ 用 Bun 写 Electron 主进程 —— 启动快到飞起
-✅ 用 Bun 快速原型 —— Bun.serve + Hono 分分钟跑起来
+正确 用 Bun 安装依赖（bun install）—— 每次快 10-50 倍
+正确 用 Bun 运行测试（bun test）—— 零配置，毫秒级启动
+正确 用 Bun 运行脚本（bun run）—— TypeScript 开箱即用
+正确 用 Bun 写 CLI 工具 —— 打包小而快
+正确 用 Bun 写 Electron 主进程 —— 启动快到飞起
+正确 用 Bun 快速原型 —— Bun.serve + Hono 分分钟跑起来
 
-❌ 生产 HTTP 服务 —— 继续用 Node.js + Fastify
-❌ 重度依赖 Node.js 生态 —— Node.js 生态更稳
-❌ Windows 开发环境 —— WSL2 是更安全的选择
+错误 生产 HTTP 服务 —— 继续用 Node.js + Fastify
+错误 重度依赖 Node.js 生态 —— Node.js 生态更稳
+错误 Windows 开发环境 —— WSL2 是更安全的选择
 ```
 
 **最终建议**：把 `bun install` 和 `bun test` 作为**日常开发工具**（替代 npm/yarn + jest），享受速度红利；生产服务继续用久经考验的 Node.js 生态。Bun 是加速器，不是替代品。
 
-快去 `bun install` 试试吧 🚀
+快去 `bun install` 试试吧
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

@@ -7,7 +7,7 @@ date: 2026-04-24
 
 > Media Queries 让页面响应视口宽度，Container Queries 让组件响应**自身容器**的宽度。这一字之差，彻底改变了组件化开发的方式。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要 Container Queries？
 
@@ -391,10 +391,10 @@ Tailwind 4.x 原生支持 Container Queries（通过 `@tailwindcss/container-que
 
 | 浏览器 | 支持版本 | 备注 |
 |--------|---------|------|
-| Chrome | 105+ | ✅ 完整支持 |
-| Firefox | 110+ | ✅ 完整支持 |
-| Safari | 16+ | ✅ 完整支持 |
-| Edge | 105+ | ✅ 完整支持 |
+| Chrome | 105+ | 正确 完整支持 |
+| Firefox | 110+ | 正确 完整支持 |
+| Safari | 16+ | 正确 完整支持 |
+| Edge | 105+ | 正确 完整支持 |
 
 **全球覆盖率已超过 90%**，可以放心使用。
 
@@ -460,16 +460,16 @@ Container Queries 不是替代 Media Queries，而是**互补**：
 
 ### 何时用 Container Queries？
 
-- ✅ 组件库 / 设计系统中的通用组件
-- ✅ 同一组件需要在不同宽度的容器中复用
-- ✅ 卡片、列表项、导航、表格等布局组件
-- ✅ 需要根据可用空间动态调整信息密度
+- 正确 组件库 / 设计系统中的通用组件
+- 正确 同一组件需要在不同宽度的容器中复用
+- 正确 卡片、列表项、导航、表格等布局组件
+- 正确 需要根据可用空间动态调整信息密度
 
 ### 何时继续用 Media Queries？
 
-- ✅ 页面级骨架布局（侧边栏 / 主内容区的切换）
-- ✅ 全局字体大小、间距系统
-- ✅ 打印样式
-- ✅ 需要感知设备特性（`prefers-color-scheme`、`prefers-reduced-motion`）
+- 正确 页面级骨架布局（侧边栏 / 主内容区的切换）
+- 正确 全局字体大小、间距系统
+- 正确 打印样式
+- 正确 需要感知设备特性（`prefers-color-scheme`、`prefers-reduced-motion`）
 
 > **一句话总结：** Media Queries 管页面，Container Queries 管组件。两者各司其职，才是现代响应式设计的正确姿势。

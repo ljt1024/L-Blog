@@ -2,12 +2,12 @@
 
 > 当 JavaScript 遇上多线程，性能瓶颈从此被打破。
 
-## 🤔 为什么需要 Web Workers？
+##  为什么需要 Web Workers？
 
 JavaScript 是单线程语言，所有代码都在主线程执行。这意味着：
 
 ```javascript
-// 😱 这段代码会冻结 UI
+//  这段代码会冻结 UI
 function heavyComputation(n) {
   let result = 0
   for (let i = 0; i < n; i++) {
@@ -33,7 +33,7 @@ document.getElementById('btn').onclick = () => {
 
 **Web Workers 的解决方案**：将耗时任务放到独立线程执行，主线程保持响应。
 
-## 🧠 核心原理：浏览器如何实现多线程
+##  核心原理：浏览器如何实现多线程
 
 ### 线程模型
 
@@ -60,17 +60,17 @@ Worker 线程与主线程**完全隔离**：
 
 | 能力 | 主线程 | Worker 线程 |
 |------|--------|-------------|
-| DOM 操作 | ✅ | ❌ |
-| 访问 window | ✅ | ❌（有 self） |
-| 访问 document | ✅ | ❌ |
-| XMLHttpRequest | ✅ | ✅ |
-| fetch | ✅ | ✅ |
-| WebSocket | ✅ | ✅ |
-| IndexedDB | ✅ | ✅ |
-| setTimeout/setInterval | ✅ | ✅ |
-| importScripts | ❌ | ✅ |
+| DOM 操作 | 正确 | 错误 |
+| 访问 window | 正确 | 错误（有 self） |
+| 访问 document | 正确 | 错误 |
+| XMLHttpRequest | 正确 | 正确 |
+| fetch | 正确 | 正确 |
+| WebSocket | 正确 | 正确 |
+| IndexedDB | 正确 | 正确 |
+| setTimeout/setInterval | 正确 | 正确 |
+| importScripts | 错误 | 正确 |
 
-## 🚀 基础用法：创建你的第一个 Worker
+##  基础用法：创建你的第一个 Worker
 
 ### 1. 创建 Worker 文件
 
@@ -79,7 +79,7 @@ Worker 线程与主线程**完全隔离**：
 self.onmessage = function(e) {
   const { data } = e
   const result = heavyComputation(data.n)
-  
+
   // 发送结果回主线程
   self.postMessage({ result })
 }
@@ -138,7 +138,7 @@ worker.onmessage = (e) => console.log(e.data) // 84
 URL.revokeObjectURL(workerUrl)
 ```
 
-## 📊 实战案例：大数据处理
+##  实战案例：大数据处理
 
 ### 案例 1：CSV 文件解析
 
@@ -153,11 +153,11 @@ self.onmessage = function(e) {
 function parseCSV(text) {
   const lines = text.split('\n')
   const headers = lines[0].split(',')
-  
+
   const data = []
   for (let i = 1; i < lines.length; i++) {
     if (!lines[i].trim()) continue
-    
+
     const values = lines[i].split(',')
     const row = {}
     headers.forEach((header, index) => {
@@ -165,7 +165,7 @@ function parseCSV(text) {
     })
     data.push(row)
   }
-  
+
   return { headers, data, rowCount: data.length }
 }
 ```
@@ -174,14 +174,14 @@ function parseCSV(text) {
 // 主线程
 async function handleFileUpload(file) {
   const text = await file.text()
-  
+
   // 显示加载状态
   showLoading('正在解析 CSV...')
-  
+
   const worker = new Worker('./csvWorker.js')
-  
+
   worker.postMessage({ csvText: text })
-  
+
   worker.onmessage = (e) => {
     const { headers, data, rowCount } = e.data
     hideLoading()
@@ -198,7 +198,7 @@ async function handleFileUpload(file) {
 // imageWorker.js
 self.onmessage = function(e) {
   const { imageData, operation } = e.data
-  
+
   let result
   switch (operation) {
     case 'grayscale':
@@ -211,27 +211,27 @@ self.onmessage = function(e) {
       result = sharpen(imageData)
       break
   }
-  
+
   self.postMessage(result)
 }
 
 function toGrayscale(imageData) {
   const data = imageData.data
-  
+
   for (let i = 0; i < data.length; i += 4) {
     const r = data[i]
     const g = data[i + 1]
     const b = data[i + 2]
-    
+
     // 加权灰度公式
     const gray = 0.299 * r + 0.587 * g + 0.114 * b
-    
+
     data[i] = gray     // R
     data[i + 1] = gray // G
     data[i + 2] = gray // B
     // data[i + 3] 保持 Alpha 不变
   }
-  
+
   return imageData
 }
 
@@ -240,24 +240,24 @@ function applyBlur(imageData) {
   const { data, width, height } = imageData
   const output = new Uint8ClampedArray(data.length)
   const radius = 2
-  
+
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       let r = 0, g = 0, b = 0, count = 0
-      
+
       for (let dy = -radius; dy <= radius; dy++) {
         for (let dx = -radius; dx <= radius; dx++) {
           const nx = Math.min(Math.max(x + dx, 0), width - 1)
           const ny = Math.min(Math.max(y + dy, 0), height - 1)
           const idx = (ny * width + nx) * 4
-          
+
           r += data[idx]
           g += data[idx + 1]
           b += data[idx + 2]
           count++
         }
       }
-      
+
       const outIdx = (y * width + x) * 4
       output[outIdx] = r / count
       output[outIdx + 1] = g / count
@@ -265,7 +265,7 @@ function applyBlur(imageData) {
       output[outIdx + 3] = data[outIdx + 3]
     }
   }
-  
+
   return new ImageData(output, width, height)
 }
 ```
@@ -288,7 +288,7 @@ worker.onmessage = (e) => {
 }
 ```
 
-## 🔄 高级模式：SharedArrayBuffer 与 Atomics
+##  高级模式：SharedArrayBuffer 与 Atomics
 
 ### 为什么需要 SharedArrayBuffer？
 
@@ -321,13 +321,13 @@ worker.onmessage = () => {
 self.onmessage = function(e) {
   const { sharedBuffer } = e.data
   const sharedArray = new Int32Array(sharedBuffer)
-  
+
   // 使用 Atomics 保证线程安全
   for (let i = 0; i < sharedArray.length; i++) {
     const oldValue = Atomics.load(sharedArray, i)
     Atomics.store(sharedArray, i, oldValue * 2)
   }
-  
+
   self.postMessage('done')
 }
 ```
@@ -357,7 +357,7 @@ Atomics.wait(arr, 0, 0, 1000) // 如果 arr[0] === 0，则阻塞
 Atomics.notify(arr, 0, 1) // 唤醒一个等待者
 ```
 
-## 🎯 进阶用法：Worker 池
+##  进阶用法：Worker 池
 
 对于大量独立任务，创建/销毁 Worker 开销大。使用 Worker 池复用线程：
 
@@ -369,20 +369,20 @@ class WorkerPool {
     this.workers = []
     this.taskQueue = []
     this.activeTasks = new Map()
-    
+
     // 初始化 Worker 池
     for (let i = 0; i < poolSize; i++) {
       this.createWorker()
     }
   }
-  
+
   createWorker() {
     const worker = new Worker(this.workerScript)
     const workerInfo = {
       worker,
       busy: false
     }
-    
+
     worker.onmessage = (e) => {
       const task = this.activeTasks.get(worker)
       if (task) {
@@ -392,7 +392,7 @@ class WorkerPool {
         this.processQueue()
       }
     }
-    
+
     worker.onerror = (e) => {
       const task = this.activeTasks.get(worker)
       if (task) {
@@ -402,29 +402,29 @@ class WorkerPool {
         this.processQueue()
       }
     }
-    
+
     this.workers.push(workerInfo)
   }
-  
+
   execute(data) {
     return new Promise((resolve, reject) => {
       this.taskQueue.push({ data, resolve, reject })
       this.processQueue()
     })
   }
-  
+
   processQueue() {
     if (this.taskQueue.length === 0) return
-    
+
     const availableWorker = this.workers.find(w => !w.busy)
     if (!availableWorker) return
-    
+
     const task = this.taskQueue.shift()
     availableWorker.busy = true
     this.activeTasks.set(availableWorker.worker, task)
     availableWorker.worker.postMessage(task.data)
   }
-  
+
   terminate() {
     this.workers.forEach(({ worker }) => worker.terminate())
     this.workers = []
@@ -450,7 +450,7 @@ const results = await Promise.all(tasks)
 pool.terminate()
 ```
 
-## 📱 实战案例：实时数据可视化
+##  实战案例：实时数据可视化
 
 ```javascript
 // simulationWorker.js - 物理模拟
@@ -459,7 +459,7 @@ let isRunning = false
 
 self.onmessage = function(e) {
   const { type, data } = e
-  
+
   switch (type) {
     case 'init':
       particles = initParticles(data.count, data.width, data.height)
@@ -494,28 +494,28 @@ function initParticles(count, width, height) {
 
 function simulate() {
   if (!isRunning) return
-  
+
   const dt = 0.016 // 60fps
-  
+
   // 更新粒子位置
   for (const p of particles) {
     p.x += p.vx * dt
     p.y += p.vy * dt
-    
+
     // 边界碰撞
     if (p.x < 0 || p.x > 800) p.vx *= -1
     if (p.y < 0 || p.y > 600) p.vy *= -1
   }
-  
+
   // 发送渲染数据（使用 Transferable 优化性能）
   const positions = new Float32Array(particles.length * 2)
   for (let i = 0; i < particles.length; i++) {
     positions[i * 2] = particles[i].x
     positions[i * 2 + 1] = particles[i].y
   }
-  
+
   self.postMessage({ positions }, [positions.buffer])
-  
+
   // 继续模拟
   setTimeout(simulate, 16)
 }
@@ -525,7 +525,7 @@ function applyForce(force) {
     const dx = force.x - p.x
     const dy = force.y - p.y
     const dist = Math.sqrt(dx * dx + dy * dy)
-    
+
     if (dist < 200) {
       p.vx += (dx / dist) * force.strength / p.mass
       p.vy += (dy / dist) * force.strength / p.mass
@@ -534,7 +534,7 @@ function applyForce(force) {
 }
 ```
 
-## 🔧 调试与性能监控
+##  调试与性能监控
 
 ### 1. Chrome DevTools 查看 Workers
 
@@ -554,11 +554,11 @@ async function benchmark(taskName, task, iterations = 10) {
     await task()
   }
   const mainTime = performance.now() - mainStart
-  
+
   // Worker 测试
   const workerStart = performance.now()
   const worker = new Worker('./taskWorker.js')
-  
+
   const promises = []
   for (let i = 0; i < iterations; i++) {
     promises.push(new Promise(resolve => {
@@ -567,10 +567,10 @@ async function benchmark(taskName, task, iterations = 10) {
     }))
   }
   await Promise.all(promises)
-  
+
   const workerTime = performance.now() - workerStart
   worker.terminate()
-  
+
   console.log(`${taskName}:`)
   console.log(`  主线程: ${mainTime.toFixed(2)}ms`)
   console.log(`  Worker:  ${workerTime.toFixed(2)}ms`)
@@ -578,15 +578,15 @@ async function benchmark(taskName, task, iterations = 10) {
 }
 ```
 
-## ⚠️ 注意事项与最佳实践
+## 注意 注意事项与最佳实践
 
 ### 1. 数据传输优化
 
 ```javascript
-// ❌ 大对象复制开销大
+// 错误 大对象复制开销大
 worker.postMessage({ hugeArray: new Array(1000000).fill(0) })
 
-// ✅ 使用 Transferable 零拷贝传输
+// 正确 使用 Transferable 零拷贝传输
 const buffer = new Float32Array(1000000)
 worker.postMessage(buffer, [buffer.buffer]) // buffer 所有权转移，主线程无法再访问
 ```
@@ -603,7 +603,7 @@ worker.onerror = (e) => {
     lineno: e.lineno,
     colno: e.colno
   })
-  
+
   // 可选：重启 Worker
   worker.terminate()
   createNewWorker()
@@ -618,7 +618,7 @@ class MyComponent {
   constructor() {
     this.worker = new Worker('./worker.js')
   }
-  
+
   destroy() {
     this.worker.terminate() // 必须手动终止
     this.worker = null
@@ -628,7 +628,7 @@ class MyComponent {
 // React 示例
 useEffect(() => {
   const worker = new Worker('./worker.js')
-  
+
   return () => {
     worker.terminate() // 清理
   }
@@ -657,7 +657,7 @@ worker.postMessage({
 // Worker
 self.onmessage = (e) => {
   const { type, id, payload } = e.data
-  
+
   try {
     const result = process(payload)
     self.postMessage({
@@ -675,9 +675,9 @@ self.onmessage = (e) => {
 }
 ```
 
-## 🚀 何时使用 Web Workers？
+##  何时使用 Web Workers？
 
-### ✅ 适合场景
+### 正确 适合场景
 
 - 大数据计算（排序、过滤、聚合）
 - 图像/视频处理
@@ -686,7 +686,7 @@ self.onmessage = (e) => {
 - JSON 解析大数据
 - 实时模拟（物理引擎、粒子系统）
 
-### ❌ 不适合场景
+### 错误 不适合场景
 
 - 简单计算（创建 Worker 开销 > 收益）
 - 频繁 DOM 操作（Worker 无法访问 DOM）
@@ -700,7 +700,7 @@ self.onmessage = (e) => {
 任务耗时 > 200ms  → 使用 Web Worker
 ```
 
-## 📚 总结
+##  总结
 
 Web Workers 是前端性能优化的利器：
 
@@ -714,4 +714,4 @@ Web Workers 是前端性能优化的利器：
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

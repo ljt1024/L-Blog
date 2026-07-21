@@ -3,6 +3,8 @@ import { computed } from 'vue'
 import { useData } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import { useRouter } from 'vitepress'
+import { ArrowLeft } from 'lucide-vue-next'
+import PageMotion from '../components/PageMotion.vue'
 
 const { Layout } = DefaultTheme
 const { page, frontmatter } = useData()
@@ -43,12 +45,13 @@ const goBack = () => {
     <template #doc-before>
       <div v-if="showBackButton" class="back-button-container">
         <button type="button" @click="goBack" class="back-button">
-          <span class="back-button-kicker">目录</span>
+          <ArrowLeft :size="17" aria-hidden="true" />
           <span class="back-button-text">{{ backText }}</span>
         </button>
       </div>
     </template>
     <template #layout-bottom>
+      <PageMotion />
       <BackToTop />
     </template>
   </Layout>
@@ -62,30 +65,22 @@ const goBack = () => {
 .back-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.78rem;
-  padding: 0.76rem 1rem;
+  gap: 0.65rem;
+  min-height: 44px;
+  padding: 0 0.9rem;
   border: 1px solid var(--vp-c-border);
-  border-radius: 999px;
+  border-radius: 4px;
   background: var(--vp-c-bg-soft);
   color: var(--vp-c-text-1);
   cursor: pointer;
-  transition: transform 0.25s ease, background-color 0.25s ease, border-color 0.25s ease,
-    box-shadow 0.25s ease;
+  transition: transform 180ms var(--ease-out), background-color 180ms var(--ease-out),
+    border-color 180ms var(--ease-out);
 }
 
 .back-button:hover {
-  transform: translateY(-2px);
+  transform: translateX(-2px);
   border-color: var(--vp-c-brand-1);
   background: var(--vp-c-bg-elv);
-  box-shadow: var(--vp-shadow-2);
-}
-
-.back-button-kicker {
-  color: var(--vp-c-text-3);
-  font-family: var(--vp-font-family-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
 }
 
 .back-button-text {

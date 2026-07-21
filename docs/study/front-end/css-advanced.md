@@ -177,7 +177,7 @@ Flexbox是一维布局模型，适用于沿单行或单列排列元素：
     flex-basis: auto; /* 基础大小 */
     /* 简写: flex: grow shrink basis */
     flex: 0 1 auto;
-    
+
     order: 0; /* 排列顺序 */
     align-self: auto; /* 单独对齐: auto | flex-start | flex-end | center | baseline | stretch */
 }
@@ -257,7 +257,7 @@ Grid是二维布局模型，适用于创建复杂的网格结构：
 /* 实际应用示例 */
 .dashboard {
     display: grid;
-    grid-template-areas: 
+    grid-template-areas:
         "header header header"
         "sidebar main aside"
         "footer footer footer";
@@ -620,7 +620,7 @@ CSS 3D变换可以创建立体效果：
     .advertisement {
         display: none;
     }
-    
+
     .content {
         font-size: 12pt;
         color: black;
@@ -650,7 +650,7 @@ CSS 3D变换可以创建立体效果：
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
     }
-    
+
     .grid-item {
         width: auto;
         margin-bottom: 0;
@@ -697,7 +697,7 @@ CSS 3D变换可以创建立体效果：
         display: flex;
         gap: 1rem;
     }
-    
+
     .card-image {
         flex: 0 0 150px;
     }
@@ -759,20 +759,20 @@ $border-radius: 0.25rem;
 // 嵌套规则
 .navbar {
     background: $primary-color;
-    
+
     .nav-link {
         color: white;
         padding: 0.5rem 1rem;
-        
+
         &:hover {
             background: darken($primary-color, 10%);
         }
-        
+
         &.active {
             font-weight: bold;
         }
     }
-    
+
     @media (max-width: 768px) {
         flex-direction: column;
     }
@@ -785,15 +785,15 @@ $border-radius: 0.25rem;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: $border-radius;
-    
+
     &:hover {
         background: darken($primary-color, 10%);
     }
-    
+
     &:active {
         transform: translateY(1px);
     }
-    
+
     &:focus {
         outline: 2px solid lighten($primary-color, 20%);
         outline-offset: 2px;
@@ -835,13 +835,13 @@ $spacing: (
     color: color-yiq($background);
     background-color: $background;
     border-color: $border;
-    
+
     &:hover {
         color: color-yiq($hover-background);
         background-color: $hover-background;
         border-color: $hover-border;
     }
-    
+
     &:focus,
     &.focus {
         box-shadow: 0 0 0 0.2rem rgba($background, 0.25);
@@ -878,7 +878,7 @@ $spacing: (
 ```scss
 // 内置函数
 .text-shadow {
-    text-shadow: 
+    text-shadow:
         darken($primary-color, 10%) 2px 2px 4px,
         lighten($primary-color, 20%) 0 0 10px;
 }
@@ -1155,11 +1155,11 @@ const Button = styled.button`
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
     cursor: pointer;
-    
+
     &:hover {
         background: ${props => props.primary ? '#0056b3' : '#545b62'};
     }
-    
+
     @media (max-width: 768px) {
         width: 100%;
         margin-bottom: 0.5rem;
@@ -1170,7 +1170,7 @@ const Container = styled.div`
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
-    
+
     ${props => props.fluid && `
         max-width: 100%;
         padding: 0;

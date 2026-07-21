@@ -7,7 +7,7 @@ date: 2026-06-08
 
 > Svelte 一直是"编译时优化"的代言人——没有 Virtual DOM，编译成精确的 DOM 更新代码。Svelte 5 带来了 Runes（符文）响应式系统，吸收了 Solid.js 的细粒度响应式思想，但保持了 Svelte 的编译时优势。Vercel 收购 Svelte 之后，SvelteKit 成为 Next.js 的有力竞争者。本文深入 Svelte 5 的 Runes 系统、编译原理和实战。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## Svelte 5 带来了什么？
 
@@ -371,9 +371,9 @@ Angular：             142 KB
 | 语法 | Svelte 文件（HTML + JS + CSS） | JSX | JSX |
 | 响应式 | Runes（`$state`） | Signals（`createSignal`） | Hooks（`useState`） |
 | 状态修改 | 直接赋值（`count += 1`） | `setCount(c => c + 1)` | `setCount(c => c + 1)` |
-| 编译时优化 | ✅ 完全编译 | ⚠️ 部分编译 | ❌ 运行时 |
+| 编译时优化 | 正确 完全编译 | 注意 部分编译 | 错误 运行时 |
 | 运行时开销 | **~0 KB** | ~18 KB | ~42 KB |
-| TypeScript | ✅ 完美支持 | ✅ 完美支持 | ✅ 完美支持 |
+| TypeScript | 正确 完美支持 | 正确 完美支持 | 正确 完美支持 |
 | 学习曲线 | ⭐⭐（最简单） | ⭐⭐⭐ | ⭐⭐⭐⭐ |
 
 ---
@@ -492,7 +492,7 @@ npm install @sveltejs/kit@next
 ## Svelte 5 适用场景
 
 ```
-✅ 适合 Svelte 5 的项目：
+正确 适合 Svelte 5 的项目：
 ─────────────────────────────────
 - 高性能 SPA（编译时优化，包体积最小）
 - 嵌入式组件（几乎零运行时）
@@ -500,7 +500,7 @@ npm install @sveltejs/kit@next
 - 全栈项目（SvelteKit + Form Actions）
 - 小型团队（学习曲线最平缓）
 
-❌ 不适合 Svelte 5 的项目：
+错误 不适合 Svelte 5 的项目：
 ─────────────────────────────────
 - 需要庞大生态（组件库不如 React 丰富）
 - 大型团队协作（最佳实践仍在演进）
@@ -603,6 +603,6 @@ Solid.js：  细粒度响应式 + JSX（部分编译）
 Svelte 5：  细粒度响应式 + 编译时优化（完全编译）
 ```
 
-如果你追求极致的性能和小包体积，Svelte 5 是目前最好的选择之一 🚀
+如果你追求极致的性能和小包体积，Svelte 5 是目前最好的选择之一
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

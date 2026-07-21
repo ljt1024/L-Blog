@@ -7,7 +7,7 @@ date: 2026-05-28
 
 > ESLint v9 正式将 Flat Config（扁平化配置）设为默认，宣告了 `.eslintrc` 时代的终结。这对前端开发者意味着什么？如何迁移？新配置范式能带来什么好处？本文从原理到实战，带你彻底搞懂 ESLint v9 的核心变化。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么 ESLint v9 是一个大版本？
 
@@ -15,11 +15,11 @@ ESLint 从 2013 年诞生以来，配置系统几乎没变过——`.eslintrc.js
 
 ```
 旧配置的问题：
-❌ .eslintrc 文件散布在各个目录，合并规则让人困惑
-❌ 插件命名约定混乱（eslint-plugin-xxx → 插件名是 xxx）
-❌ 配置文件本身不在 ESLint 的检查范围内（可以写无效配置）
-❌ TypeScript 项目需要额外配置 @typescript-eslint/parser
-❌ 加载机制复杂：先向上查 .eslintrc，再合并，再 override
+错误 .eslintrc 文件散布在各个目录，合并规则让人困惑
+错误 插件命名约定混乱（eslint-plugin-xxx → 插件名是 xxx）
+错误 配置文件本身不在 ESLint 的检查范围内（可以写无效配置）
+错误 TypeScript 项目需要额外配置 @typescript-eslint/parser
+错误 加载机制复杂：先向上查 .eslintrc，再合并，再 override
 ```
 
 ESLint v9 的 Flat Config 用一个 `eslint.config.js` 文件取代了这一切。
@@ -31,7 +31,7 @@ ESLint v9 的 Flat Config 用一个 `eslint.config.js` 文件取代了这一切�
 ### 旧 vs 新
 
 ```javascript
-// ❌ 旧配置：.eslintrc.js
+// 错误 旧配置：.eslintrc.js
 module.exports = {
   env: {
     browser: true,
@@ -64,7 +64,7 @@ module.exports = {
   ],
 };
 
-// ✅ 新配置：eslint.config.js（Flat Config）
+// 正确 新配置：eslint.config.js（Flat Config）
 import js from "@eslint/js";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import reactPlugin from "eslint-plugin-react";
@@ -531,13 +531,13 @@ export default [
 旧配置隐式匹配所有文件，Flat Config **必须显式指定** `files`：
 
 ```javascript
-// ✅ 只对 .ts 文件生效
+// 正确 只对 .ts 文件生效
 {
   files: ["**/*.ts"],
   rules: { "@typescript-eslint/no-explicit-any": "warn" },
 }
 
-// ❌ 没有 files 配置 → 对所有文件生效（包括 .json, .md）
+// 错误 没有 files 配置 → 对所有文件生效（包括 .json, .md）
 // 旧 .eslintrc 就是这样，经常误报
 ```
 
@@ -656,6 +656,6 @@ overrides          →  files + rules 独立配置项
 4. ignores 用独立配置项
 ```
 
-如果你还在用 `.eslintrc`，是时候迁移了。Flat Config 不是"换了个写法"，而是从根本上让 ESLint 配置变得更清晰 🎯
+如果你还在用 `.eslintrc`，是时候迁移了。Flat Config 不是"换了个写法"，而是从根本上让 ESLint 配置变得更清晰
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

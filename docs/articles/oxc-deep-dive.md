@@ -7,7 +7,7 @@ date: 2026-06-04
 
 > 前端工具链正在经历一场 Rust 风暴。Rolldown、Biome、Turbopack 都在用 Rust 重写。而 Oxc（Oxc Project）是这场风暴的中心——它是 Vite 官方选定的 JS/TS 多合一工具链，用于替代 Babel/ESLint/Prettier/Terser。一个 Oxc 同时提供解析器、linter、formatter、minifier、转译器，且速度比 JS 快 10-100 倍。本文深入 Oxc 的架构、现状和未来。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 前端工具链的性能困境
 
@@ -343,9 +343,9 @@ Oxc Linter 已实现大部分 ESLint 规则：
 
 ```
 Oxc Linter 状态：
-✅ 核心规则：~100+ 规则已实现
-🔄 React 规则：部分实现
-🔄 Vue 规则：计划中
+正确 核心规则：~100+ 规则已实现
+ React 规则：部分实现
+ Vue 规则：计划中
 ⏳ 插件系统：开发中
 ```
 
@@ -443,7 +443,7 @@ export default defineConfig({
 ## Oxc 的局限性
 
 ```
-⚠️ 当前局限性：
+注意 当前局限性：
 ─────────────────────────────────
 1. 插件生态：Oxc Linter 还没有插件系统（计划中）
    → 目前不能自定义规则（只能配置内置规则）
@@ -451,14 +451,14 @@ export default defineConfig({
 3. JSX/TSX 支持：部分高级场景仍需 Babel
 4. 生态成熟度：刚起步，配套工具（如 eslint-plugin-oxc）还在开发
 
-✅ 何时用 Oxc：
+正确 何时用 Oxc：
 ─────────────────────────────────
 - 新项目（不需要兼容旧配置）
 - 性能敏感项目（CI/CD 加速）
 - Vite 6 项目（Rolldown 已默认集成）
 - 简单 Lint + Format（不需要自定义规则）
 
-❌ 何时不用 Oxc：
+错误 何时不用 Oxc：
 ─────────────────────────────────
 - 已有复杂 ESLint 配置（迁移成本高）
 - 需要大量自定义插件（等待插件系统）
@@ -506,18 +506,18 @@ Oxc 生态：
 ```
 Oxc 路线图：
 ─────────────────────────────────
-✅ 已完成：
+正确 已完成：
 - Parser / Transformer / Linter / Formatter / Minifier
 - Vite 集成（Rolldown）
 - Biome 集成
 
-🔄 开发中：
+ 开发中：
 - 插件系统（支持自定义 Linter 规则）
 - 更多 ESLint 规则
 - Vue SFC 支持
 - React Hooks 规则
 
-📅 计划中：
+ 计划中：
 - Rust crate 发布（供其他工具使用）
 - Language Server Protocol（LSP）支持
 - VS Code 插件（诊断 / 格式化）
@@ -562,6 +562,6 @@ Vue 支持不足
 - Vite 项目 → 升级 Vite 6，自动获得 Rolldown
 ```
 
-**前端工具链的 Rust 化是不可逆的趋势**——Oxc 正在成为这个趋势的核心力量 ⚡
+**前端工具链的 Rust 化是不可逆的趋势**——Oxc 正在成为这个趋势的核心力量
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

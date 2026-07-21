@@ -124,15 +124,15 @@ module.exports = {
 确保 Tree Shaking 生效的关键：
 
 ```javascript
-// ❌ 错误：引入整个库
+// 错误 错误：引入整个库
 import _ from 'lodash'
 const result = _.cloneDeep(obj)
 
-// ✅ 正确：按需引入
+// 正确 正确：按需引入
 import cloneDeep from 'lodash/cloneDeep'
 const result = cloneDeep(obj)
 
-// ✅ 更好：使用支持 ESM 的替代库
+// 正确 更好：使用支持 ESM 的替代库
 import { cloneDeep } from 'lodash-es'
 ```
 
@@ -323,11 +323,11 @@ export default defineConfig({
 ### 路由懒加载
 
 ```javascript
-// ❌ 全部打包到一个 chunk
+// 错误 全部打包到一个 chunk
 import Home from '@/views/Home.vue'
 import About from '@/views/About.vue'
 
-// ✅ 按路由分割
+// 正确 按路由分割
 const routes = [
   {
     path: '/',
@@ -367,4 +367,4 @@ const routes = [
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

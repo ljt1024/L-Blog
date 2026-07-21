@@ -67,10 +67,10 @@ build:
   steps:
     - name: Install Dependencies
       run: npm install
-      
+
     - name: Run Tests
       run: npm test
-      
+
     - name: Build Project
       run: npm run build
 
@@ -82,14 +82,14 @@ deploy:
     url: registry.example.com
     username: $REGISTRY_USERNAME
     password: $REGISTRY_PASSWORD
-  
+
   steps:
     - name: Build Docker Image
       run: docker build -t my-app:${VERSION} .
-      
+
     - name: Push to Registry
       run: docker push my-app:${VERSION}
-      
+
     - name: Deploy to Server
       run: |
         ssh user@server "docker pull my-app:${VERSION} && \

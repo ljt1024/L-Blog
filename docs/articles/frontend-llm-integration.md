@@ -32,7 +32,7 @@ async function callLLM(prompt) {
       temperature: 0.7
     })
   });
-  
+
   const data = await response.json();
   return data.choices[0].message.content;
 }
@@ -60,7 +60,7 @@ async function generateText(prompt) {
     messages: [{ role: 'user', content: prompt }],
     model: 'gpt-3.5-turbo',
   });
-  
+
   return completion.choices[0].message.content;
 }
 ```
@@ -108,14 +108,14 @@ async function streamResponse(prompt) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ prompt })
   });
-  
+
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
-  
+
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-    
+
     const chunk = decoder.decode(value);
     // 实时更新UI
     document.getElementById('response').innerHTML += chunk;
@@ -136,7 +136,7 @@ async function robustLLMCall(prompt, maxRetries = 3) {
     } catch (error) {
       console.warn(`Attempt ${i + 1} failed:`, error);
       if (i === maxRetries - 1) throw error;
-      
+
       // 指数退避
       await new Promise(resolve => setTimeout(resolve, 1000 * 2 ** i));
     }
@@ -153,14 +153,14 @@ class LLMMemoizer {
   constructor() {
     this.cache = new Map();
   }
-  
+
   async call(prompt, options = {}) {
     const cacheKey = JSON.stringify({ prompt, ...options });
-    
+
     if (this.cache.has(cacheKey) && !options.forceRefresh) {
       return this.cache.get(cacheKey);
     }
-    
+
     const result = await callLLMAPI(prompt, options);
     this.cache.set(cacheKey, result);
     return result;
@@ -176,10 +176,10 @@ class LLMMemoizer {
 永远不要在前端代码中硬编码API密钥，应该通过后端代理：
 
 ```javascript
-// ❌ 错误做法 - 暴露API密钥
+// 错误 错误做法 - 暴露API密钥
 const API_KEY = 'sk-xxxxxxxx';
 
-// ✅ 正确做法 - 通过后端代理
+// 正确 正确做法 - 通过后端代理
 async function callLLMThroughBackend(prompt) {
   const response = await fetch('/api/llm-proxy', {
     method: 'POST',
@@ -200,7 +200,7 @@ function validateUserInput(input) {
   if (input.length > 1000) {
     throw new Error('输入过长');
   }
-  
+
   // 过滤敏感内容
   const sensitivePatterns = [/password/i, /secret/i];
   for (const pattern of sensitivePatterns) {
@@ -208,7 +208,7 @@ function validateUserInput(input) {
       throw new Error('包含敏感内容');
     }
   }
-  
+
   return input;
 }
 ```
@@ -223,25 +223,25 @@ class CodeAssistant {
   constructor() {
     this.llm = new ChatOpenAI({ modelName: "gpt-3.5-turbo" });
   }
-  
+
   async explainCode(codeSnippet) {
     const prompt = `请解释以下JavaScript代码的作用：
-    
+
     ${codeSnippet}
-    
+
     请用简洁的语言说明：1. 代码的主要功能 2. 关键的技术点 3. 可能的改进建议`;
-    
+
     const response = await this.llm.invoke(prompt);
     return response.content;
   }
-  
+
   async generateCode(requirement) {
     const prompt = `请根据以下需求生成JavaScript代码：
-    
+
     ${requirement}
-    
+
     只返回代码，不需要解释。`;
-    
+
     const response = await this.llm.invoke(prompt);
     return response.content;
   }
@@ -260,18 +260,18 @@ assistant.explainCode('const doubled = arr.map(x => x * 2);').then(explanation =
 // 利用LLM自动填写表单
 async function autoFillForm(formData, userQuery) {
   const prompt = `根据用户提供的信息，填写以下表单：
-  
+
   表单字段：
   ${JSON.stringify(formData, null, 2)}
-  
+
   用户信息：
   ${userQuery}
-  
+
   请返回填写好的表单数据，只返回JSON格式，不需要额外说明。`;
-  
+
   const llm = new ChatOpenAI({ modelName: "gpt-3.5-turbo" });
   const response = await llm.invoke(prompt);
-  
+
   try {
     return JSON.parse(response.content);
   } catch (error) {
@@ -293,23 +293,23 @@ class BatchProcessor {
     this.queue = [];
     this.batchSize = batchSize;
   }
-  
+
   addRequest(prompt) {
     return new Promise((resolve, reject) => {
       this.queue.push({ prompt, resolve, reject });
-      
+
       if (this.queue.length >= this.batchSize) {
         this.processBatch();
       }
     });
   }
-  
+
   async processBatch() {
     if (this.queue.length === 0) return;
-    
+
     const batch = this.queue.splice(0, this.batchSize);
     const combinedPrompt = batch.map(item => item.prompt).join('\n\n');
-    
+
     try {
       const results = await callLLMBatch(combinedPrompt);
       batch.forEach((item, index) => {

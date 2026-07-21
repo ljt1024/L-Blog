@@ -90,18 +90,18 @@ class QABot {
       modelName: "gpt-3.5-turbo",
       temperature: 0.3,
     });
-    
+
     this.prompt = ChatPromptTemplate.fromMessages([
       ["system", "你是一个前端技术专家，专门回答关于Web开发的问题。请提供准确、简洁的回答。"],
       ["user", "{question}"],
     ]);
-    
+
     this.parser = new StringOutputParser();
-    
+
     // 构建处理链
     this.chain = this.prompt.pipe(this.model).pipe(this.parser);
   }
-  
+
   async answer(question) {
     try {
       const response = await this.chain.invoke({ question });
@@ -134,20 +134,20 @@ class ChatBotWithMemory {
       modelName: "gpt-3.5-turbo",
       temperature: 0.7,
     });
-    
+
     this.memory = new BufferMemory({
       memoryKey: "history",
       inputKey: "input",
       outputKey: "response",
     });
-    
+
     this.chain = new ConversationChain({
       llm: this.model,
       memory: this.memory,
       verbose: true,
     });
   }
-  
+
   async chat(message) {
     const response = await this.chain.call({ input: message });
     return response.response;
@@ -210,34 +210,34 @@ class DocumentQASystem {
     this.vectorStore = null;
     this.qaChain = null;
   }
-  
+
   async loadDocument(content) {
     // 分割文档
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 1000,
       chunkOverlap: 200,
     });
-    
+
     const docs = await splitter.createDocuments([content]);
-    
+
     // 创建向量存储
     this.vectorStore = await MemoryVectorStore.fromDocuments(
       docs,
       this.embeddings
     );
-    
+
     // 创建问答链
     this.qaChain = RetrievalQAChain.fromLLM(
       new ChatOpenAI({ modelName: "gpt-3.5-turbo" }),
       this.vectorStore.asRetriever()
     );
   }
-  
+
   async ask(question) {
     if (!this.qaChain) {
       throw new Error("请先加载文档");
     }
-    
+
     const response = await this.qaChain.invoke({ query: question });
     return response.text;
   }
@@ -280,7 +280,7 @@ class MonitoredChain {
       }
     });
   }
-  
+
   createChain() {
     return RunnableSequence.from([
       // 你的处理步骤
@@ -353,23 +353,23 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
-  
+
   try {
     const { message } = req.body;
-    
+
     const model = new ChatOpenAI({
       modelName: "gpt-3.5-turbo",
       temperature: 0.7,
     });
-    
+
     const prompt = ChatPromptTemplate.fromMessages([
       ["system", "你是一个友好的前端开发助手"],
       ["user", "{input}"],
     ]);
-    
+
     const chain = prompt.pipe(model);
     const response = await chain.invoke({ input: message });
-    
+
     res.status(200).json({ response: response.content });
   } catch (error) {
     console.error("API错误:", error);
@@ -386,26 +386,26 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
-    
+
     // 添加用户消息
     const userMessage = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setLoading(true);
-    
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input })
       });
-      
+
       const data = await response.json();
-      
+
       // 添加AI回复
       const aiMessage = { role: 'assistant', content: data.response };
       setMessages(prev => [...prev, aiMessage]);
@@ -417,7 +417,7 @@ export default function ChatInterface() {
       setLoading(false);
     }
   };
-  
+
   return (
     <div className="chat-container">
       <div className="messages">
@@ -427,7 +427,7 @@ export default function ChatInterface() {
           </div>
         ))}
       </div>
-      
+
       <form onSubmit={handleSubmit}>
         <input
           value={input}

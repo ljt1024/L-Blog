@@ -24,7 +24,7 @@ HTML5引入了许多新的语义化标签，这些标签不仅有助于开发者
             </ul>
         </nav>
     </header>
-    
+
     <main>
         <article>
             <header>
@@ -40,13 +40,13 @@ HTML5引入了许多新的语义化标签，这些标签不仅有助于开发者
                 <p>更多文章内容...</p>
             </section>
         </article>
-        
+
         <aside>
             <h3>侧边栏</h3>
             <p>相关链接或其他辅助信息</p>
         </aside>
     </main>
-    
+
     <footer>
         <p>&copy; 2023 版权信息</p>
     </footer>
@@ -110,31 +110,31 @@ HTML5为表单引入了许多新的输入类型和验证属性，大大简化了
     <!-- 邮箱输入 -->
     <label for="email">邮箱：</label>
     <input type="email" id="email" name="email" required>
-    
+
     <!-- 网址输入 -->
     <label for="website">个人网站：</label>
     <input type="url" id="website" name="website">
-    
+
     <!-- 数字输入 -->
     <label for="age">年龄：</label>
     <input type="number" id="age" name="age" min="1" max="120">
-    
+
     <!-- 日期选择 -->
     <label for="birthday">生日：</label>
     <input type="date" id="birthday" name="birthday">
-    
+
     <!-- 时间选择 -->
     <label for="meeting-time">会议时间：</label>
     <input type="datetime-local" id="meeting-time" name="meeting-time">
-    
+
     <!-- 颜色选择 -->
     <label for="color">喜欢的颜色：</label>
     <input type="color" id="color" name="color">
-    
+
     <!-- 搜索框 -->
     <label for="search">搜索：</label>
     <input type="search" id="search" name="search">
-    
+
     <!-- 范围选择 -->
     <label for="volume">音量：</label>
     <input type="range" id="volume" name="volume" min="0" max="100">
@@ -148,15 +148,15 @@ HTML5为表单引入了许多新的输入类型和验证属性，大大简化了
     <!-- 必填字段 -->
     <label for="username">用户名：</label>
     <input type="text" id="username" name="username" required>
-    
+
     <!-- 最小长度 -->
     <label for="password">密码：</label>
     <input type="password" id="password" name="password" minlength="8" required>
-    
+
     <!-- 模式匹配 -->
     <label for="phone">手机号：</label>
     <input type="tel" id="phone" name="phone" pattern="[0-9]{11}" placeholder="请输入11位手机号">
-    
+
     <!-- 数值范围 -->
     <label for="score">分数：</label>
     <input type="number" id="score" name="score" min="0" max="100" step="0.1">
@@ -170,46 +170,46 @@ HTML5为表单引入了许多新的输入类型和验证属性，大大简化了
     <label for="username">用户名：</label>
     <input type="text" id="username" name="username" required minlength="3">
     <span id="username-error" class="error"></span>
-    
+
     <label for="email">邮箱：</label>
     <input type="email" id="email" name="email" required>
     <span id="email-error" class="error"></span>
-    
+
     <button type="submit">注册</button>
 </form>
 
 <script>
 document.getElementById('registration-form').addEventListener('submit', function(e) {
     e.preventDefault();
-    
+
     const username = document.getElementById('username');
     const email = document.getElementById('email');
-    
+
     // 清除之前的错误信息
     document.querySelectorAll('.error').forEach(el => el.textContent = '');
-    
+
     // 检查用户名
     if (username.validity.valueMissing) {
         document.getElementById('username-error').textContent = '用户名不能为空';
         return;
     }
-    
+
     if (username.validity.tooShort) {
         document.getElementById('username-error').textContent = '用户名至少需要3个字符';
         return;
     }
-    
+
     // 检查邮箱
     if (email.validity.valueMissing) {
         document.getElementById('email-error').textContent = '邮箱不能为空';
         return;
     }
-    
+
     if (email.validity.typeMismatch) {
         document.getElementById('email-error').textContent = '请输入有效的邮箱地址';
         return;
     }
-    
+
     // 如果验证通过，提交表单
     alert('表单验证通过！');
 });
@@ -227,14 +227,14 @@ Web Components是一套不同的技术，允许您创建可重用的定制元素
 class MyButton extends HTMLElement {
     constructor() {
         super();
-        
+
         // 创建shadow root
         const shadow = this.attachShadow({mode: 'open'});
-        
+
         // 创建按钮元素
         const button = document.createElement('button');
         button.textContent = this.getAttribute('label') || '点击我';
-        
+
         // 添加样式
         const style = document.createElement('style');
         style.textContent = `
@@ -247,16 +247,16 @@ class MyButton extends HTMLElement {
                 cursor: pointer;
                 font-size: 16px;
             }
-            
+
             button:hover {
                 background-color: #0056b3;
             }
         `;
-        
+
         // 将元素附加到shadow root
         shadow.appendChild(style);
         shadow.appendChild(button);
-        
+
         // 添加事件监听器
         button.addEventListener('click', () => {
             this.dispatchEvent(new CustomEvent('myButtonClick', {
@@ -290,20 +290,20 @@ Shadow DOM允许将隐藏的DOM树附加到常规DOM树中：
 class CardComponent extends HTMLElement {
     constructor() {
         super();
-        
+
         // 创建shadow root
         const shadow = this.attachShadow({mode: 'open'});
-        
+
         // 创建卡片结构
         const card = document.createElement('div');
         card.className = 'card';
-        
+
         const title = document.createElement('h3');
         title.textContent = this.getAttribute('title') || '默认标题';
-        
+
         const content = document.createElement('p');
         content.textContent = this.getAttribute('content') || '默认内容';
-        
+
         // 添加样式
         const style = document.createElement('style');
         style.textContent = `
@@ -315,18 +315,18 @@ class CardComponent extends HTMLElement {
                 box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                 background-color: white;
             }
-            
+
             h3 {
                 margin-top: 0;
                 color: #333;
             }
-            
+
             p {
                 color: #666;
                 line-height: 1.5;
             }
         `;
-        
+
         // 组装组件
         card.appendChild(title);
         card.appendChild(content);
@@ -353,20 +353,20 @@ customElements.define('card-component', CardComponent);
             display: inline-block;
             width: 200px;
         }
-        
+
         .user-avatar {
             width: 64px;
             height: 64px;
             border-radius: 50%;
             object-fit: cover;
         }
-        
+
         .user-name {
             font-weight: bold;
             margin: 8px 0;
         }
     </style>
-    
+
     <div class="user-card">
         <img class="user-avatar" src="" alt="用户头像">
         <div class="user-name"></div>
@@ -381,13 +381,13 @@ function createUserCard(user) {
     // 克隆模板
     const template = document.getElementById('user-card-template');
     const clone = template.content.cloneNode(true);
-    
+
     // 填充数据
     clone.querySelector('.user-avatar').src = user.avatar;
     clone.querySelector('.user-avatar').alt = user.name;
     clone.querySelector('.user-name').textContent = user.name;
     clone.querySelector('.user-email').textContent = user.email;
-    
+
     return clone;
 }
 
@@ -554,19 +554,19 @@ ctx.fillText('Hello Canvas!', 150, 280);
 <svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
     <!-- 矩形 -->
     <rect x="10" y="10" width="100" height="100" fill="#FF0000" />
-    
+
     <!-- 带边框的矩形 -->
     <rect x="130" y="10" width="100" height="100" fill="none" stroke="#00FF00" stroke-width="5" />
-    
+
     <!-- 圆形 -->
     <circle cx="200" cy="200" r="50" fill="#0000FF" />
-    
+
     <!-- 线条 -->
     <line x1="10" y1="250" x2="390" y2="250" stroke="#FFFF00" stroke-width="3" />
-    
+
     <!-- 文本 -->
     <text x="150" y="280" font-family="Arial" font-size="20" fill="#000000">Hello SVG!</text>
-    
+
     <!-- 路径 -->
     <path d="M 50 50 Q 100 25 150 50 T 250 50" stroke="#FF00FF" fill="none" stroke-width="2" />
 </svg>
@@ -589,19 +589,19 @@ let dx = 2;
 function animate() {
     // 清除画布
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     // 绘制移动的矩形
     ctx.fillStyle = '#FF0000';
     ctx.fillRect(x, 100, 50, 50);
-    
+
     // 更新位置
     x += dx;
-    
+
     // 边界检测
     if (x + 50 > canvas.width || x < 0) {
         dx = -dx;
     }
-    
+
     // 继续动画
     requestAnimationFrame(animate);
 }
@@ -614,7 +614,7 @@ canvas.addEventListener('click', (e) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-    
+
     // 检查点击是否在矩形内
     if (mouseX > x && mouseX < x + 50 && mouseY > 100 && mouseY < 150) {
         ctx.fillStyle = '#00FF00'; // 改变颜色
@@ -714,19 +714,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const darkMode = localStorage.getItem('darkMode') === 'true';
     document.getElementById('darkModeToggle').checked = darkMode;
     document.body.classList.toggle('dark-mode', darkMode);
-    
+
     // 恢复主题颜色设置
     const themeColor = localStorage.getItem('themeColor') || 'blue';
     document.getElementById('themeColor').value = themeColor;
     document.body.className = `theme-${themeColor}`;
-    
+
     // 监听设置变化
     document.getElementById('darkModeToggle').addEventListener('change', (e) => {
         const isDarkMode = e.target.checked;
         localStorage.setItem('darkMode', isDarkMode);
         document.body.classList.toggle('dark-mode', isDarkMode);
     });
-    
+
     document.getElementById('themeColor').addEventListener('change', (e) => {
         const color = e.target.value;
         localStorage.setItem('themeColor', color);
@@ -749,14 +749,14 @@ document.addEventListener('DOMContentLoaded', () => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>优化示例</title>
-    
+
     <!-- 关键CSS内联 -->
     <style>
         body { font-family: Arial, sans-serif; }
         .header { background: #333; color: white; padding: 1rem; }
         .content { padding: 1rem; }
     </style>
-    
+
     <!-- 非关键CSS异步加载 -->
     <link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="styles.css"></noscript>
@@ -765,11 +765,11 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="header">
         <h1>网站标题</h1>
     </div>
-    
+
     <div class="content">
         <p>页面内容...</p>
     </div>
-    
+
     <!-- 非关键JavaScript异步加载 -->
     <script src="analytics.js" async></script>
     <script src="non-critical.js" defer></script>
@@ -783,18 +783,18 @@ document.addEventListener('DOMContentLoaded', () => {
 <head>
     <!-- DNS预解析 -->
     <link rel="dns-prefetch" href="//api.example.com">
-    
+
     <!-- 预连接 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    
+
     <!-- 预加载关键资源 -->
     <link rel="preload" href="hero-image.jpg" as="image">
     <link rel="preload" href="critical-font.woff2" as="font" type="font/woff2" crossorigin>
-    
+
     <!-- 预获取可能需要的资源 -->
     <link rel="prefetch" href="next-page.html">
     <link rel="prefetch" href="large-image.jpg">
-    
+
     <!-- 预渲染 -->
     <link rel="prerender" href="checkout.html">
 </head>
@@ -813,7 +813,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </picture>
 
 <!-- 使用srcset进行密度适配 -->
-<img src="image-1x.jpg" 
+<img src="image-1x.jpg"
      srcset="image-1x.jpg 1x, image-2x.jpg 2x, image-3x.jpg 3x"
      alt="描述性文字">
 

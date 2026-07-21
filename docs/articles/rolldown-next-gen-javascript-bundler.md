@@ -171,7 +171,7 @@ Rolldown 支持的 Rollup 钩子包括：
 ### 兼容性注意事项
 
 ```javascript
-// ⚠️ Rolldown 与 Rollup 的差异点
+// 注意 Rolldown 与 Rollup 的差异点
 
 // 1. 虚拟模块前缀不同
 // Rollup: '\0' 前缀
@@ -240,7 +240,7 @@ function myVitePlugin(options = {}) {
   return {
     name: 'vite-plugin-my-plugin',
 
-    // ✅ Rolldown 完全支持
+    // 正确 Rolldown 完全支持
     resolveId(source, importer, options) {
       if (source === 'my:virtual') {
         return source;
@@ -262,7 +262,7 @@ function myVitePlugin(options = {}) {
       }
     },
 
-    // ✅ Vite 专属钩子仍在 Vite 层面处理
+    // 正确 Vite 专属钩子仍在 Vite 层面处理
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         // 开发服务器专属逻辑
@@ -282,7 +282,7 @@ function myVitePlugin(options = {}) {
 | 冷启动构建 | 12.3s | 1.8s | **1.5s** |
 | 热更新（增量） | 890ms | 120ms | **95ms** |
 | 产物大小 | 100% | 108% | **100%** |
-| Tree Shaking | ✓ | 部分 | ✓ |
+| Tree Shaking | 是 | 部分 | 是 |
 
 > esbuild 的产物略大是因为它不执行 Scope Hoisting；Rolldown 完整实现了 ESM 语义。
 
@@ -291,10 +291,10 @@ function myVitePlugin(options = {}) {
 Rolldown 的发展路径清晰：
 
 ```
-Phase 1 ✅ 基础打包能力（与 Rollup API 兼容）
-Phase 2 🔄 深度 Vite 集成（SSR、HMR 增强）
-Phase 3 📋 完整生态兼容（Vite 插件全支持）
-Phase 4 🚀 稳定版 → 成为 Vite 默认打包器
+Phase 1 正确 基础打包能力（与 Rollup API 兼容）
+Phase 2  深度 Vite 集成（SSR、HMR 增强）
+Phase 3  完整生态兼容（Vite 插件全支持）
+Phase 4  稳定版 → 成为 Vite 默认打包器
 ```
 
 特别值得关注的功能：
@@ -316,4 +316,4 @@ Rolldown 代表了 JavaScript 工具链的一次重要范式转换——用 Rust
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

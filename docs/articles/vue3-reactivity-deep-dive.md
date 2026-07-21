@@ -27,10 +27,10 @@ function defineReactive(obj, key, val) {
 ```
 
 **核心缺陷**：
-- ❌ 无法检测**新增/删除属性**（需要 `Vue.set` / `Vue.delete`）
-- ❌ 无法检测**数组索引赋值**（`arr[0] = 1` 不触发更新）
-- ❌ 需要递归遍历所有属性，**初始化性能差**
-- ❌ 无法监听 `Map`、`Set` 等数据结构
+- 错误 无法检测**新增/删除属性**（需要 `Vue.set` / `Vue.delete`）
+- 错误 无法检测**数组索引赋值**（`arr[0] = 1` 不触发更新）
+- 错误 需要递归遍历所有属性，**初始化性能差**
+- 错误 无法监听 `Map`、`Set` 等数据结构
 
 ---
 
@@ -72,10 +72,10 @@ function reactive(target) {
 ```
 
 **Proxy 的优势**：
-- ✅ 代理整个对象，新增/删除属性自动响应
-- ✅ 数组操作（push、splice、索引赋值）全部支持
-- ✅ 懒递归，只有访问到嵌套对象时才代理，性能更好
-- ✅ 支持 `Map`、`Set`、`WeakMap`、`WeakSet`
+- 正确 代理整个对象，新增/删除属性自动响应
+- 正确 数组操作（push、splice、索引赋值）全部支持
+- 正确 懒递归，只有访问到嵌套对象时才代理，性能更好
+- 正确 支持 `Map`、`Set`、`WeakMap`、`WeakSet`
 
 ---
 
@@ -325,9 +325,9 @@ function watch(source, cb, options = {}) {
 **Q：为什么解构 reactive 对象会失去响应式？**
 ```javascript
 const state = reactive({ count: 0 })
-const { count } = state // ❌ count 是普通数字，失去响应式
+const { count } = state // 错误 count 是普通数字，失去响应式
 
-// ✅ 使用 toRefs 保持响应式
+// 正确 使用 toRefs 保持响应式
 const { count } = toRefs(state)
 ```
 
@@ -357,4 +357,4 @@ Vue 3 响应式系统的核心链路：
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

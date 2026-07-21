@@ -69,7 +69,7 @@
 var rotate = function(nums, k) {
     // 处理k大于数组长度的情况
     k %= nums.length;
-    
+
     // 辅助函数：翻转数组指定范围内的元素
     const reverse = (start, end) => {
         while (start < end) {
@@ -78,13 +78,13 @@ var rotate = function(nums, k) {
             end--;
         }
     };
-    
+
     // 第一次翻转：整体翻转
     reverse(0, nums.length - 1);
-    
+
     // 第二次翻转：翻转前k个元素
     reverse(0, k - 1);
-    
+
     // 第三次翻转：翻转剩余元素
     reverse(k, nums.length - 1);
 };
@@ -100,7 +100,7 @@ public class Solution {
         reverse(nums, 0, k - 1);
         reverse(nums, k, nums.length - 1);
     }
-    
+
     private void reverse(int[] nums, int start, int end) {
         while (start < end) {
             int temp = nums[start];
@@ -124,13 +124,13 @@ def rotate(nums, k):
     """
     n = len(nums)
     k %= n
-    
+
     def reverse(start, end):
         while start < end:
             nums[start], nums[end] = nums[end], nums[start]
             start += 1
             end -= 1
-    
+
     # 三次翻转
     reverse(0, n - 1)
     reverse(0, k - 1)

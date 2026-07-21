@@ -269,11 +269,11 @@ class Clock implements ClockInterface {
 ```typescript
 class Greeter {
   greeting: string;
-  
+
   constructor(message: string) {
     this.greeting = message;
   }
-  
+
   greet() {
     return "Hello, " + this.greeting;
   }
@@ -350,7 +350,7 @@ animal = rhino;
 class Octopus {
   readonly name: string;
   readonly numberOfLegs: number = 8;
-  
+
   constructor (theName: string) {
     this.name = theName;
   }
@@ -365,11 +365,11 @@ let dad = new Octopus("Man with the 8 strong legs");
 ```typescript
 class Employee {
   private _fullName: string = "";
-  
+
   get fullName(): string {
     return this._fullName;
   }
-  
+
   set fullName(newName: string) {
     if (newName && newName.length > 0) {
       this._fullName = newName;
@@ -460,11 +460,11 @@ type LoggablePerson = Person & Serializable;
 
 class Employee implements LoggablePerson {
   name: string;
-  
+
   constructor(name: string) {
     this.name = name;
   }
-  
+
   serialize(): string {
     return JSON.stringify(this);
   }
@@ -602,7 +602,7 @@ function format(formatString: string) {
 class Greeter {
   @format("Hello, %s")
   greeting: string;
-  
+
   constructor(message: string) {
     this.greeting = message;
   }
@@ -635,16 +635,16 @@ namespace Validation {
   export interface StringValidator {
     isAcceptable(s: string): boolean;
   }
-  
+
   const lettersRegexp = /^[A-Za-z]+$/;
   const numberRegexp = /^[0-9]+$/;
-  
+
   export class LettersOnlyValidator implements StringValidator {
     isAcceptable(s: string) {
       return lettersRegexp.test(s);
     }
   }
-  
+
   export class ZipCodeValidator implements StringValidator {
     isAcceptable(s: string) {
       return s.length === 5 && numberRegexp.test(s);
@@ -678,7 +678,7 @@ validators["Letters only"] = new Validation.LettersOnlyValidator();
     "outDir": "./dist",                          /* 指定输出目录 */
     "rootDir": "./src",                          /* 用来控制输出目录结构 */
     "removeComments": true,                      /* 删除编译后的所有的注释 */
-    
+
     /* 严格的类型检查选项 */
     "strict": true,                              /* 启用所有严格类型检查选项 */
     "noImplicitAny": true,                       /* 在表达式和声明上有隐含的 any类型时报错 */
@@ -688,13 +688,13 @@ validators["Letters only"] = new Validation.LettersOnlyValidator();
     "strictPropertyInitialization": true,        /* 启用类的属性初始化检查 */
     "noImplicitThis": true,                      /* 当 this 表达式值为 any 类型的时候，生成一个错误 */
     "alwaysStrict": true,                        /* 以严格模式检查每个模块，并在每个文件里加入 'use strict' */
-    
+
     /* 额外的检查 */
     "noUnusedLocals": true,                      /* 有未使用的变量时，抛出错误 */
     "noUnusedParameters": true,                  /* 有未使用的参数时，抛出错误 */
     "noImplicitReturns": true,                   /* 并不是所有函数里的代码都有返回值时，抛出错误 */
     "noFallthroughCasesInSwitch": true,          /* 报告 switch 语句的 fallthrough 错误 */
-    
+
     /* 模块解析选项 */
     "moduleResolution": "node",                  /* 选择模块解析策略 */
     "baseUrl": "./",                             /* 解析非相对模块名的基准目录 */
@@ -704,13 +704,13 @@ validators["Letters only"] = new Validation.LettersOnlyValidator();
     "types": [],                                 /* 需要包含的类型声明文件名列表 */
     "allowSyntheticDefaultImports": true,        /* 允许从没有设置默认导出的模块中默认导入 */
     "esModuleInterop": true,                     /* 通过为所有导入创建命名空间对象，实现 CommonJS 和 ES 模块之间的互操作性 */
-    
+
     /* Source Map Options */
     "sourceRoot": "",                            /* 指定调试器应该找到 TypeScript 文件而不是源文件的位置 */
     "mapRoot": "",                               /* 指定调试器应该找到映射文件而不是生成文件的位置 */
     "inlineSourceMap": true,                     /* 生成单个 soucemaps 文件，而不是将 sourcemaps 生成不同的文件 */
     "inlineSources": true,                       /* 将代码与 sourcemaps 生成到一个文件中 */
-    
+
     /* 其他选项 */
     "experimentalDecorators": true,              /* 启用实验性的ES装饰器 */
     "emitDecoratorMetadata": true,               /* 给源码里的装饰器声明加上设计类型元数据 */
@@ -741,18 +741,18 @@ interface UserListProps {
 
 const UserList: React.FC<UserListProps> = ({ users, onSelectUser }) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  
+
   useEffect(() => {
     if (selectedUser) {
       onSelectUser(selectedUser);
     }
   }, [selectedUser, onSelectUser]);
-  
+
   return (
     <div>
       {users.map(user => (
-        <div 
-          key={user.id} 
+        <div
+          key={user.id}
           onClick={() => setSelectedUser(user)}
           className={selectedUser?.id === user.id ? 'selected' : ''}
         >
@@ -792,7 +792,7 @@ export default defineComponent({
     const filteredTodos = computed(() => {
       return props.todos.filter(todo => !todo.completed);
     });
-    
+
     const addTodo = () => {
       if (newTodo.value.trim()) {
         // 发送事件给父组件
@@ -800,7 +800,7 @@ export default defineComponent({
         newTodo.value = '';
       }
     };
-    
+
     return {
       newTodo,
       filteredTodos,

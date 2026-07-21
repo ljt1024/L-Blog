@@ -7,7 +7,7 @@ date: 2026-05-31
 
 > Vite 用"开发时 native ESM + 生产时 Rollup 打包"的巧妙设计，解决了 Webpack 启动慢、HMR 慢的痛点。如今 Vite 已成为 Vue/React 项目的默认构建工具，Vite 6 也已在 2025 年发布。本文深入 Vite 的架构设计、插件系统、性能优化和实战配置，带你真正掌握这款工具。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么 Vite 这么快？
 
@@ -388,7 +388,7 @@ export default defineConfig({
 ### 3. 动态导入（Lazy Loading）
 
 ```tsx
-// ✅ 路由级代码分割（Vite 自动处理）
+// 正确 路由级代码分割（Vite 自动处理）
 import { lazy, Suspense } from 'react';
 
 const Home = lazy(() => import('./pages/Home'));
@@ -696,6 +696,6 @@ Vite 6 的未来：
 - 和 VitePress、Vitest 深度集成 → 一站式前端工具链
 ```
 
-如果你还在用 Webpack，是时候迁移了。Vite 不是"另一个构建工具"，而是**前端开发体验的一次重大升级** 🚀
+如果你还在用 Webpack，是时候迁移了。Vite 不是"另一个构建工具"，而是**前端开发体验的一次重大升级**
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

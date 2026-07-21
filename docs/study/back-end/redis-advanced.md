@@ -529,7 +529,7 @@ Redis Cluster通过哈希槽（hash slot）来分配数据：
    ```conf
    # AOF文件增长比例触发重写
    auto-aof-rewrite-percentage 100
-   
+
    # AOF文件最小重写大小
    auto-aof-rewrite-min-size 64mb
    ```

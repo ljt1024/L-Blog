@@ -7,7 +7,7 @@ date: 2026-05-13
 
 > 写 CSS 这么多年，最让人抓狂的问题之一就是："能不能选到有某个子元素的父元素？" 比如：只有一个子元素的容器，和有多个子元素的容器，能不能用不同样式？过去答案是：不能。CSS 没有父选择器。直到 `:has()` 出现——CSS 终于补上了这块长达二十年的短板。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么 `:has()` 这么重要？
 
@@ -20,8 +20,8 @@ ul li:hover { background: #f0f0f0; }          /* hover 到 li */
 input:invalid { border-color: red; }           /* input 状态 */
 
 /* 我们一直做不到的 */
-ul:has(li) { ... }        /* ❌ 以前不可能：根据子元素选父元素 */
-form:has(input:invalid) { ... }  /* ❌ 以前不可能：根据表单状态选 form */
+ul:has(li) { ... }        /* 错误 以前不可能：根据子元素选父元素 */
+form:has(input:invalid) { ... }  /* 错误 以前不可能：根据表单状态选 form */
 ```
 
 CSS 的选择器一直是**向下匹配**的——你能选后代，但不能根据后代反选祖先。`:has()` 打破了这个限制。
@@ -29,9 +29,9 @@ CSS 的选择器一直是**向下匹配**的——你能选后代，但不能根
 ### 浏览器支持现状（2024+）
 
 ```
-Chrome 111+  ✅  (2023年3月)
-Safari 15.4+ ✅  (2022年3月)
-Firefox 121+ ✅  (2023年12月)
+Chrome 111+  正确  (2023年3月)
+Safari 15.4+ 正确  (2022年3月)
+Firefox 121+ 正确  (2023年12月)
 
 全浏览器 baseline 支持！可以放心使用！
 ```
@@ -304,11 +304,11 @@ section:has(:target) {
 `:has()` 是**选择器级别**的计算，浏览器在样式重新计算时评估：
 
 ```css
-/* ⚠️ 避免：深层嵌套的 :has() */
+/* 注意 避免：深层嵌套的 :has() */
 body:has(div:has(div:has(p))) { ... }
 /* 每层 :has() 都可能触发整棵子树的重新评估 */
 
-/* ✅ 推荐：浅层、具体的 :has() */
+/* 正确 推荐：浅层、具体的 :has() */
 .card:has(.badge) { ... }
 form:has(input:invalid) { ... }
 ```
@@ -368,12 +368,12 @@ body:has(.error-message)::before {
 ### 不支持的选择器组合
 
 ```css
-/* ❌ 不能选"父元素的父元素"（只能一层）*/
-div:has(p) { ... }  /* ✅ 可以 */
-body:has(div:has(p)) { ... }  /* ⚠️ 可以但不推荐（性能差）*/
+/* 错误 不能选"父元素的父元素"（只能一层）*/
+div:has(p) { ... }  /* 正确 可以 */
+body:has(div:has(p)) { ... }  /* 注意 可以但不推荐（性能差）*/
 
-/* ❌ 不能根据伪元素选择 */
-div:has(::before) { ... }  /* ❌ 伪元素不能被 :has() 匹配 */
+/* 错误 不能根据伪元素选择 */
+div:has(::before) { ... }  /* 错误 伪元素不能被 :has() 匹配 */
 ```
 
 ### 降级方案
@@ -398,10 +398,10 @@ if (!hasHas) {
 
 | 需求 | 传统方案 | `:has()` 方案 | 推荐 |
 |------|---------|--------------|------|
-| 根据子元素选父元素 | JS 查询 DOM | `parent:has(child)` | ✅ `:has()` |
-| 表单验证反馈 | JS 监听 input 事件 | `form:has(input:invalid)` | ✅ `:has()` |
-| 悬停显示子元素 | JS 监听 mouseenter | `.parent:hover .child` | ✅ 传统 CSS 就够了 |
-| 根据兄弟数量调整样式 | JS 计算 children.length | `ul:has(li:nth-child(6))` | ✅ `:has()` |
+| 根据子元素选父元素 | JS 查询 DOM | `parent:has(child)` | 正确 `:has()` |
+| 表单验证反馈 | JS 监听 input 事件 | `form:has(input:invalid)` | 正确 `:has()` |
+| 悬停显示子元素 | JS 监听 mouseenter | `.parent:hover .child` | 正确 传统 CSS 就够了 |
+| 根据兄弟数量调整样式 | JS 计算 children.length | `ul:has(li:nth-child(6))` | 正确 `:has()` |
 
 ## 总结
 
@@ -424,4 +424,4 @@ form:has(input:invalid) { border-color: red; }
 
 有了 `:has()`，CSS 终于不再需要借助 JavaScript 来做"根据内容选容器"的事情了。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

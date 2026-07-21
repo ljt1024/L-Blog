@@ -7,7 +7,7 @@ date: 2026-07-03
 
 > 同步阻塞是性能的敌人。当你的程序等待 I/O 时，CPU 却在idle——这简直是对计算资源的浪费。asyncio 让 Python 拥有了真正的并发能力：一个线程内、多个协程、百万连接。本文深入解析 asyncio 的核心机制、协程语法、并发模式与实战避坑。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 同步 vs 异步：为什么需要 asyncio？
 
@@ -67,16 +67,16 @@ async def fetch_users():
 ```
 异步编程的优势：
 ─────────────────────────────────
-✅ 并发执行
+正确 并发执行
   → 10 个 HTTP 请求同时发出
   → 总耗时 ≈ 最慢那个请求（50ms）
   → 提升 10x 性能
 
-✅ 单线程高并发
+正确 单线程高并发
   → 一个线程维护数万个协程
   → 协程切换成本 ≈ 0（用户态，无 Context Switch）
 
-✅ 优雅的长连接
+正确 优雅的长连接
   → WebSocket / SSE / gRPC
   → 单线程处理海量并发连接
 ```
@@ -179,7 +179,7 @@ async def main():
 # 推荐：只调用一次 asyncio.run()
 asyncio.run(main())
 
-# ❌ 错误：不要在已有一个 run() 内再调用 run()
+# 错误 错误：不要在已有一个 run() 内再调用 run()
 # asyncio.run(main())  # 外层已创建循环
 # asyncio.run(other()) # 嵌套会报错
 ```
@@ -528,27 +528,27 @@ import asyncio
 
 app = FastAPI()
 
-# ✅ 异步路由：FastAPI 不会阻塞线程
+# 正确 异步路由：FastAPI 不会阻塞线程
 @app.get("/async/users")
 async def get_users_async():
     # 这里使用 asyncio.sleep 不会阻塞事件循环
     await asyncio.sleep(1)  # 模拟 I/O
     return [{"id": 1, "name": "小虾子"}]
 
-# ⚠️ 同步路由：FastAPI 会在线程池中运行
+# 注意 同步路由：FastAPI 会在线程池中运行
 @app.get("/sync/users")
 def get_users_sync():
     # 如果这里用 time.sleep(1)，会阻塞整个事件循环！
     # 只适合 CPU 密集型操作
     return [{"id": 1, "name": "小虾子"}]
 
-# ✅ 数据库操作（配合 SQLAlchemy 异步驱动）
+# 正确 数据库操作（配合 SQLAlchemy 异步驱动）
 @app.get("/posts/{post_id}")
 async def get_post(post_id: int):
     post = await db.get_post(post_id)  # 异步数据库查询
     return post
 
-# ✅ 并发路由
+# 正确 并发路由
 @app.get("/multi")
 async def get_multi():
     user, posts = await asyncio.gather(
@@ -603,26 +603,26 @@ async def shutdown():
 import asyncio
 import time
 
-# ❌ 错误：使用同步 sleep（阻塞整个线程）
+# 错误 错误：使用同步 sleep（阻塞整个线程）
 async def bad_sleep():
-    time.sleep(1)  # ❌ 阻塞事件循环 1 秒
+    time.sleep(1)  # 错误 阻塞事件循环 1 秒
     return "完成"
 
-# ✅ 正确：使用 asyncio.sleep（暂停协程，不阻塞线程）
+# 正确 正确：使用 asyncio.sleep（暂停协程，不阻塞线程）
 async def good_sleep():
-    await asyncio.sleep(1)  # ✅ 协程暂停，线程可以执行其他协程
+    await asyncio.sleep(1)  # 正确 协程暂停，线程可以执行其他协程
     return "完成"
 
-# ❌ 错误：同步文件 I/O（aiofiles 有异步版本）
+# 错误 错误：同步文件 I/O（aiofiles 有异步版本）
 # with open("file.txt") as f:
-#     content = f.read()  # ❌ 阻塞！
+#     content = f.read()  # 错误 阻塞！
 
-# ✅ 正确：使用 aiofiles
+# 正确 正确：使用 aiofiles
 import aiofiles
 
 async def read_file():
     async with aiofiles.open("file.txt", encoding="utf-8") as f:
-        return await f.read()  # ✅ 异步文件操作
+        return await f.read()  # 正确 异步文件操作
 ```
 
 ### 陷阱 2：忘记 await
@@ -635,17 +635,17 @@ async def fetch_data():
     return {"data": "important"}
 
 async def main():
-    # ❌ 错误：忘记 await，返回的是协程对象
-    result = fetch_data()  # ❌ 返回协程对象，不是 {"data": "important"}
+    # 错误 错误：忘记 await，返回的是协程对象
+    result = fetch_data()  # 错误 返回协程对象，不是 {"data": "important"}
     print(result)  # <coroutine object ...>
 
-    # ✅ 正确：使用 await
-    result = await fetch_data()  # ✅ 等待协程完成
+    # 正确 正确：使用 await
+    result = await fetch_data()  # 正确 等待协程完成
     print(result)  # {'data': 'important'}
 
-    # ❌ 常见错误：列表推导式中忘记 await
-    # results = [fetch_data() for _ in range(10)]  # ❌ 协程对象列表！
-    # ✅ 正确：
+    # 错误 常见错误：列表推导式中忘记 await
+    # results = [fetch_data() for _ in range(10)]  # 错误 协程对象列表！
+    # 正确 正确：
     results = await asyncio.gather(*[fetch_data() for _ in range(10)])
 ```
 
@@ -654,13 +654,13 @@ async def main():
 ```python
 import asyncio
 
-# ❌ 错误：使用同步 requests（阻塞事件循环）
+# 错误 错误：使用同步 requests（阻塞事件循环）
 # async def bad_http():
 #     import requests
-#     resp = requests.get("https://api.example.com")  # ❌ 阻塞！
+#     resp = requests.get("https://api.example.com")  # 错误 阻塞！
 #     return resp.json()
 
-# ✅ 正确：使用异步 HTTP 库
+# 正确 正确：使用异步 HTTP 库
 async def good_http():
     import aiohttp
     async with aiohttp.ClientSession() as session:
@@ -681,15 +681,15 @@ async def good_http():
 ```python
 import asyncio
 
-# ❌ 错误：创建任务但不等待完成
+# 错误 错误：创建任务但不等待完成
 async def bad_create_task():
     for i in range(1000):
         asyncio.create_task(some_async_function(i))
-        # ❌ 任务创建后没有保存引用
-        # ❌ 如果程序提前退出，这些任务会被丢弃
+        # 错误 任务创建后没有保存引用
+        # 错误 如果程序提前退出，这些任务会被丢弃
     # 函数结束，任务可能还没执行完！
 
-# ✅ 正确：保存任务引用，确保全部完成
+# 正确 正确：保存任务引用，确保全部完成
 async def good_create_task():
     tasks = []
     for i in range(1000):
@@ -699,7 +699,7 @@ async def good_create_task():
     # 等待所有任务完成
     await asyncio.gather(*tasks)
 
-# ✅ 或者使用 asyncio.TaskGroup（Python 3.11+，自动管理）
+# 正确 或者使用 asyncio.TaskGroup（Python 3.11+，自动管理）
 async def modern_create_task():
     async with asyncio.TaskGroup() as tg:
         for i in range(1000):
@@ -712,18 +712,18 @@ async def modern_create_task():
 ```python
 import asyncio
 
-# ❌ 错误：在 async 代码中使用 threading.Lock
-# lock = threading.Lock()  # ❌ 同步锁，阻塞线程！
-# async with lock:  # ❌ async with 不兼容 threading.Lock
+# 错误 错误：在 async 代码中使用 threading.Lock
+# lock = threading.Lock()  # 错误 同步锁，阻塞线程！
+# async with lock:  # 错误 async with 不兼容 threading.Lock
 
-# ✅ 正确：使用 asyncio.Lock
+# 正确 正确：使用 asyncio.Lock
 async def counter_with_lock():
     lock = asyncio.Lock()
     count = 0
 
     async def increment():
         nonlocal count
-        async with lock:  # ✅ 异步锁，暂停协程
+        async with lock:  # 正确 异步锁，暂停协程
             count += 1
 
     await asyncio.gather(*[increment() for _ in range(1000)])
@@ -817,15 +817,15 @@ async def main2():
 ```python
 import asyncio
 
-# ❌ 错误：在同步函数中直接 await
+# 错误 错误：在同步函数中直接 await
 # def sync_call():
-#     await asyncio.sleep(1)  # ❌ SyntaxError: 'await' outside async function
+#     await asyncio.sleep(1)  # 错误 SyntaxError: 'await' outside async function
 
-# ✅ 方式 1：asyncio.run（推荐，用于入口函数）
+# 正确 方式 1：asyncio.run（推荐，用于入口函数）
 def sync_main():
     asyncio.run(async_operation())
 
-# ✅ 方式 2：asyncio.get_event_loop（用于框架集成）
+# 正确 方式 2：asyncio.get_event_loop（用于框架集成）
 def sync_in_framework():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
@@ -834,7 +834,7 @@ def sync_in_framework():
     finally:
         loop.close()
 
-# ✅ 方式 3：nest_asyncio（允许嵌套事件循环，Jupyter/IPython）
+# 正确 方式 3：nest_asyncio（允许嵌套事件循环，Jupyter/IPython）
 # pip install nest_asyncio
 # import nest_asyncio
 # nest_asyncio.apply()
@@ -874,14 +874,14 @@ gRPC：grpcio（aio）
 ```
 避坑清单：
 ─────────────────────────────────
-✅ 用 asyncio.sleep 而非 time.sleep
-✅ 用 aiohttp/httpx 而非 requests
-✅ 异步函数不要返回裸协程（要 await）
-✅ 锁用 asyncio.Lock 而非 threading.Lock
-✅ 创建 Task 要保存引用，确保完成
-✅ 单线程，多协程，不要混用同步库
+正确 用 asyncio.sleep 而非 time.sleep
+正确 用 aiohttp/httpx 而非 requests
+正确 异步函数不要返回裸协程（要 await）
+正确 锁用 asyncio.Lock 而非 threading.Lock
+正确 创建 Task 要保存引用，确保完成
+正确 单线程，多协程，不要混用同步库
 ```
 
-asyncio 让 Python 拥有了工业级的并发能力——单线程、百万协程、零阻塞。从 HTTP 请求到数据库查询，从 WebSocket 到文件 I/O，异步 Python 是高性能后端服务的基石 🦐
+asyncio 让 Python 拥有了工业级的并发能力——单线程、百万协程、零阻塞。从 HTTP 请求到数据库查询，从 WebSocket 到文件 I/O，异步 Python 是高性能后端服务的基石
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

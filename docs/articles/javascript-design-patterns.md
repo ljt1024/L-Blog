@@ -7,7 +7,7 @@ date: 2026-05-20
 
 > 设计模式不是背下来面试用的，而是解决真实问题的思维工具。当你的代码出现"这个逻辑到处复制粘贴"、"改一个地方要改十处"的时候，就是设计模式出场的时候。本文涵盖前端最常用的 12 种设计模式，每个都配有真实场景和可运行代码。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 设计模式三大类
 
@@ -29,14 +29,14 @@ date: 2026-05-20
 **场景：** 全局只需要一个实例——数据库连接、状态管理、配置中心。
 
 ```javascript
-// ❌ 不安全：每次 new 都创建新实例
+// 错误 不安全：每次 new 都创建新实例
 class Database {
   constructor() {
     this.connection = new Connection();
   }
 }
 
-// ✅ 单例：全局唯一
+// 正确 单例：全局唯一
 class Database {
   static #instance = null;
 
@@ -80,7 +80,7 @@ const createDB = (() => {
 **场景：** 根据条件创建不同类型的对象，调用方不需要知道具体类。
 
 ```javascript
-// ❌ 硬编码创建
+// 错误 硬编码创建
 function createUI(type) {
   if (type === 'input') return new Input();
   if (type === 'button') return new Button();
@@ -88,7 +88,7 @@ function createUI(type) {
   throw new Error(`未知类型: ${type}`);
 }
 
-// ✅ 工厂模式
+// 正确 工厂模式
 class ComponentFactory {
   #registry = new Map();
 
@@ -351,7 +351,7 @@ class File extends FileSystemNode {
 
   getSize() { return this.size; }
   print(indent = '') {
-    console.log(`${indent}📄 ${this.name} (${this.size}KB)`);
+    console.log(`${indent} ${this.name} (${this.size}KB)`);
   }
 }
 
@@ -371,7 +371,7 @@ class Folder extends FileSystemNode {
   }
 
   print(indent = '') {
-    console.log(`${indent}📁 ${this.name}/`);
+    console.log(`${indent} ${this.name}/`);
     this.children.forEach(child => child.print(indent + '  '));
   }
 }
@@ -394,17 +394,17 @@ const root = new Folder('project')
 
 console.log('总大小:', root.getSize(), 'KB');
 root.print();
-// 📁 project/
-//   📄 index.html (5KB)
-//   📄 app.js (120KB)
-//   📁 src/
-//     📄 main.js (45KB)
-//     📄 utils.js (30KB)
-//     📁 components/
-//       📄 Header.vue (15KB)
-//       📄 Footer.vue (12KB)
-//   📁 public/
-//     📄 favicon.ico (4KB)
+//  project/
+//    index.html (5KB)
+//    app.js (120KB)
+//    src/
+//      main.js (45KB)
+//      utils.js (30KB)
+//      components/
+//        Header.vue (15KB)
+//        Footer.vue (12KB)
+//    public/
+//      favicon.ico (4KB)
 
 // React 组件树本质就是组合模式
 // <App>
@@ -527,7 +527,7 @@ function addToCart(product) {
 **场景：** 算法族可互换，消除大量 if/else。
 
 ```javascript
-// ❌ 满天飞的条件分支
+// 错误 满天飞的条件分支
 function calculatePrice(type, price) {
   if (type === 'normal') return price;
   if (type === 'vip') return price * 0.8;
@@ -536,7 +536,7 @@ function calculatePrice(type, price) {
   throw new Error('未知类型');
 }
 
-// ✅ 策略模式
+// 正确 策略模式
 const pricingStrategies = {
   normal: (price) => price,
   vip: (price) => price * 0.8,
@@ -581,7 +581,7 @@ ctx.calculate(100, 20); // 80
 **场景：** 对象行为随状态改变，状态机。
 
 ```javascript
-// ❌ 状态散落在条件分支中
+// 错误 状态散落在条件分支中
 class Document {
   publish() {
     if (this.status === 'draft') {
@@ -594,7 +594,7 @@ class Document {
   }
 }
 
-// ✅ 状态模式：每个状态一个类
+// 正确 状态模式：每个状态一个类
 class DraftState {
   constructor(doc) { this.doc = doc; }
   publish() { this.doc.state = new ReviewState(this.doc); }
@@ -810,7 +810,7 @@ history.undo();  // 取消第二条 add
 
 ## 什么时候用？什么时候不用？
 
-### ✅ 应该用设计模式
+### 正确 应该用设计模式
 
 - 同样的逻辑出现了 **3 次以上**
 - 修改一个功能要动 **多个文件**
@@ -818,7 +818,7 @@ history.undo();  // 取消第二条 add
 - 团队协作时，需要 **统一的约定**
 - 代码审查时，别人 **一眼看不懂** 你在干什么
 
-### ❌ 不应该用设计模式
+### 错误 不应该用设计模式
 
 - 简单脚本，逻辑不到 50 行
 - 为了用模式而用模式（过度设计）
@@ -853,4 +853,4 @@ KISS 原则 > 设计模式
 
 设计模式的本质不是 23 种固定套路，而是 **一种思维方式**——用前人的经验解决你眼前的重复问题。当你能自然地用出这些模式而不需要刻意想"我应该用 XX 模式"的时候，你就真正掌握了它们。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

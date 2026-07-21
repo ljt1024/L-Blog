@@ -7,7 +7,7 @@ date: 2026-07-17
 
 > 不写测试的代码叫"草稿"，不调试就上线的项目叫"赌局"。从 `pytest` 的核心机制到 `pdb` 的交互调试，从 `fixture` 的依赖注入到 `mock` 的外部服务打桩，从 `coverage` 的覆盖率分析到性能剖析——本文覆盖 Python 测试与调试的每一个关键环节。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要测试？
 
@@ -20,11 +20,11 @@ date: 2026-07-17
 ─────────────────────────────────
 
 没有测试的代码：
-✓ 刚写完时运行正确
-✗ 改了一个逻辑可能坏掉三个地方
-✗ 不敢重构
-✗ 新成员不敢改
-✗ 代码质量只依靠"小心谨慎"
+是 刚写完时运行正确
+否 改了一个逻辑可能坏掉三个地方
+否 不敢重构
+否 新成员不敢改
+否 代码质量只依靠"小心谨慎"
 ```
 
 ---
@@ -851,7 +851,7 @@ def test_slow_operation():
 ### 陷阱 1：共享 fixture 导致测试间耦合
 
 ```python
-# ❌ 陷阱：fixture 作用域过大导致测试串联
+# 错误 陷阱：fixture 作用域过大导致测试串联
 @pytest.fixture(scope="session")
 def db():
     conn = Database.connect()
@@ -863,9 +863,9 @@ def test_insert(db):
 
 def test_count(db):
     # test_insert 插入的 Alice 还在！count = 1
-    assert db.query("users").count() == 0  # ❌ 失败
+    assert db.query("users").count() == 0  # 错误 失败
 
-# ✅ 正确：每个测试独立
+# 正确 正确：每个测试独立
 @pytest.fixture(scope="function")
 def clean_db():
     conn = Database.connect()
@@ -885,15 +885,15 @@ def db_session():
 ### 陷阱 2：Mock 不匹配真实行为
 
 ```python
-# ❌ 陷阱：mock 返回了真实代码不会返回的数据
+# 错误 陷阱：mock 返回了真实代码不会返回的数据
 mock_db.query.return_value = {"id": 1, "name": "Alice"}
 # 但真实数据库返回的是 [{"id": 1, "name": "Alice"}]
 # 类型不匹配！
 
-# ✅ 正确：mock 返回真实的数据结构
+# 正确 正确：mock 返回真实的数据结构
 mock_db.query.return_value = [{"id": 1, "name": "Alice"}]
 
-# ❌ 陷阱：过度 mock 导致测试没有价值
+# 错误 陷阱：过度 mock 导致测试没有价值
 @patch("builtins.print")
 @patch("random.randint")
 @patch("time.sleep")
@@ -902,7 +902,7 @@ def test_so_many_mocks(mock_sleep, mock_randint, mock_print):
     result = my_function()
     assert result == 42  # 所有依赖都被 mock 了，什么也没测到
 
-# ✅ 原则：
+# 正确 原则：
 # 1. mock 外部依赖（网络、数据库、文件系统）
 # 2. 不 mock 自己代码的逻辑
 # 3. mock 返回值和真实行为一致
@@ -911,11 +911,11 @@ def test_so_many_mocks(mock_sleep, mock_randint, mock_print):
 ### 陷阱 3：只测 happy path
 
 ```python
-# ❌ 陷阱：只测试正常路径
+# 错误 陷阱：只测试正常路径
 def test_divide():
     assert divide(10, 2) == 5  # happy path
 
-# ✅ 正确：覆盖边界和异常
+# 正确 正确：覆盖边界和异常
 @pytest.mark.parametrize("a, b, expected", [
     (10, 2, 5),          # 正常
     (0, 5, 0),           # 零被除
@@ -993,18 +993,18 @@ w / where        显示调用栈
 ```
 最佳实践：
 ─────────────────────────────────
-✅ 每个测试函数只测一件事情
-✅ 使用 fixture 管理依赖，不要手动 setup/teardown
-✅ mock 要匹配真实行为（类型、结构）
-✅ 覆盖 happy path + 边界 + 异常
-✅ pytest-cov 做覆盖率分析（关注核心路径 100%）
-✅ 用 @pytest.mark.parametrize 减少重复代码
-✅ fixture 作用域选小不选大（保持隔离）
-✅ breakpoint() 比 print() 调试更高效
-✅ CI 中运行测试 + 覆盖率 + 类型检查
-✅ 调试从 print() 升级到 pdb（省时省力）
+正确 每个测试函数只测一件事情
+正确 使用 fixture 管理依赖，不要手动 setup/teardown
+正确 mock 要匹配真实行为（类型、结构）
+正确 覆盖 happy path + 边界 + 异常
+正确 pytest-cov 做覆盖率分析（关注核心路径 100%）
+正确 用 @pytest.mark.parametrize 减少重复代码
+正确 fixture 作用域选小不选大（保持隔离）
+正确 breakpoint() 比 print() 调试更高效
+正确 CI 中运行测试 + 覆盖率 + 类型检查
+正确 调试从 print() 升级到 pdb（省时省力）
 ```
 
-测试是代码的"双胞胎"——没有测试的代码不是"写完"了，而是"刚写完"而已。pytest 的 fixture + mock + parametrize 三件套能覆盖绝大多数场景，cProfile 和 py-spy 做性能分析，pdb 做交互式调试——这套组合拳让你的 Python 代码既有质量保障又有诊断能力 🦐
+测试是代码的"双胞胎"——没有测试的代码不是"写完"了，而是"刚写完"而已。pytest 的 fixture + mock + parametrize 三件套能覆盖绝大多数场景，cProfile 和 py-spy 做性能分析，pdb 做交互式调试——这套组合拳让你的 Python 代码既有质量保障又有诊断能力
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

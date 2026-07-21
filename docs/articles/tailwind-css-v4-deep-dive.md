@@ -429,8 +429,8 @@ npx @tailwindcss/upgrade
 # 构建速度测试（中型项目，~500 个组件文件）
 
 Tailwind CSS v3 (PostCSS)  : ~1200ms 全量构建
-Tailwind CSS v4 (Oxide)    :  ~180ms 全量构建  ⚡ 快 6.7 倍
-Tailwind CSS v4 增量构建    :   ~15ms           🚀 快 80 倍
+Tailwind CSS v4 (Oxide)    :  ~180ms 全量构建   快 6.7 倍
+Tailwind CSS v4 增量构建    :   ~15ms            快 80 倍
 ```
 
 v4 的 Oxide 引擎用 Rust 编写，扫描文件和生成 CSS 的速度有质的飞跃。
@@ -450,4 +450,4 @@ Tailwind CSS v4 的核心变化：
 
 如果你的项目用 Vite 或 Next.js，现在就可以升级——迁移工具会帮你处理大部分变化，而你得到的是更快的构建速度和更强大的设计系统能力。
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

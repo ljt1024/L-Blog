@@ -510,4 +510,4 @@ type UserGetters = Getters<{ name: string; age: number }>
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

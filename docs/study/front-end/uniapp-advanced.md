@@ -89,33 +89,33 @@ export default {
       message: 'Hello UniApp'
     }
   },
-  
+
   // 监听页面加载
   onLoad(options) {
     console.log('Page loaded', options)
   },
-  
+
   // 监听页面显示
   onShow() {
     console.log('Page shown')
   },
-  
+
   // 监听页面隐藏
   onHide() {
     console.log('Page hidden')
   },
-  
+
   // 监听页面卸载
   onUnload() {
     console.log('Page unloaded')
   },
-  
+
   // 监听用户下拉刷新
   onPullDownRefresh() {
     console.log('Pull down refresh')
     uni.stopPullDownRefresh()
   },
-  
+
   // 监听页面上拉触底
   onReachBottom() {
     console.log('Reach bottom')
@@ -130,8 +130,8 @@ export default {
 <!-- 父组件 -->
 <template>
   <view>
-    <child-component 
-      :message="parentMessage" 
+    <child-component
+      :message="parentMessage"
       @child-event="handleChildEvent"
     />
   </view>
@@ -144,13 +144,13 @@ export default {
   components: {
     ChildComponent
   },
-  
+
   data() {
     return {
       parentMessage: 'Hello from parent'
     }
   },
-  
+
   methods: {
     handleChildEvent(data) {
       console.log('Received from child:', data)
@@ -175,7 +175,7 @@ export default {
       default: ''
     }
   },
-  
+
   methods: {
     sendToParent() {
       this.$emit('child-event', 'Hello from child')
@@ -334,19 +334,19 @@ export default {
 const globalData = {
   userInfo: null,
   token: '',
-  
+
   setUserInfo(info) {
     this.userInfo = info
   },
-  
+
   getUserInfo() {
     return this.userInfo
   },
-  
+
   setToken(token) {
     this.token = token
   },
-  
+
   getToken() {
     return this.token
   }
@@ -365,7 +365,7 @@ export default {
       console.log('User info:', userInfo)
     }
   },
-  
+
   methods: {
     login() {
       // 登录逻辑
@@ -420,7 +420,7 @@ const BASE_URL = 'https://api.example.com'
 
 const request = (options) => {
   const { url, method = 'GET', data = {}, header = {} } = options
-  
+
   return new Promise((resolve, reject) => {
     uni.request({
       url: BASE_URL + url,
@@ -499,8 +499,8 @@ export default {
 <template>
   <view>
     <!-- 使用uni-app的图片组件 -->
-    <image 
-      src="https://example.com/image.jpg" 
+    <image
+      src="https://example.com/image.jpg"
       mode="aspectFill"
       lazy-load
       @load="onImageLoad"
@@ -515,7 +515,7 @@ export default {
     onImageLoad(e) {
       console.log('Image loaded', e)
     },
-    
+
     onImageError(e) {
       console.error('Image load error', e)
     }
@@ -528,19 +528,19 @@ export default {
 
 ```vue
 <template>
-  <scroll-view 
-    class="scroll-area" 
+  <scroll-view
+    class="scroll-area"
     scroll-y="true"
     @scrolltolower="onScrollToLower"
   >
-    <view 
-      v-for="(item, index) in visibleList" 
+    <view
+      v-for="(item, index) in visibleList"
       :key="item.id"
       class="list-item"
     >
       <text>{{ item.title }}</text>
     </view>
-    
+
     <!-- 上拉加载更多 -->
     <view v-if="loading" class="loading">
       <text>加载中...</text>
@@ -559,7 +559,7 @@ export default {
       loading: false
     }
   },
-  
+
   methods: {
     loadData() {
       this.loading = true
@@ -573,7 +573,7 @@ export default {
         this.currentPage++
       }, 1000)
     },
-    
+
     onScrollToLower() {
       if (!this.loading) {
         this.loadData()
@@ -645,15 +645,15 @@ uni.addInterceptor('request', {
   <view>
     <!-- 公共内容 -->
     <text>通用内容</text>
-    
+
     <!-- #ifdef H5 -->
     <text>H5平台特有内容</text>
     <!-- #endif -->
-    
+
     <!-- #ifdef MP-WEIXIN -->
     <text>微信小程序特有内容</text>
     <!-- #endif -->
-    
+
     <!-- #ifndef APP-PLUS -->
     <text>非App平台内容</text>
     <!-- #endif -->
@@ -666,7 +666,7 @@ export default {
     // #ifdef H5
     console.log('Running in H5')
     // #endif
-    
+
     // #ifdef MP-WEIXIN
     console.log('Running in WeChat MiniProgram')
     // #endif
@@ -701,7 +701,7 @@ export default {
 uni.getSystemInfo({
   success: (info) => {
     console.log('System info:', info)
-    
+
     // 根据平台做特殊处理
     // #ifdef MP-WEIXIN
     if (info.platform === 'ios') {
@@ -738,7 +738,7 @@ npm install @dcloudio/uni-ui
     <uni-card title="卡片标题" note="卡片底部信息">
       <text>卡片内容主体</text>
     </uni-card>
-    
+
     <uni-popup ref="popup" type="bottom">
       <view class="popup-content">
         <text>弹出层内容</text>
@@ -755,7 +755,7 @@ export default {
     uniCard,
     uniPopup
   },
-  
+
   methods: {
     openPopup() {
       this.$refs.popup.open()
@@ -775,7 +775,7 @@ const MyPlugin = {
     Vue.prototype.$myMethod = function() {
       console.log('My plugin method called')
     }
-    
+
     // 添加全局组件
     Vue.component('my-component', {
       template: '<view>My Component</view>'

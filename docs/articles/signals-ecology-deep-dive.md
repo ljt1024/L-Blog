@@ -7,7 +7,7 @@ date: 2026-06-10
 
 > Solid.js 用 Signals，Svelte 5 用 Runes（底层也是 Signals），Vue Vapor Mode 底层是 Proxy + 编译优化，Preact 有 @preact/signals，Jotai 是原子化 Signals，Nano Stores 是跨框架 Signals……Signals 正在成为前端状态管理的"新lingua franca"。本文系统梳理 Signals 的前世今生、各框架实现、以及如何跨框架使用。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## Signals 是什么？
 
@@ -442,7 +442,7 @@ const greeting = useStore($greeting);
 | 创建信号 | `createSignal()` | `$state()` | `ref()` | `signal()` | `atom()` | `atom()` |
 | 派生值 | `createMemo()` | `$derived()` | `computed()` | `computed()` | `atom(fn)` | `computed()` |
 | 副作用 | `createEffect()` | `$effect()` | `watchEffect()` | `effect()` | WIP | `atom.listen()` |
-| 批量更新 | ✅ 自动 | ✅ 自动 | ✅ 自动 | ✅ 自动 | ✅ 自动 | ✅ 自动 |
+| 批量更新 | 正确 自动 | 正确 自动 | 正确 自动 | 正确 自动 | 正确 自动 | 正确 自动 |
 | 包大小 | ~7KB | ~0KB（编译） | ~33KB | ~2KB | ~3KB | ~1KB |
 
 ### 性能对比
@@ -468,34 +468,34 @@ React 18：                 ~35%
 如何选择 Signals 方案？
 ─────────────────────────────────
 用 Solid.js？
-  ✅ 需要极致性能
-  ✅ 不需要 React 生态
-  ✅ 可以接受 JSX 学习曲线
+  正确 需要极致性能
+  正确 不需要 React 生态
+  正确 可以接受 JSX 学习曲线
 
 用 Svelte 5？
-  ✅ 想要 Vue 类似的简洁语法
-  ✅ 想要最小包体积（~0KB 运行时）
-  ✅ 逐步迁移（从 Svelte 4）
+  正确 想要 Vue 类似的简洁语法
+  正确 想要最小包体积（~0KB 运行时）
+  正确 逐步迁移（从 Svelte 4）
 
 用 Vue Vapor Mode？
-  ✅ 已在用 Vue 3
-  ✅ 想要无感升级（无需改代码）
-  ✅ 需要 Vue 生态（Pinia、Vue Router 等）
+  正确 已在用 Vue 3
+  正确 想要无感升级（无需改代码）
+  正确 需要 Vue 生态（Pinia、Vue Router 等）
 
 用 Preact Signals？
-  ✅ 用 React 但想要 Signals
-  ✅ 包体积敏感（Preact ~3KB + Signals ~2KB）
-  ✅ 逐步迁移 React → Preact
+  正确 用 React 但想要 Signals
+  正确 包体积敏感（Preact ~3KB + Signals ~2KB）
+  正确 逐步迁移 React → Preact
 
 用 Jotai？
-  ✅ 需要原子化状态管理
-  ✅ 用 React / Preact
-  ✅ 需要状态组合（派生状态复杂）
+  正确 需要原子化状态管理
+  正确 用 React / Preact
+  正确 需要状态组合（派生状态复杂）
 
 用 Nano Stores？
-  ✅ 需要跨框架（React + Vue + Svelte）
-  ✅ 需要极小包体积（~1KB）
-  ✅ 不需要复杂状态逻辑
+  正确 需要跨框架（React + Vue + Svelte）
+  正确 需要极小包体积（~1KB）
+  正确 不需要复杂状态逻辑
 ```
 
 ---
@@ -503,7 +503,7 @@ React 18：                 ~35%
 ## Signals 的局限性
 
 ```
-⚠️ Signals 不是银弹：
+注意 Signals 不是银弹：
 ─────────────────────────────────
 1. 调试困难：
    - 异步更新追踪复杂
@@ -581,6 +581,6 @@ React 项目 → Preact Signals / Jotai
 多框架 → Nano Stores
 ```
 
-Signals 的崛起代表了前端渲染范式的一次重要转向——从"告诉框架什么时候更新"到"告诉框架什么变了" 📡
+Signals 的崛起代表了前端渲染范式的一次重要转向——从"告诉框架什么时候更新"到"告诉框架什么变了"
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

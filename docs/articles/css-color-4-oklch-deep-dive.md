@@ -139,7 +139,7 @@ OKLCH 的 C 值是控制**色彩饱和度**的关键：
 .intense    { color: oklch(60% 0.40 200); } /* 极鲜艳蓝 */
 ```
 
-> ⚠️ **重要提示**：OKLCH 的 C 值没有固定上限，因为它是相对于 Display P3 或 sRGB 色域的。在实际操作中，**超过 0.4 的值在高饱和度显示器上可能产生过饱和**，建议开发时在 Safari（支持 Display P3）和 Chrome（sRGB）之间切换对比。
+> 注意 **重要提示**：OKLCH 的 C 值没有固定上限，因为它是相对于 Display P3 或 sRGB 色域的。在实际操作中，**超过 0.4 的值在高饱和度显示器上可能产生过饱和**，建议开发时在 Safari（支持 Display P3）和 Chrome（sRGB）之间切换对比。
 
 ## 四、CSS Color 4 颜色函数
 
@@ -374,20 +374,20 @@ OKLCH 本身不会带来额外的渲染负担——浏览器最终仍会将颜�
 ### 7.2 注意事项
 
 ```css
-/* ✅ 推荐：直接使用 OKLCH 值 */
+/* 正确 推荐：直接使用 OKLCH 值 */
 .badge {
   color: oklch(95% 0.01 240);
   background: oklch(60% 0.2 240);
 }
 
-/* ⚠️ 避免：在动画中频繁计算相对颜色 */
+/* 注意 避免：在动画中频繁计算相对颜色 */
 @keyframes bad-practice {
   /* 每个关键帧都重新计算 from-source 颜色 */
   from { color: oklch(from var(--bg) l calc(c * 1.2) h); }
   to   { color: oklch(from var(--bg) l calc(c * 0.5) h); }
 }
 
-/* ✅ 推荐：预计算颜色值，或使用 CSS 变量 */
+/* 正确 推荐：预计算颜色值，或使用 CSS 变量 */
 :root {
   --badge-active: oklch(65% 0.25 240);
   --badge-inactive: oklch(65% 0.08 240);
@@ -454,4 +454,4 @@ OKLCH 和 CSS Color 4 带来的变革不亚于当年从 `px` 到 `rem` 的转变
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

@@ -225,7 +225,7 @@ function LikeButton({ postId, initialLikes }: { postId: string, initialLikes: nu
     <fetcher.Form method="post" action="/api/like">
       <input type="hidden" name="postId" value={postId} />
       <button type="submit">
-        ❤️ {likes} likes
+         {likes} likes
       </button>
     </fetcher.Form>
   )
@@ -650,20 +650,20 @@ app/
 
 ### 9.2 性能清单
 
-- ✅ 使用 `prefetch` 预加载关键路由
-- ✅ 为慢速数据使用 `defer` + `<Await>`
-- ✅ 在 `links` 函数中优化资源加载
-- ✅ 为静态资源设置合理的 Cache-Control
-- ✅ 使用 `ErrorBoundary` 隔离错误
-- ✅ 避免在 loader 中执行耗时操作（使用 streaming）
+- 正确 使用 `prefetch` 预加载关键路由
+- 正确 为慢速数据使用 `defer` + `<Await>`
+- 正确 在 `links` 函数中优化资源加载
+- 正确 为静态资源设置合理的 Cache-Control
+- 正确 使用 `ErrorBoundary` 隔离错误
+- 正确 避免在 loader 中执行耗时操作（使用 streaming）
 
 ### 9.3 安全清单
 
-- ✅ 验证所有用户输入（前端 + 后端）
-- ✅ 使用 CSRF token（Remix 自动处理）
-- ✅ 设置安全的 HTTP headers（Helmet.js）
-- ✅ 敏感操作需要重新验证（Re-authentication）
-- ✅ 使用 HTTPS（生产环境强制）
+- 正确 验证所有用户输入（前端 + 后端）
+- 正确 使用 CSRF token（Remix 自动处理）
+- 正确 设置安全的 HTTP headers（Helmet.js）
+- 正确 敏感操作需要重新验证（Re-authentication）
+- 正确 使用 HTTPS（生产环境强制）
 
 ## 十、未来展望
 
@@ -686,4 +686,4 @@ Remix 通过其独特的设计哲学——**拥抱 Web 平台**、**渐进增强
 - [Remix GitHub Repository](https://github.com/remix-run/remix)
 - [Web Fundamentals - MDN](https://developer.mozilla.org/en-US/docs/Web)
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

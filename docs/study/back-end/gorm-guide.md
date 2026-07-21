@@ -47,21 +47,21 @@ func main() {
     // 参考 https://github.com/go-sql-driver/mysql#dsn-data-source-name 获取详情
     dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
     db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-    
+
     if err != nil {
         panic("failed to connect database")
     }
-    
+
     // 测试连接
     sqlDB, err := db.DB()
     if err != nil {
         panic("failed to get database instance")
     }
-    
+
     // 设置连接池
     sqlDB.SetMaxIdleConns(10)
     sqlDB.SetMaxOpenConns(100)
-    
+
     // 使用db进行数据库操作
     // ...
 }
@@ -84,10 +84,10 @@ type User struct {
     ID        uint           `gorm:"primaryKey"`
     Name      string         `gorm:"not null"`
     Email     string         `gorm:"uniqueIndex;not null"`
-    Age       int            
-    Birthday  *time.Time     
-    CreatedAt time.Time      
-    UpdatedAt time.Time      
+    Age       int
+    Birthday  *time.Time
+    CreatedAt time.Time
+    UpdatedAt time.Time
     DeletedAt gorm.DeletedAt `gorm:"index"` // 软删除
 }
 
@@ -397,11 +397,11 @@ err := db.Transaction(func(tx *gorm.DB) error {
         // 返回任何错误都会回滚事务
         return err
     }
-    
+
     if err := tx.Create(&User{Name: "李四"}).Error; err != nil {
         return err
     }
-    
+
     // 返回 nil 提交事务
     return nil
 })

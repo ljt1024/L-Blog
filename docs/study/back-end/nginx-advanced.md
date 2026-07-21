@@ -277,20 +277,20 @@ http {
     log_format main '$remote_addr - $remote_user [$time_local] "$request" '
                     '$status $body_bytes_sent "$http_referer" '
                     '"$http_user_agent" "$http_x_forwarded_for"';
-                    
+
     access_log /var/log/nginx/access.log main;
-    
+
     # 基本设置
     sendfile on;
     tcp_nopush on;
     tcp_nodelay on;
     keepalive_timeout 65;
     types_hash_max_size 2048;
-    
+
     # MIME类型映射
     include /etc/nginx/mime.types;
     default_type application/octet-stream;
-    
+
     # 包含站点配置
     include /etc/nginx/conf.d/*.conf;
     include /etc/nginx/sites-enabled/*;
@@ -307,20 +307,20 @@ http {
 server {
     listen 80;
     server_name example.com www.example.com;
-    
+
     # 网站根目录
     root /var/www/example.com;
     index index.html index.htm index.php;
-    
+
     # 访问日志
     access_log /var/log/nginx/example.com.access.log;
     error_log /var/log/nginx/example.com.error.log;
-    
+
     # 网站根目录访问规则
     location / {
         try_files $uri $uri/ =404;
     }
-    
+
     # PHP处理（如果需要）
     location ~ \.php$ {
         fastcgi_pass 127.0.0.1:9000;
@@ -328,7 +328,7 @@ server {
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         include fastcgi_params;
     }
-    
+
     # 静态文件缓存
     location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
         expires 1y;
@@ -407,7 +407,7 @@ nginx -v
 server {
     listen 80;
     server_name api.example.com;
-    
+
     location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_set_header Host $host;
@@ -431,7 +431,7 @@ upstream backend {
 server {
     listen 80;
     server_name app.example.com;
-    
+
     location / {
         proxy_pass http://backend;
         proxy_set_header Host $host;
@@ -469,26 +469,26 @@ sudo crontab -e
 server {
     listen 443 ssl http2;
     server_name example.com;
-    
+
     # SSL证书配置
     ssl_certificate /path/to/fullchain.pem;
     ssl_certificate_key /path/to/private.key;
-    
+
     # SSL安全设置
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
     ssl_prefer_server_ciphers off;
-    
+
     # OCSP stapling
     ssl_stapling on;
     ssl_stapling_verify on;
     resolver 8.8.8.8 8.8.4.4 valid=300s;
     resolver_timeout 5s;
-    
+
     # 网站配置
     root /var/www/example.com;
     index index.html index.htm;
-    
+
     location / {
         try_files $uri $uri/ =404;
     }
@@ -528,17 +528,17 @@ http {
     open_file_cache_valid 30s;
     open_file_cache_min_uses 2;
     open_file_cache_errors on;
-    
+
     # 输出缓冲区
     output_buffers 1 32k;
     postpone_output 1460;
-    
+
     # 客户端缓冲区
     client_body_buffer_size 10K;
     client_header_buffer_size 1k;
     client_max_body_size 8m;
     large_client_header_buffers 2 1k;
-    
+
     # 超时设置
     client_body_timeout 12;
     client_header_timeout 12;
@@ -574,7 +574,7 @@ http {
 server {
     # 隐藏版本号
     server_tokens off;
-    
+
     # 防止图片盗链
     location ~* \.(gif|jpg|jpeg|png|bmp|swf)$ {
         valid_referers none blocked *.example.com example.com;
@@ -582,28 +582,28 @@ server {
             return 403;
         }
     }
-    
+
     # 防止文件注入
     location ~ \.php$ {
         include /etc/nginx/fastcgi_params;
         fastcgi_intercept_errors on;
         fastcgi_pass 127.0.0.1:9000;
     }
-    
+
     # 限制请求方法
     if ($request_method !~ ^(GET|HEAD|POST)$ ) {
         return 405;
     }
-    
+
     # 限制访问敏感文件
     location ~ /\.ht {
         deny all;
     }
-    
+
     location ~ ^/(README|INSTALL|LICENSE|CHANGELOG|UPGRADE)$ {
         deny all;
     }
-    
+
     location ~ ^/(bin|cache|tmp)/ {
         deny all;
     }
@@ -617,14 +617,14 @@ server {
 http {
     # 限制每个IP的请求速率（每秒10个请求）
     limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
-    
+
     # 限制每个IP的连接数
     limit_conn_zone $binary_remote_addr zone=conn_limit_per_ip:10m;
-    
+
     server {
         # 应用连接限制
         limit_conn conn_limit_per_ip 10;
-        
+
         # 应用请求速率限制
         location /api/ {
             limit_req zone=api burst=20 nodelay;
@@ -701,10 +701,10 @@ server {
 
 访问 `http://your_server/nginx_status` 可以看到类似以下的信息：
 ```
-Active connections: 291 
+Active connections: 291
 server accepts handled requests
- 16630948 16630948 31070465 
-Reading: 6 Writing: 179 Waiting: 106 
+ 16630948 16630948 31070465
+Reading: 6 Writing: 179 Waiting: 106
 ```
 
 ### 11.2 使用第三方监控工具

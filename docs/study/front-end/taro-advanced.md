@@ -110,7 +110,7 @@ class Parent extends Component {
   render() {
     return (
       <View>
-        <ChildComponent 
+        <ChildComponent
           message={this.state.message}
           onMessage={this.handleMessage}
         />
@@ -342,7 +342,7 @@ const BASE_URL = 'https://api.example.com'
 
 const request = (options) => {
   const { url, method = 'GET', data = {}, header = {} } = options
-  
+
   return Taro.request({
     url: BASE_URL + url,
     method,

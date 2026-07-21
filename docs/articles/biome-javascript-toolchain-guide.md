@@ -408,7 +408,7 @@ time npx eslint . && npx prettier --check .
 
 # Biome lint + format（并行）
 time npx biome check .
-# real    0m0.8s  ⚡ 快了 35 倍！
+# real    0m0.8s   快了 35 倍！
 
 # 增量检查（改动 5 个文件）
 time npx biome check --changed
@@ -443,4 +443,4 @@ Biome 重新定义了前端工具链：
 
 从今天起，把 Prettier 和 ESLint 删了吧。
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

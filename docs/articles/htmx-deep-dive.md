@@ -7,7 +7,7 @@ date: 2026-06-03
 
 > 当全栈框架用 React/Vue 重构一切的时候，HTMX 告诉你：其实 HTML 才是最好的 UI 描述语言。HTMX 用"超媒体 API"的理念，让服务器直接返回 HTML 片段，而不用写一行 JavaScript。Stripe、LinkedIn、Cloudflare 都在用它。2024 年它成为最受关注的 Web 技术之一。本文从理念到实战，带你搞懂 HTMX 为什么让这么多人"真香"。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么 HTMX 让人"真香"？
 
@@ -18,7 +18,7 @@ date: 2026-06-03
 前端：React/Vue + Redux/Zustand + React Query + 10个npm包 → 100KB+ JS
 后端：REST API + JWT + 鉴权层 → 复杂
 状态：前端管数据、后端管业务 → 数据不一致
-⏱️  开发周期：数周起步
+⏱  开发周期：数周起步
 ```
 
 ```
@@ -26,7 +26,7 @@ HTMX 的思路：
 服务器返回 HTML 片段 → 直接替换页面局部
 浏览器零 JavaScript → 最终产物 HTML
 前端、后端合一 → 一个后端搞定全栈
-⏱️  开发周期：几天
+⏱  开发周期：几天
 ```
 
 **HTMX 不是"不要 JavaScript"，而是"用最少的 JavaScript 做最多的事情"。**
@@ -93,7 +93,7 @@ app = Flask(__name__)
 
 @app.get("/hello")
 def hello():
-    return "<span>Hello from HTMX! 🦐</span>"
+    return "<span>Hello from HTMX! </span>"
 
 @app.get("/")
 def index():
@@ -250,7 +250,7 @@ contact_template = """
 
 success_template = """
 <div class="success">
-  <h3>✅ 发送成功！</h3>
+  <h3>正确 发送成功！</h3>
   <p>感谢您的留言</p>
 </div>
 """
@@ -290,7 +290,7 @@ def contact():
     hx-target="#results"
     hx-indicator=".spinner"
   />
-  <span class="htmx-indicator spinner">🔄 搜索中...</span>
+  <span class="htmx-indicator spinner"> 搜索中...</span>
 </div>
 
 <div id="results"></div>
@@ -449,7 +449,7 @@ document.body.addEventListener('htmx:before-ajax-request', (e) => {
   </style>
 </head>
 <body>
-  <h1>📝 HTMX ToDo 列表</h1>
+  <h1> HTMX ToDo 列表</h1>
 
   <!-- 添加新任务 -->
   <form hx-post="/todos" hx-target="#todo-list" hx-swap="afterbegin">
@@ -487,7 +487,7 @@ todo_item_template = """
     hx-target="closest div"
     hx-swap="outerHTML"
     class="done-btn">
-    {{ '↩️ 撤销' if todo.done else '✓ 完成' }}
+    {{ '↩ 撤销' if todo.done else '是 完成' }}
   </button>
 </div>
 """
@@ -568,7 +568,7 @@ app.get('/', (c) => c.html(<html>
   </body>
 </html>));
 
-app.get('/api/hello', (c) => c.html('<span>Hello HTMX! 🦐</span>'));
+app.get('/api/hello', (c) => c.html('<span>Hello HTMX! </span>'));
 ```
 
 ### Go net/http
@@ -605,17 +605,17 @@ func main() {
 | 学习曲线 | ⭐ 极低 | ⭐⭐⭐⭐⭐ | ⭐⭐ |
 | 后端复杂度 | 低（返回 HTML） | 高（REST API + JWT） | 低 |
 | 状态管理 | 服务器端 | 客户端 | 客户端 |
-| SEO | ✅ 天然友好 | ⚠️ 需要 SSR | ⚠️ 需要 SSR |
-| 复杂交互 | ❌ 不适合 | ✅ 适合 | ⭐⭐⭐ |
-| 实时更新 | ⚠️ 需 WebSocket | ✅ WebSocket/SSE | ⚠️ 需扩展 |
-| 移动端 | ⚠️ | ✅ | ⭐⭐⭐ |
+| SEO | 正确 天然友好 | 注意 需要 SSR | 注意 需要 SSR |
+| 复杂交互 | 错误 不适合 | 正确 适合 | ⭐⭐⭐ |
+| 实时更新 | 注意 需 WebSocket | 正确 WebSocket/SSE | 注意 需扩展 |
+| 移动端 | 注意 | 正确 | ⭐⭐⭐ |
 
 ---
 
 ## HTMX 适用场景
 
 ```
-✅ 强项：
+正确 强项：
 ─────────────────
 - 后台管理系统（CRUD 为主）
 - 博客、文档站点
@@ -624,7 +624,7 @@ func main() {
 - 快速 MVP（几天完成全栈）
 - 不想写 JavaScript 的后端开发者
 
-❌ 弱项：
+错误 弱项：
 ─────────────────
 - 复杂客户端交互（地图编辑器、设计工具）
 - 实时多人协作
@@ -702,6 +702,6 @@ HTML 片段：服务器返回 HTML，不是 JSON
 
 **HTMX 不是"反 JavaScript"，而是"按需 JavaScript"** —— 如果 HTML 能解决，就用 HTML。如果真的需要复杂交互，再引入 JavaScript 库。
 
-HTML 是 Web 的根基，HTMX 让 HTML 重新成为 UI 的主角 📄
+HTML 是 Web 的根基，HTMX 让 HTML 重新成为 UI 的主角
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

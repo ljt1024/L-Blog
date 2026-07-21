@@ -60,7 +60,7 @@ function Profile({ userId }) {
 
   useEffect(() => {
     let cancelled = false;
-    
+
     fetchUser(userId).then(data => {
       if (!cancelled) {
         setUser(data);
@@ -84,10 +84,10 @@ function Profile({ userId }) {
 ```
 
 **优势：**
-- ✅ 相关逻辑聚合在一起
-- ✅ 无需手动绑定 this
-- ✅ 副作用可独立管理
-- ✅ 易于测试和复用
+- 正确 相关逻辑聚合在一起
+- 正确 无需手动绑定 this
+- 正确 副作用可独立管理
+- 正确 易于测试和复用
 
 ## 二、核心 Hooks 深度解析
 
@@ -97,16 +97,16 @@ function Profile({ userId }) {
 
 ```jsx
 function Counter() {
-  // ✅ 正确：初始值只会在首次渲染时使用
+  // 正确 正确：初始值只会在首次渲染时使用
   const [count, setCount] = useState(0);
 
-  // ❌ 错误：每次渲染都会创建新数组
+  // 错误 错误：每次渲染都会创建新数组
   const [items, setItems] = useState(createExpensiveArray());
 
-  // ✅ 正确：惰性初始化，只执行一次
+  // 正确 正确：惰性初始化，只执行一次
   const [items, setItems] = useState(() => createExpensiveArray());
 
-  // ✅ 正确：函数式更新，避免闭包陷阱
+  // 正确 正确：函数式更新，避免闭包陷阱
   const increment = () => setCount(prev => prev + 1);
 
   // 批量更新
@@ -131,18 +131,18 @@ function UserForm() {
     age: 0
   });
 
-  // ❌ 错误：直接修改状态
+  // 错误 错误：直接修改状态
   const updateName = (name) => {
     user.name = name;
     setUser(user); // 不会触发重新渲染
   };
 
-  // ✅ 正确：创建新对象
+  // 正确 正确：创建新对象
   const updateUser = (field, value) => {
     setUser(prev => ({ ...prev, [field]: value }));
   };
 
-  // ✅ 更好：使用 useReducer 处理复杂状态
+  // 正确 更好：使用 useReducer 处理复杂状态
   const [state, dispatch] = useReducer(userReducer, initialUser);
 }
 ```
@@ -155,24 +155,24 @@ function UserForm() {
 function DataFetcher({ userId, filter }) {
   const [data, setData] = useState(null);
 
-  // ❌ 缺少依赖：可能的 bug
+  // 错误 缺少依赖：可能的 bug
   useEffect(() => {
     fetchData(userId, filter).then(setData);
   }, [userId]); // filter 变化时不会重新执行
 
-  // ✅ 完整依赖
+  // 正确 完整依赖
   useEffect(() => {
     fetchData(userId, filter).then(setData);
   }, [userId, filter]);
 
-  // ✅ 使用函数式更新避免依赖
+  // 正确 使用函数式更新避免依赖
   useEffect(() => {
     fetchData(userId).then(data => {
       setData(prev => ({ ...prev, ...data })); // 不依赖当前 data
     });
   }, [userId]);
 
-  // ✅ 空依赖数组：只在挂载时执行
+  // 正确 空依赖数组：只在挂载时执行
   useEffect(() => {
     const timer = setInterval(() => {
       console.log('tick');
@@ -180,7 +180,7 @@ function DataFetcher({ userId, filter }) {
     return () => clearInterval(timer);
   }, []);
 
-  // ✅ 无依赖数组：每次渲染后都执行
+  // 正确 无依赖数组：每次渲染后都执行
   useEffect(() => {
     console.log('rendered');
   });
@@ -195,9 +195,9 @@ function SearchBox() {
   const [results, setResults] = useState([]);
 
   useEffect(() => {
-    // ✅ 使用 AbortController 取消请求
+    // 正确 使用 AbortController 取消请求
     const controller = new AbortController();
-    
+
     if (query) {
       searchAPI(query, { signal: controller.signal })
         .then(setResults)
@@ -219,10 +219,10 @@ function SearchBox() {
 
 ```jsx
 function OptimizedComponent({ items, onClick }) {
-  // ❌ 过度优化：简单计算不需要 memo
+  // 错误 过度优化：简单计算不需要 memo
   const doubled = useMemo(() => count * 2, [count]);
 
-  // ✅ 合理优化：昂贵计算
+  // 正确 合理优化：昂贵计算
   const sortedItems = useMemo(() => {
     return items.sort((a, b) => {
       // 复杂的排序逻辑...
@@ -230,20 +230,20 @@ function OptimizedComponent({ items, onClick }) {
     });
   }, [items]);
 
-  // ❌ 无意义的 memo：函数每次都会创建新引用
+  // 错误 无意义的 memo：函数每次都会创建新引用
   const handleClick = useCallback(() => {
     console.log('clicked');
   }, []); // 空依赖，但组件内定义的函数还是新引用
 
-  // ✅ 合理使用：作为子组件 props 传递
+  // 正确 合理使用：作为子组件 props 传递
   const handleItemClick = useCallback((id) => {
     onClick(id);
   }, [onClick]); // 依赖 onClick，避免过时闭包
 
   return (
-    <ExpensiveChild 
-      items={sortedItems} 
-      onClick={handleItemClick} 
+    <ExpensiveChild
+      items={sortedItems}
+      onClick={handleItemClick}
     />
   );
 }
@@ -297,7 +297,7 @@ function useWindowSize() {
 // 使用
 function ResponsiveComponent() {
   const { width, height } = useWindowSize();
-  
+
   return (
     <div>
       窗口尺寸: {width} x {height}
@@ -324,8 +324,8 @@ function useLocalStorage(key, initialValue) {
 
   const setValue = useCallback((value) => {
     try {
-      const valueToStore = value instanceof Function 
-        ? value(storedValue) 
+      const valueToStore = value instanceof Function
+        ? value(storedValue)
         : value;
       setStoredValue(valueToStore);
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
@@ -490,7 +490,7 @@ function useForm(initialValues, onSubmit) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch({ type: 'SUBMIT_START' });
-    
+
     try {
       await onSubmit(state.values);
       dispatch({ type: 'SUBMIT_SUCCESS' });
@@ -546,7 +546,7 @@ function App() {
 function Counter() {
   const [count, setCount] = useState(0);
 
-  // ❌ 闭包陷阱：count 始终是初始值 0
+  // 错误 闭包陷阱：count 始终是初始值 0
   useEffect(() => {
     const timer = setInterval(() => {
       console.log(count); // 永远是 0
@@ -555,7 +555,7 @@ function Counter() {
     return () => clearInterval(timer);
   }, []); // 空依赖：count 是过时闭包
 
-  // ✅ 解决方案 1：添加依赖
+  // 正确 解决方案 1：添加依赖
   useEffect(() => {
     const timer = setInterval(() => {
       setCount(count + 1);
@@ -563,7 +563,7 @@ function Counter() {
     return () => clearInterval(timer);
   }, [count]);
 
-  // ✅ 解决方案 2：函数式更新
+  // 正确 解决方案 2：函数式更新
   useEffect(() => {
     const timer = setInterval(() => {
       setCount(prev => prev + 1); // 总是获取最新值
@@ -571,7 +571,7 @@ function Counter() {
     return () => clearInterval(timer);
   }, []);
 
-  // ✅ 解决方案 3：使用 ref
+  // 正确 解决方案 3：使用 ref
   const countRef = useRef(count);
   countRef.current = count;
 
@@ -596,7 +596,7 @@ function SearchResults({ query }) {
     const currentSequence = ++sequence.current;
 
     searchAPI(query).then(data => {
-      // ✅ 检查是否已取消或是否是最新请求
+      // 正确 检查是否已取消或是否是最新请求
       if (!cancelled && currentSequence === sequence.current) {
         setResults(data);
       }
@@ -613,30 +613,30 @@ function SearchResults({ query }) {
 
 ```jsx
 function BestPracticesExample({ userId }) {
-  // ✅ 1. Hooks 在组件顶层调用
+  // 正确 1. Hooks 在组件顶层调用
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ 2. 自定义 Hooks 以 use 开头
+  // 正确 2. 自定义 Hooks 以 use 开头
   const { data, error } = useUser(userId);
 
-  // ✅ 3. 使用解构和默认值
+  // 正确 3. 使用解构和默认值
   const { name = 'Guest', avatar = defaultAvatar } = user || {};
 
-  // ✅ 4. 条件渲染在 return 中处理
+  // 正确 4. 条件渲染在 return 中处理
   if (loading) return <Spinner />;
   if (error) return <ErrorMessage error={error} />;
 
-  // ✅ 5. 使用 key 重置组件状态
+  // 正确 5. 使用 key 重置组件状态
   return (
     <div>
       <UserForm key={userId} user={user} />
     </div>
   );
 
-  // ❌ 不要在循环、条件中调用 Hooks
-  // ❌ 不要在普通函数中调用 Hooks
-  // ❌ 不要直接修改 state
+  // 错误 不要在循环、条件中调用 Hooks
+  // 错误 不要在普通函数中调用 Hooks
+  // 错误 不要直接修改 state
 }
 ```
 
@@ -690,4 +690,4 @@ React Hooks 的精髓在于：
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

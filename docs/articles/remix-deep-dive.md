@@ -7,7 +7,7 @@ date: 2026-06-30
 
 > Next.js 统治了 React 全栈框架赛道，但 Remix 带来了不同的哲学——以 Web 标准为基础、以 Nested Routing 为核心、以渐进增强为理念。本文深度解析 Remix 的设计思想、核心机制、数据加载模式，以及与 Next.js 的全方位对比。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要 Remix？
 
@@ -69,7 +69,7 @@ npx create-remix@latest my-remix-app
 
 # 选择部署平台
 ? Where do you want to deploy? (Use arrow keys)
-  ❯ Remix App Server
+  > Remix App Server
     Express Server
     Vercel
     Netlify
@@ -116,14 +116,14 @@ import { useLoaderData } from "@remix-run/react";
 // Loader：服务端执行，返回数据给组件
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const { slug } = params;
-  
+
   // 从数据库/API 获取数据
   const post = await db.post.findUnique({ where: { slug } });
-  
+
   if (!post) {
     throw new Response("Not Found", { status: 404 });
   }
-  
+
   // 返回 JSON 响应
   return json({ post });
 }
@@ -131,7 +131,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 // 组件：使用 useLoaderData 获取数据
 export default function PostRoute() {
   const { post } = useLoaderData<typeof loader>();
-  
+
   return (
     <article>
       <h1>{post.title}</h1>
@@ -153,7 +153,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const title = formData.get("title");
   const content = formData.get("content");
-  
+
   // 验证
   if (!title || !content) {
     return json(
@@ -161,12 +161,12 @@ export async function action({ request }: ActionFunctionArgs) {
       { status: 400 }
     );
   }
-  
+
   // 创建文章
   const post = await db.post.create({
     data: { title, content },
   });
-  
+
   // 重定向到文章页
   return redirect(`/posts/${post.slug}`);
 }
@@ -174,13 +174,13 @@ export async function action({ request }: ActionFunctionArgs) {
 // 组件：使用 <Form> 替代原生 <form>
 export default function NewPostRoute() {
   const actionData = useActionData<typeof action>();
-  
+
   return (
     <Form method="post">
       {actionData?.error && (
         <div className="error">{actionData.error}</div>
       )}
-      
+
       <input name="title" placeholder="标题" />
       <textarea name="content" placeholder="内容" />
       <button type="submit">发布</button>
@@ -204,7 +204,7 @@ import { useNavigation } from "@remix-run/react";
 function SubmitButton() {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
-  
+
   return (
     <button disabled={isSubmitting}>
       {isSubmitting ? "提交中..." : "提交"}
@@ -250,7 +250,7 @@ export async function loader() {
 
 export default function App() {
   const { user } = useLoaderData<typeof loader>();
-  
+
   return (
     <html>
       <head>
@@ -283,7 +283,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function DashboardRoute() {
   const { stats } = useLoaderData<typeof loader>();
-  
+
   return (
     <div className="dashboard">
       <aside>
@@ -312,7 +312,7 @@ export async function loader() {
 
 export default function SettingsRoute() {
   const { settings } = useLoaderData<typeof loader>();
-  
+
   return (
     <Form method="patch">
       <label>
@@ -341,19 +341,19 @@ export async function loader({ params }: LoaderFunctionArgs) {
   const post = await db.post.findUnique({
     where: { slug: params.slug },
   });
-  
+
   if (!post) {
     // 抛出 Response，Remix 会捕获并渲染 errorboundary
     throw new Response("Not Found", { status: 404 });
   }
-  
+
   return json({ post });
 }
 
 // Error Boundary：捕获该路由及其子路由的错误
 export function ErrorBoundary() {
   const error = useRouteError();
-  
+
   if (isRouteErrorResponse(error)) {
     // 是 Response 错误（404、500 等）
     return (
@@ -363,7 +363,7 @@ export function ErrorBoundary() {
       </div>
     );
   }
-  
+
   // 其他错误（JS 运行时错误）
   return (
     <div className="error">
@@ -380,7 +380,7 @@ export function ErrorBoundary() {
 // app/root.tsx
 export function ErrorBoundary() {
   const error = useRouteError();
-  
+
   // 根错误边界：捕获所有未处理的错误
   return (
     <html>
@@ -412,19 +412,19 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
-  
+
   const result = await login(email, password);
-  
+
   if (!result.success) {
     return json({ error: result.error });
   }
-  
+
   return redirect("/dashboard");
 }
 
 export default function LoginRoute() {
   const actionData = useActionData<typeof action>();
-  
+
   return (
     <Form method="post">
       <input name="email" type="email" required />
@@ -448,15 +448,15 @@ import { useFetcher } from "@remix-run/react";
 
 function LikeButton({ postId, initialLikes }: { postId: string; initialLikes: number }) {
   const fetcher = useFetcher<{ likes: number }>();
-  
+
   // 乐观状态：如果正在提交，显示乐观值；否则显示服务器值
   const likes = fetcher.formData
     ? initialLikes + 1  // 乐观更新
     : initialLikes;      // 服务器值
-  
+
   return (
     <fetcher.Form method="post" action={`/posts/${postId}/like`}>
-      <button type="submit">👍 {likes}</button>
+      <button type="submit"> {likes}</button>
     </fetcher.Form>
   );
 }
@@ -474,13 +474,13 @@ import { useFetcher } from "@remix-run/react";
 
 function FavoriteButton({ postId }: { postId: string }) {
   const fetcher = useFetcher<{ isFavorited: boolean }>();
-  
+
   const isFavorited = fetcher.data?.isFavorited ?? false;
-  
+
   return (
     <fetcher.Form method="post" action={`/posts/${postId}/favorite`}>
       <button type="submit">
-        {isFavorited ? "❤️" : "🤍"}
+        {isFavorited ? "" : ""}
       </button>
     </fetcher.Form>
   );
@@ -498,7 +498,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return [{ title: "文章未找到" }];
   }
-  
+
   return [
     { title: data.post.title },
     { name: "description", content: data.post.excerpt },
@@ -522,11 +522,11 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const post = await db.post.findUnique({
     where: { slug: params.slug },
   });
-  
+
   if (!post) {
     throw new Response("Not Found", { status: 404 });
   }
-  
+
   // 返回 JSON（API 端点）
   return json({ post });
 }
@@ -588,19 +588,19 @@ export const onRequest = createPagesFunctionHandler({
 ```
 选择 Remix 的场景：
 ─────────────────────────────────
-✅ 需要 Nested Routing（仪表盘、CMS、管理后台）
-✅ 表单密集型应用（内容管理、数据录入）
-✅ 团队熟悉 Web 标准（Fetch API、HTML Form）
-✅ 需要部署到多种平台（Node.js、Cloudflare、Netlify）
-✅ 希望学习曲线平缓（无 RSC 概念）
+正确 需要 Nested Routing（仪表盘、CMS、管理后台）
+正确 表单密集型应用（内容管理、数据录入）
+正确 团队熟悉 Web 标准（Fetch API、HTML Form）
+正确 需要部署到多种平台（Node.js、Cloudflare、Netlify）
+正确 希望学习曲线平缓（无 RSC 概念）
 
 选择 Next.js 的场景：
 ─────────────────────────────────
-✅ 需要 SSR + ISR（增量静态再生）
-✅ 需要 Image 优化（next/image）
-✅ 需要国际化（next-intl、next-i18next）
-✅ 需要 Vercel 生态（一键部署、Edge Functions）
-✅ 团队已熟悉 Next.js
+正确 需要 SSR + ISR（增量静态再生）
+正确 需要 Image 优化（next/image）
+正确 需要国际化（next-intl、next-i18next）
+正确 需要 Vercel 生态（一键部署、Edge Functions）
+正确 团队已熟悉 Next.js
 ```
 
 ---
@@ -624,19 +624,19 @@ useNavigation：获取页面导航状态
 ```
 Remix 的优势：
 ─────────────────────────────────
-✅ Nested Routing（UI + 数据双重嵌套）
-✅ 渐进增强（无 JS 也能用）
-✅ 表单处理简单（<Form> 内置支持）
-✅ 基于 Web 标准（Fetch API、Request、Response）
-✅ 部署灵活（任意 Node.js / Edge 平台）
+正确 Nested Routing（UI + 数据双重嵌套）
+正确 渐进增强（无 JS 也能用）
+正确 表单处理简单（<Form> 内置支持）
+正确 基于 Web 标准（Fetch API、Request、Response）
+正确 部署灵活（任意 Node.js / Edge 平台）
 
 Remix 的劣势：
 ─────────────────────────────────
-❌ 生态系统小于 Next.js
-❌ 没有 ISR（增量静态再生）
-❌ 学习资源少于 Next.js
+错误 生态系统小于 Next.js
+错误 没有 ISR（增量静态再生）
+错误 学习资源少于 Next.js
 ```
 
-Remix 让全栈 React 开发回归 Web 标准——Nested Routing 是它的灵魂，渐进增强是它的理念，Web 标准是它的基石 🦐
+Remix 让全栈 React 开发回归 Web 标准——Nested Routing 是它的灵魂，渐进增强是它的理念，Web 标准是它的基石
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

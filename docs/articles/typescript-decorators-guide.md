@@ -140,14 +140,14 @@ console.log(user.extraInfo); // "扩展信息"
 ```typescript
 function logger(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
   const method = descriptor.value;
-  
+
   descriptor.value = function (...args: any[]) {
     console.log(`[LOG] Calling ${propertyKey}`, args);
     const result = method.apply(this, args);
     console.log(`[LOG] ${propertyKey} returned`, result);
     return result;
   };
-  
+
   return descriptor;
 }
 
@@ -165,7 +165,7 @@ class ProductService {
 function cache(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
   const cacheMap = new Map<string, any>();
   const method = descriptor.value;
-  
+
   descriptor.value = function (...args: any[]) {
     const key = JSON.stringify(args);
     if (cacheMap.has(key)) {
@@ -176,7 +176,7 @@ function cache(target: any, propertyKey: string, descriptor: PropertyDescriptor)
     cacheMap.set(key, result);
     return result;
   };
-  
+
   return descriptor;
 }
 
@@ -200,12 +200,12 @@ function debounce(wait: number) {
   ) {
     let timeout: NodeJS.Timeout;
     const original = descriptor.value;
-    
+
     descriptor.value = function (...args: any[]) {
       clearTimeout(timeout);
       timeout = setTimeout(() => original.apply(this, args), wait);
     };
-    
+
     return descriptor;
   };
 }
@@ -241,7 +241,7 @@ function bound(_target: any, _propertyKey: string, descriptor: PropertyDescripto
 
 class Handler {
   name = "Handler";
-  
+
   @bound
   handleClick() {
     console.log(this.name);
@@ -259,7 +259,7 @@ click(); // "Handler" (正常输出，而不是 undefined)
 function minLength(min: number) {
   return function (target: any, propertyKey: string) {
     let value: string;
-    
+
     const descriptor: PropertyDescriptor = {
       get() { return value; },
       set(val: string) {
@@ -269,7 +269,7 @@ function minLength(min: number) {
         value = val;
       }
     };
-    
+
     Object.defineProperty(target, propertyKey, descriptor);
   };
 }
@@ -290,7 +290,7 @@ user.username = "abc"; // 正常
 
 ```typescript
 function required(target: any, propertyKey: string, parameterIndex: number) {
-  const existingRequiredParameters: number[] = 
+  const existingRequiredParameters: number[] =
     Reflect.getMetadata("required", target, propertyKey) || [];
   existingRequiredParameters.push(parameterIndex);
   Reflect.defineMetadata("required", existingRequiredParameters, target, propertyKey);
@@ -298,20 +298,20 @@ function required(target: any, propertyKey: string, parameterIndex: number) {
 
 function validate(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
   const method = descriptor.value;
-  
+
   descriptor.value = function (...args: any[]) {
-    const requiredParams: number[] = 
+    const requiredParams: number[] =
       Reflect.getMetadata("required", target, propertyKey) || [];
-    
+
     for (const index of requiredParams) {
       if (args[index] === undefined) {
         throw new Error(`Missing required parameter at index ${index}`);
       }
     }
-    
+
     return method.apply(this, args);
   };
-  
+
   return descriptor;
 }
 
@@ -336,18 +336,18 @@ type Constructor<T = any> = new (...args: any[]) => T;
 class Container {
   private static instance: Container;
   private services = new Map<Constructor, any>();
-  
+
   static get Instance() {
     if (!Container.instance) {
       Container.instance = new Container();
     }
     return Container.instance;
   }
-  
+
   register<T>(token: Constructor<T>, instance: T): void {
     this.services.set(token, instance);
   }
-  
+
   resolve<T>(token: Constructor<T>): T {
     return this.services.get(token);
   }
@@ -390,11 +390,11 @@ function createReducer(initialState: any, handlers: Record<string, ActionHandler
 function action(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
   const type = propertyKey;
   const fn = descriptor.value;
-  
+
   descriptor.value = function (...args: any[]) {
     return { type, payload: args[0] };
   };
-  
+
   return descriptor;
 }
 
@@ -403,7 +403,7 @@ class CounterReducer {
   increment(state: number, payload: number = 1) {
     return state + payload;
   }
-  
+
   @action
   decrement(state: number, payload: number = 1) {
     return state - payload;
@@ -438,7 +438,7 @@ class UserController {
   getUsers() {
     return [{ id: 1, name: '张三' }];
   }
-  
+
   @post('/create')
   createUser(payload: any) {
     return { success: true, data: payload };
@@ -450,14 +450,14 @@ function bootstrap(cls: new (...args: any[]) => any) {
   const instance = new cls();
   const routes = cls.prototype.routes || [];
   const prefix = cls.prototype.prefix || '';
-  
-  console.log(`\n🚀 Registered routes for ${cls.name}:`);
+
+  console.log(`\n Registered routes for ${cls.name}:`);
   routes.forEach((r: any) => {
     console.log(`   ${r.method} ${prefix}${r.path} → ${r.handler}`);
   });
-  
+
   return (req: any) => {
-    const route = routes.find((r: any) => 
+    const route = routes.find((r: any) =>
       r.method === req.method && r.path === req.path
     );
     if (route) {
@@ -470,18 +470,18 @@ function bootstrap(cls: new (...args: any[]) => any) {
 const app = bootstrap(UserController);
 
 // 模拟请求
-console.log('\n📨 Testing routes:');
+console.log('\n Testing routes:');
 console.log(app({ method: 'GET', path: '/api/users/list', body: {} }));
 console.log(app({ method: 'POST', path: '/api/users/create', body: { name: '李四' } }));
 ```
 
 输出：
 ```
-🚀 Registered routes for UserController:
+ Registered routes for UserController:
    GET /api/users/list → getUsers
    POST /api/users/create → createUser
 
-📨 Testing routes:
+ Testing routes:
 [{ id: 1, name: '张三' }]
 { success: true, data: { name: '李四' } }
 ```
@@ -503,12 +503,12 @@ class Example {
 ### 2. 保持装饰器纯净
 
 ```typescript
-// ❌ 不好：装饰器有副作用
+// 错误 不好：装饰器有副作用
 function badDecorator(target: any) {
   target.instanceCount = 0; // 共享状态
 }
 
-// ✅ 好：使用闭包或 descriptor 存储状态
+// 正确 好：使用闭包或 descriptor 存储状态
 function goodDecorator(target: any, key: string, descriptor: PropertyDescriptor) {
   const callCount = 0; // 每个实例独立
   // ...
@@ -542,4 +542,4 @@ TypeScript 装饰器为我们提供了强大的元编程能力：
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

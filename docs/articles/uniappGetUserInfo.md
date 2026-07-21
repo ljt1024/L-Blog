@@ -1,5 +1,5 @@
 新版本微信小程序通过getUserInfo获取到用户的头像是灰色，昵称显示为微信用户，这是微信版本更新了，现在需要用getUserProfile来获取用户的头像和昵称，并且只能页面产生点击事件（例如 button 上 bindtap 的回调中）后才可调用，也就是说你不能在一个方法里面去触发这个事件，这是需要值得注意的。详见[微信官方文档说明](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/user-info/wx.getUserProfile.html)
-	
+
 
 ```javascript
 <button @click="logins">测试登录</button>
@@ -19,7 +19,7 @@ logins() {
 				icon:"none",
 				title:'用户拒绝获取'
 			})
-		}  
+		}
 	})
 },
 ```

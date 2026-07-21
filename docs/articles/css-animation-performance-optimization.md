@@ -16,9 +16,9 @@ JavaScript → Style → Layout → Paint → Composite
 
 | 属性修改 | 触发阶段 | 性能成本 |
 |---------|---------|---------|
-| `width`, `height`, `margin` | Layout（重排） | 🔴 高 |
-| `background`, `color`, `border` | Paint（重绘） | 🟡 中 |
-| `transform`, `opacity` | Composite（合成） | 🟢 低 |
+| `width`, `height`, `margin` | Layout（重排） |  高 |
+| `background`, `color`, `border` | Paint（重绘） |  中 |
+| `transform`, `opacity` | Composite（合成） |  低 |
 
 **关键结论**：只有 `transform` 和 `opacity` 不会触发布局和绘制变化，直接在 GPU 层面合成，这就是动画性能优化的核心。
 
@@ -27,7 +27,7 @@ JavaScript → Style → Layout → Paint → Composite
 ### 实战对比
 
 ```css
-/* ❌ 低性能：触发重排 */
+/* 错误 低性能：触发重排 */
 .badge {
   animation: moveRight 1s ease;
 }
@@ -37,7 +37,7 @@ JavaScript → Style → Layout → Paint → Composite
   to { left: 100px; }
 }
 
-/* ✅ 高性能：使用 transform */
+/* 正确 高性能：使用 transform */
 .badge {
   animation: moveRight 1s ease;
 }
@@ -62,7 +62,7 @@ JavaScript → Style → Layout → Paint → Composite
 .card {
   /* 告诉浏览器：这个元素将要变化 */
   will-change: transform;
-  
+
   /* 变化结束后移除，释放内存 */
   transition: transform 0.3s ease;
 }
@@ -88,14 +88,14 @@ JavaScript → Style → Layout → Paint → Composite
 ### 1. 位移用 translate，勿用 top/left
 
 ```css
-/* ✅ 正确 */
+/* 正确 正确 */
 .element {
   transform: translateX(50px);
   transform: translateY(50px);
   transform: translate(50px, 50px); /* 组合写法 */
 }
 
-/* ❌ 错误 */
+/* 错误 错误 */
 .element {
   top: 50px;
   left: 50px;
@@ -105,12 +105,12 @@ JavaScript → Style → Layout → Paint → Composite
 ### 2. 缩放用 scale，勿用 width/height
 
 ```css
-/* ✅ 正确 */
+/* 正确 正确 */
 .modal {
   transform: scale(1.1);
 }
 
-/* ❌ 错误 */
+/* 错误 错误 */
 .modal {
   width: 110%;
   height: 110%;
@@ -120,7 +120,7 @@ JavaScript → Style → Layout → Paint → Composite
 ### 3. 旋转用 rotate，勿用 margin/padding
 
 ```css
-/* ✅ 正确 */
+/* 正确 正确 */
 .spinner {
   animation: spin 1s linear infinite;
 }
@@ -129,7 +129,7 @@ JavaScript → Style → Layout → Paint → Composite
   to { transform: rotate(360deg); }
 }
 
-/* ❌ 错误 */
+/* 错误 错误 */
 .spinner {
   /* 永远不要用这种方式做旋转动画！*/
 }
@@ -138,7 +138,7 @@ JavaScript → Style → Layout → Paint → Composite
 ### 4. 透明度动画替代 display/visibility
 
 ```css
-/* ❌ 错误：会触发布局变化 */
+/* 错误 错误：会触发布局变化 */
 .modal {
   display: none;
 }
@@ -146,7 +146,7 @@ JavaScript → Style → Layout → Paint → Composite
   display: block;
 }
 
-/* ✅ 正确：仅触发合成层 */
+/* 正确 正确：仅触发合成层 */
 .modal {
   opacity: 0;
   visibility: hidden;
@@ -207,7 +207,7 @@ function onDrag(element, x, y) {
 
 ## 常见误区
 
-### ❌ 滥用 will-change
+### 错误 滥用 will-change
 
 ```css
 /* 错误：给所有元素都加 will-change */
@@ -216,7 +216,7 @@ function onDrag(element, x, y) {
 }
 ```
 
-### ❌ 在动画中修改布局属性
+### 错误 在动画中修改布局属性
 
 ```css
 /* 错误：动画过程中修改 width */
@@ -226,7 +226,7 @@ function onDrag(element, x, y) {
 }
 ```
 
-### ❌ 忽略硬件加速的副作用
+### 错误 忽略硬件加速的副作用
 
 ```css
 /* 某些情况下可能导致字体模糊 */
@@ -239,13 +239,13 @@ function onDrag(element, x, y) {
 
 | 优化技巧 | 原理 | 效果 |
 |---------|-----|-----|
-| 使用 transform/opacity | 避免重排/重绘 | 🟢🟢🟢 |
-| 合理使用 will-change | 创建合成层 | 🟢🟢 |
-| 使用 translate/scale | GPU 加速 | 🟢🟢🟢 |
-| 避免布局属性动画 | 减少 CPU 消耗 | 🟢🟢🟢 |
+| 使用 transform/opacity | 避免重排/重绘 |  |
+| 合理使用 will-change | 创建合成层 |  |
+| 使用 translate/scale | GPU 加速 |  |
+| 避免布局属性动画 | 减少 CPU 消耗 |  |
 
 记住这个黄金法则：**动画用 transform 和 opacity 就对了！**
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

@@ -539,7 +539,7 @@ func readFile(filename string) {
         log.Fatal(err)
     }
     defer file.Close()  // 函数结束时关闭文件
-    
+
     // 处理文件...
     // file.Close()会在函数返回前自动调用
 }

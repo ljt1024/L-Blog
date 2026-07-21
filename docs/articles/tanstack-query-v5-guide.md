@@ -7,14 +7,14 @@ date: 2026-05-25
 
 > 你是否还在用 useEffect + useState 管理接口请求？是否还在手写 loading/error/数据缓存逻辑？TanStack Query（原 React Query）把这些全部承包了。v5 版本带来了更简洁的 API、更好的 TypeScript 支持和更小的体积。本文从零到实战，带你掌握现代 React 数据请求的正确姿势。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要 TanStack Query？
 
 ### 手写请求的痛点
 
 ```tsx
-// ❌ 手写请求：重复代码地狱
+// 错误 手写请求：重复代码地狱
 function UserProfile({ userId }: { userId: string }) {
   const [data, setData] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -47,7 +47,7 @@ function UserProfile({ userId }: { userId: string }) {
 ### 用 TanStack Query 之后
 
 ```tsx
-// ✅ 一行搞定
+// 正确 一行搞定
 import { useQuery } from '@tanstack/react-query';
 
 function UserProfile({ userId }: { userId: string }) {
@@ -539,9 +539,9 @@ function TodoPage() {
 |------|---------------|-----|
 | 体积 | ~12KB gzipped | ~4KB gzipped |
 | API 丰富度 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-| 离线支持 | ✅ | ❌ |
-| 无限加载 | ✅ 内置 | 需手动 |
-| 乐观更新 | ✅ 完善 | 基础 |
+| 离线支持 | 正确 | 错误 |
+| 无限加载 | 正确 内置 | 需手动 |
+| 乐观更新 | 正确 完善 | 基础 |
 | 适合场景 | 中大型应用 | 轻量应用 |
 | 学习曲线 | 中等 | 平缓 |
 
@@ -556,13 +556,13 @@ function TodoPage() {
 ### 1. queryKey 设计规范
 
 ```tsx
-// ✅ 推荐：分层结构
+// 正确 推荐：分层结构
 queryKey: ['todos']                    // 列表
 queryKey: ['todo', id]                 // 详情
 queryKey: ['todos', { status }]       // 带过滤的列表
 queryKey: ['user', userId, 'todos']   // 嵌套资源
 
-// ❌ 不推荐：模糊的 key
+// 错误 不推荐：模糊的 key
 queryKey: ['data']  // 不知道是什么数据
 queryKey: [Math.random()]  // 每次都重新请求
 ```
@@ -596,7 +596,7 @@ useQuery({
 ### 3. 避免过度请求
 
 ```tsx
-// ✅ 用 enabled 控制请求时机
+// 正确 用 enabled 控制请求时机
 const { data } = useQuery({
   queryKey: ['user', id],
   queryFn: () => fetchUser(id),
@@ -627,6 +627,6 @@ TanStack Query 解决了前端数据请求的**所有痛点**：
 4. 用 `useInfiniteQuery` 做无限滚动
 5. 配合 React 19 `use()` 做 Server Components
 
-数据请求不再是 React 开发的痛点，TanStack Query 帮你承包了 🎯
+数据请求不再是 React 开发的痛点，TanStack Query 帮你承包了
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

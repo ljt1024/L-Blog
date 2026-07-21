@@ -43,23 +43,23 @@ Zustand 的核心在于 **Store 创建函数** 和 **订阅机制**：
 function create<T>(initializer: (set: SetState<T>) => T) {
   // 1. 创建全局 store
   const store = { state: initializer(set) }
-  
+
   // 2. 订阅者集合
   const subscribers = new Set<() => void>()
-  
+
   // 3. set 函数实现
   const set: SetState<T> = (partial) => {
-    store.state = typeof partial === 'function' 
-      ? partial(store.state) 
+    store.state = typeof partial === 'function'
+      ? partial(store.state)
       : partial
     // 通知所有订阅者
     subscribers.forEach(fn => fn())
   }
-  
+
   // 4. 返回 hooks
   return <U>(selector: (state: T) => U) => {
     const [state, setState] = useState(() => selector(store.state))
-    
+
     useEffect(() => {
       const listener = () => {
         const newState = selector(store.state)
@@ -70,7 +70,7 @@ function create<T>(initializer: (set: SetState<T>) => T) {
       subscribers.add(listener)
       return () => subscribers.delete(listener)
     }, [selector])
-    
+
     return state
   }
 }
@@ -120,7 +120,7 @@ function Dashboard() {
 const useStore = create((set, get) => ({
   items: [],
   filter: 'all',
-  
+
   // 不需要单独存储 computed 值
   // 直接在组件中计算，或使用 selector
   // items 变化时 computed 自动更新
@@ -130,12 +130,12 @@ const useStore = create((set, get) => ({
 function FilteredList() {
   const items = useStore((s) => s.items)
   const filter = useStore((s) => s.filter)
-  
+
   const filteredItems = useMemo(() => {
     if (filter === 'all') return items
     return items.filter(i => i.status === filter)
   }, [items, filter])
-  
+
   return <List items={filteredItems} />
 }
 ```
@@ -154,7 +154,7 @@ const useUserStore = create<UserStore>((set) => ({
   users: [],
   loading: false,
   error: null,
-  
+
   fetchUsers: async () => {
     set({ loading: true, error: null })
     try {
@@ -225,11 +225,11 @@ interface CartSlice {
 
 const createCartSlice = (set) => ({
   cart: [],
-  addToCart: (item) => set((state) => ({ 
-    cart: [...state.cart, item] 
+  addToCart: (item) => set((state) => ({
+    cart: [...state.cart, item]
   })),
-  removeFromCart: (id) => set((state) => ({ 
-    cart: state.cart.filter(i => i.id !== id) 
+  removeFromCart: (id) => set((state) => ({
+    cart: state.cart.filter(i => i.id !== id)
   })),
 })
 
@@ -247,20 +247,20 @@ const useStore = create<Store>()((...args) => ({
 ### 1. 避免不必要的重新渲染
 
 ```typescript
-// ❌ 错误: 每次 store 变化都重新渲染
+// 错误 错误: 每次 store 变化都重新渲染
 function BadComponent() {
   const { count, increment } = useStore() // 订阅整个 store
   return <button onClick={increment}>{count}</button>
 }
 
-// ✅ 正确: 只订阅需要的部分
+// 正确 正确: 只订阅需要的部分
 function GoodComponent() {
   const count = useStore((s) => s.count)
   const increment = useStore((s) => s.increment)
   return <button onClick={increment}>{count}</button>
 }
 
-// ✅ 更好的方式: 使用 shallow 比较
+// 正确 更好的方式: 使用 shallow 比较
 import { shallow } from 'zustand/shallow'
 
 function BestComponent() {
@@ -277,13 +277,13 @@ function BestComponent() {
 ```typescript
 // 当需要访问多个 state 片段时
 function UserCard() {
-  // ❌ 每次渲染创建新对象
-  const userData = useStore((s) => ({ 
-    user: s.user, 
-    isOnline: s.isOnline 
+  // 错误 每次渲染创建新对象
+  const userData = useStore((s) => ({
+    user: s.user,
+    isOnline: s.isOnline
   }))
-  
-  // ✅ 使用 shallow 或分开的 selector
+
+  // 正确 使用 shallow 或分开的 selector
   const user = useStore((s) => s.user)
   const isOnline = useStore((s) => s.isOnline)
 }
@@ -296,7 +296,7 @@ const useStore = create((set) => ({
   count: 0,
   // 重置到初始状态
   reset: () => set({ count: 0 }),
-  
+
   // 重置整个 store
   $reset: () => set(initialState, true), // 第二个参数 true 表示重置
 }))
@@ -327,4 +327,4 @@ Zustand 用它的理念证明了一个道理：**好的工具不需要复杂，�
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

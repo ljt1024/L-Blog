@@ -34,9 +34,9 @@ if ('serviceWorker' in navigator) {
       const registration = await navigator.serviceWorker.register('/sw.js', {
         scope: '/'  // 控制的作用域范围
       });
-      
+
       console.log('Service Worker 注册成功:', registration.scope);
-      
+
       // 监听更新
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
@@ -47,7 +47,7 @@ if ('serviceWorker' in navigator) {
           }
         });
       });
-      
+
     } catch (error) {
       console.error('Service Worker 注册失败:', error);
     }
@@ -94,7 +94,7 @@ const STATIC_ASSETS = [
 
 self.addEventListener('install', (event) => {
   console.log('Service Worker 正在安装...');
-  
+
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -121,7 +121,7 @@ self.addEventListener('install', (event) => {
 ```javascript
 self.addEventListener('activate', (event) => {
   console.log('Service Worker 已激活');
-  
+
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
@@ -155,10 +155,10 @@ self.addEventListener('activate', (event) => {
 ```javascript
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  
+
   // 只处理 GET 请求
   if (request.method !== 'GET') return;
-  
+
   event.respondWith(
     caches.match(request)
       .then((cachedResponse) => {
@@ -166,7 +166,7 @@ self.addEventListener('fetch', (event) => {
           // 缓存命中，直接返回
           return cachedResponse;
         }
-        
+
         // 缓存未命中，请求网络
         return fetch(request)
           .then((response) => {
@@ -174,16 +174,16 @@ self.addEventListener('fetch', (event) => {
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
-            
+
             // 克隆响应（因为响应流只能读取一次）
             const responseToCache = response.clone();
-            
+
             // 缓存响应
             caches.open(CACHE_NAME)
               .then((cache) => {
                 cache.put(request, responseToCache);
               });
-            
+
             return response;
           });
       })
@@ -198,28 +198,28 @@ self.addEventListener('fetch', (event) => {
 ```javascript
 async function networkFirst(request) {
   const cache = await caches.open(CACHE_NAME);
-  
+
   try {
     // 尝试从网络获取
     const response = await fetch(request);
-    
+
     if (response.ok) {
       // 缓存响应
       cache.put(request, response.clone());
       return response;
     }
-    
+
     throw new Error('Network response was not ok');
   } catch (error) {
     console.log('网络请求失败，回退到缓存');
-    
+
     // 从缓存获取
     const cachedResponse = await cache.match(request);
-    
+
     if (cachedResponse) {
       return cachedResponse;
     }
-    
+
     // 缓存也没有，返回离线页面
     return cache.match('/offline.html');
   }
@@ -240,7 +240,7 @@ self.addEventListener('fetch', (event) => {
 async function staleWhileRevalidate(request) {
   const cache = await caches.open(CACHE_NAME);
   const cachedResponse = await cache.match(request);
-  
+
   // 后台更新缓存
   const fetchPromise = fetch(request)
     .then((response) => {
@@ -250,7 +250,7 @@ async function staleWhileRevalidate(request) {
       return response;
     })
     .catch(() => cachedResponse);
-  
+
   // 立即返回缓存（如果有的话）
   return cachedResponse || fetchPromise;
 }
@@ -300,7 +300,7 @@ const STATIC_ASSETS = [
 
 // 判断请求类型
 function isStaticAsset(url) {
-  return url.pathname.startsWith('/static/') || 
+  return url.pathname.startsWith('/static/') ||
          url.pathname.endsWith(('.css', '.js', '.png', '.jpg', '.webp'));
 }
 
@@ -314,14 +314,14 @@ const cacheStrategies = {
     const cache = await caches.open(STATIC_CACHE);
     const cached = await cache.match(request);
     if (cached) return cached;
-    
+
     const response = await fetch(request);
     if (response.ok) {
       cache.put(request, response.clone());
     }
     return response;
   },
-  
+
   networkFirst: async (request) => {
     const cache = await caches.open(API_CACHE);
     try {
@@ -334,11 +334,11 @@ const cacheStrategies = {
       return cache.match(request) || cache.match('/offline.html');
     }
   },
-  
+
   staleWhileRevalidate: async (request) => {
     const cache = await caches.open(DYNAMIC_CACHE);
     const cached = await cache.match(request);
-    
+
     const fetchPromise = fetch(request)
       .then((response) => {
         if (response.ok) {
@@ -347,7 +347,7 @@ const cacheStrategies = {
         return response;
       })
       .catch(() => cached);
-    
+
     return cached || fetchPromise;
   }
 };
@@ -355,10 +355,10 @@ const cacheStrategies = {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
-  
+
   // 只处理 GET 请求
   if (request.method !== 'GET') return;
-  
+
   // 根据请求类型选择策略
   if (isStaticAsset(url)) {
     event.respondWith(cacheStrategies.cacheFirst(request));
@@ -433,7 +433,7 @@ function showUpdateNotification() {
     </div>
   `;
   document.body.appendChild(notification);
-  
+
   document.getElementById('update-btn').addEventListener('click', async () => {
     const registration = await navigator.serviceWorker.ready;
     if (registration.waiting) {
@@ -506,17 +506,17 @@ function showUpdateNotification() {
 // 订阅推送
 async function subscribeToPush() {
   const registration = await navigator.serviceWorker.ready;
-  
+
   // 请求通知权限
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') {
     console.log('通知权限被拒绝');
     return;
   }
-  
+
   // 获取订阅
   let subscription = await registration.pushManager.getSubscription();
-  
+
   if (!subscription) {
     // 创建新订阅
     const vapidPublicKey = 'YOUR_VAPID_PUBLIC_KEY';
@@ -525,7 +525,7 @@ async function subscribeToPush() {
       applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
     });
   }
-  
+
   // 将订阅发送到服务器
   await fetch('/api/subscribe', {
     method: 'POST',
@@ -540,10 +540,10 @@ function urlBase64ToUint8Array(base64String) {
   const base64 = (base64String + padding)
     .replace(/-/g, '+')
     .replace(/_/g, '/');
-  
+
   const rawData = atob(base64);
   const outputArray = new Uint8Array(rawData.length);
-  
+
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }
@@ -553,7 +553,7 @@ function urlBase64ToUint8Array(base64String) {
 // sw.js 处理推送
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};
-  
+
   const options = {
     body: data.body || '您有一条新消息',
     icon: '/icons/icon-192.png',
@@ -567,7 +567,7 @@ self.addEventListener('push', (event) => {
       { action: 'close', title: '关闭' }
     ]
   };
-  
+
   event.waitUntil(
     self.registration.showNotification(data.title || 'PWA 应用', options)
   );
@@ -576,7 +576,7 @@ self.addEventListener('push', (event) => {
 // 处理通知点击
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  
+
   if (event.action === 'open' || !event.action) {
     event.waitUntil(
       clients.matchAll({ type: 'window' })
@@ -632,7 +632,7 @@ self.addEventListener('sync', (event) => {
 
 async function syncMessages() {
   const messages = await getFromIndexedDB('pending-messages');
-  
+
   for (const message of messages) {
     try {
       await fetch('/api/messages', {
@@ -753,7 +753,7 @@ registerRoute(
 
 // JS/CSS 缓存
 registerRoute(
-  ({ request }) => 
+  ({ request }) =>
     request.destination === 'style' || request.destination === 'script',
   new StaleWhileRevalidate({
     cacheName: 'static-resources',
@@ -777,4 +777,4 @@ Service Worker 和 PWA 技术为 Web 应用带来了接近原生应用的体验�
 
 掌握这些技术，你的 Web 应用就能真正实现"一次部署，永久可用"的用户体验。
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

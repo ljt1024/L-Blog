@@ -7,7 +7,7 @@ date: 2026-06-02
 
 > CSS-in-JS 的江湖从来不缺争论。Styled Components 运行时开销大，Emotion 维护停滞，CVA 偏向工具函数，Vanilla Extract 配置繁琐。直到 Panda CSS 横空出世——它用"零运行时 + 静态生成"的思路，重新定义了 CSS-in-JS。Vite 创建默认支持、CRA 官方推荐、Pandas Studio 都在用。本文从原理到实战，看看 Panda CSS 能否成为你的下一选择。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## CSS-in-JS 的困境
 
@@ -88,7 +88,7 @@ const styles = stylex.create({
                     const styles = css({
                       padding: '4px',
                     });
-                                          
+
 需要 .stylex 文件       纯 TypeScript / TSX
 需要额外的 Vite 插件    Vite 一键集成
 类型生成复杂          自动推断类型
@@ -374,7 +374,7 @@ const hoverEffect = css({
   },
   // 伪元素
   _before: {
-    content: '"★"',
+    content: '""',
     marginRight: '2',
   },
 });
@@ -613,15 +613,15 @@ Panda CSS:     ~5ms（已有 CSS）
 
 | 维度 | Panda CSS | Tailwind | Vanilla Extract | Styled Components |
 |------|----------|---------|----------------| ----------------|
-| 零运行时 | ✅ | ✅ | ✅ | ❌ |
-| 类型安全 | ✅ TS 开箱即用 | ⚠️ 需要JSDoc | ✅ | ❌ |
-| 代码提示 | VS Code 自动补全 | 需要背类名 | 无 | ✅ JS/TS |
+| 零运行时 | 正确 | 正确 | 正确 | 错误 |
+| 类型安全 | 正确 TS 开箱即用 | 注意 需要JSDoc | 正确 | 错误 |
+| 代码提示 | VS Code 自动补全 | 需要背类名 | 无 | 正确 JS/TS |
 | 学习成本 | 低 | 高 | 中 | 低 |
-| 调试 | 类名可读 | 类名不可读 | 可读 | ✅ |
+| 调试 | 类名可读 | 类名不可读 | 可读 | 正确 |
 | CSS 支持 | 原生写法 | 类名堆砌 | JS对象 | Tagged Template |
 | 条件样式 | 原生 TS | 任意值 | TS 对象 | props 透传 |
-| 嵌套选择器 | ✅ 原生支持 | ✅ | 有限 | ✅ |
-| Dark Mode | ✅ 语义Token | ✅ | 手动 | 手动 |
+| 嵌套选择器 | 正确 原生支持 | 正确 | 有限 | 正确 |
+| Dark Mode | 正确 语义Token | 正确 | 手动 | 手动 |
 | 社区 | 小，快速成长 | 大 | 中 | 大但停滞 |
 
 ---
@@ -680,7 +680,7 @@ import { Box, Flex } from styled-system';
 ## 结论：Panda CSS 适合谁？
 
 ```
-✅ 适合 Panda CSS 的项目：
+正确 适合 Panda CSS 的项目：
 ─────────────────────────
 - 需要零运行时的 SSR 项目（Next.js、Nuxt）
 - 喜欢 CSS 原生写法，不想背 Tailwind 类名
@@ -688,7 +688,7 @@ import { Box, Flex } from styled-system';
 - 想要静态生成的 CSS（构建时产出）
 - 团队熟悉 CSS，不需要另学 DSL
 
-❌ 不适合 Panda CSS 的项目：
+错误 不适合 Panda CSS 的项目：
 ─────────────────────────
 - 需要样式的动态变化（CSS 变量方案更好）
 - 小型项目，CSS 文件本来就很小
@@ -701,6 +701,6 @@ import { Box, Flex } from styled-system';
 - **Vite + Panda CSS**：开发体验 + 零运行时
 - **Panda + Framer Motion**：形态过渡 + 动画
 
-Panda CSS 用 **TypeScript + 构建时静态化** 的思路，提供了一种介于 "Tailwind 的原子化" 和 "Styled Components 的声明式" 之间的选择。不是银弹，但是一個值得考虑的方案 🎋
+Panda CSS 用 **TypeScript + 构建时静态化** 的思路，提供了一种介于 "Tailwind 的原子化" 和 "Styled Components 的声明式" 之间的选择。不是银弹，但是一個值得考虑的方案
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

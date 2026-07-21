@@ -55,7 +55,7 @@ import { Hono } from "hono";
 
 const app = new Hono();
 
-app.get("/", (c) => c.text("Hello Hono! 🔥"));
+app.get("/", (c) => c.text("Hello Hono! "));
 
 app.get("/api/hello/:name", (c) => {
   const name = c.req.param("name");
@@ -609,7 +609,7 @@ app.notFound((c) => {
   return c.json({ error: `${c.req.path} not found` }, 404);
 });
 
-console.log("🔥 Hono server running on http://localhost:3000");
+console.log(" Hono server running on http://localhost:3000");
 
 export default { port: 3000, fetch: app.fetch };
 ```
@@ -623,8 +623,8 @@ export default { port: 3000, fetch: app.fetch };
 Express (Node 20)     :  ~45,000 req/s
 Fastify (Node 20)     :  ~85,000 req/s
 Hono (Node 20)        :  ~120,000 req/s
-Hono (Bun)            :  ~250,000 req/s  ⚡
-Hono (Cloudflare)     :  ~400,000 req/s  🚀
+Hono (Bun)            :  ~250,000 req/s
+Hono (Cloudflare)     :  ~400,000 req/s
 ```
 
 ## 总结
@@ -639,4 +639,4 @@ Hono 的核心优势：
 
 如果你在用 Express，现在就可以开始迁移到 Hono——API 相似，但类型安全、性能、生态都强出一个量级。
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

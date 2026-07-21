@@ -50,14 +50,14 @@
 ```javascript
 // agents/code-review-agent.js
 import { ChatOpenAI } from "@langchain/openai";
-import { 
-  ChatPromptTemplate, 
-  MessagesPlaceholder 
+import {
+  ChatPromptTemplate,
+  MessagesPlaceholder
 } from "@langchain/core/prompts";
-import { 
-  AIMessage, 
-  HumanMessage, 
-  SystemMessage 
+import {
+  AIMessage,
+  HumanMessage,
+  SystemMessage
 } from "@langchain/core/messages";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { DynamicTool } from "@langchain/core/tools";
@@ -68,7 +68,7 @@ class CodeReviewAgent {
       modelName: "gpt-3.5-turbo",
       temperature: 0.3,
     });
-    
+
     this.prompt = ChatPromptTemplate.fromMessages([
       new SystemMessage(`你是一个专业的前端代码评审专家。你的任务是：
 1. 分析代码质量和最佳实践
@@ -78,11 +78,11 @@ class CodeReviewAgent {
       new MessagesPlaceholder("history"),
       new HumanMessage("{input}"),
     ]);
-    
+
     this.parser = new StringOutputParser();
     this.history = [];
   }
-  
+
   // 代码质量分析工具
   getCodeQualityTool() {
     return new DynamicTool({
@@ -95,11 +95,11 @@ class CodeReviewAgent {
       }
     });
   }
-  
+
   // 静态代码分析
   analyzeCodeQuality(code) {
     const issues = [];
-    
+
     // 检查常见问题
     if (!code.includes('use strict')) {
       issues.push({
@@ -108,7 +108,7 @@ class CodeReviewAgent {
         severity: "medium"
       });
     }
-    
+
     if (code.split('\n').length > 200) {
       issues.push({
         type: "warning",
@@ -116,7 +116,7 @@ class CodeReviewAgent {
         severity: "medium"
       });
     }
-    
+
     // 检查潜在的安全问题
     if (code.includes('eval(')) {
       issues.push({
@@ -125,34 +125,34 @@ class CodeReviewAgent {
         severity: "high"
       });
     }
-    
+
     return issues;
   }
-  
+
   async reviewCode(codeSnippet, fileName = "unknown") {
     try {
       // 添加用户输入到历史
       this.history.push(new HumanMessage(`请评审以下${fileName}中的代码：\n\n${codeSnippet}`));
-      
+
       // 构建链
       const chain = this.prompt.pipe(this.llm).pipe(this.parser);
-      
+
       // 执行评审
       const response = await chain.invoke({
         input: `请评审以下${fileName}中的代码：\n\n${codeSnippet}`,
         history: this.history
       });
-      
+
       // 添加AI响应到历史
       this.history.push(new AIMessage(response));
-      
+
       return response;
     } catch (error) {
       console.error("代码评审出错:", error);
       return "抱歉，在评审代码时遇到了问题。";
     }
   }
-  
+
   // 获取评审历史
   getHistory() {
     return this.history.map(msg => ({
@@ -160,7 +160,7 @@ class CodeReviewAgent {
       content: msg.content
     }));
   }
-  
+
   // 清除历史
   clearHistory() {
     this.history = [];
@@ -186,7 +186,7 @@ class TaskAutomationAgent {
       modelName: "gpt-3.5-turbo",
       temperature: 0,
     });
-    
+
     this.tools = {
       createComponent: this.createComponentTool(),
       generateTest: this.generateTestTool(),
@@ -194,7 +194,7 @@ class TaskAutomationAgent {
       createDocumentation: this.createDocumentationTool()
     };
   }
-  
+
   // 创建React组件工具
   createComponentTool() {
     return new DynamicTool({
@@ -205,14 +205,14 @@ class TaskAutomationAgent {
           ["system", "你是一个React专家，专门创建高质量的React组件。"],
           ["user", `根据以下需求创建一个React组件：\n\n${requirements}\n\n只返回代码，不需要解释。`]
         ]);
-        
+
         const chain = prompt.pipe(this.llm);
         const response = await chain.invoke({});
         return response.content;
       }
     });
   }
-  
+
   // 生成测试用例工具
   generateTestTool() {
     return new DynamicTool({
@@ -223,14 +223,14 @@ class TaskAutomationAgent {
           ["system", "你是一个前端测试专家，专门为React组件编写测试用例。"],
           ["user", `为以下React组件编写测试用例：\n\n${componentCode}\n\n使用Jest和React Testing Library，只返回测试代码。`]
         ]);
-        
+
         const chain = prompt.pipe(this.llm);
         const response = await chain.invoke({});
         return response.content;
       }
     });
   }
-  
+
   // 代码优化工具
   optimizeCodeTool() {
     return new DynamicTool({
@@ -241,14 +241,14 @@ class TaskAutomationAgent {
           ["system", "你是一个前端性能优化专家。"],
           ["user", `优化以下代码以提高性能：\n\n${code}\n\n只返回优化后的代码。`]
         ]);
-        
+
         const chain = prompt.pipe(this.llm);
         const response = await chain.invoke({});
         return response.content;
       }
     });
   }
-  
+
   // 创建文档工具
   createDocumentationTool() {
     return new DynamicTool({
@@ -259,14 +259,14 @@ class TaskAutomationAgent {
           ["system", "你是一个技术文档编写专家。"],
           ["user", `为以下代码创建技术文档：\n\n${code}\n\n包括：1. 组件用途 2. Props说明 3. 使用示例`]
         ]);
-        
+
         const chain = prompt.pipe(this.llm);
         const response = await chain.invoke({});
         return response.content;
       }
     });
   }
-  
+
   async executeTask(taskDescription) {
     // 让LLM决定使用哪个工具
     const decisionPrompt = ChatPromptTemplate.fromMessages([
@@ -278,10 +278,10 @@ class TaskAutomationAgent {
 4. create_documentation - 创建文档`],
       ["user", `用户需求：${taskDescription}\n\n请告诉我应该使用哪个工具，并提供工具需要的参数。`]
     ]);
-    
+
     const decisionChain = decisionPrompt.pipe(this.llm);
     const decision = await decisionChain.invoke({});
-    
+
     // 解析决策结果并执行相应工具
     // 这里简化处理，实际应用中需要更复杂的解析逻辑
     return decision.content;
@@ -308,18 +308,18 @@ export default function AIAssistantPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const [history, setHistory] = useState([]);
   const textareaRef = useRef(null);
-  
+
   const codeReviewAgent = useRef(new CodeReviewAgent());
   const taskAgent = useRef(new TaskAutomationAgent());
-  
+
   const handleCodeReview = async () => {
     if (!input.trim()) return;
-    
+
     setIsLoading(true);
     try {
       const reviewResult = await codeReviewAgent.current.reviewCode(input);
       setResult(reviewResult);
-      
+
       // 更新历史记录
       setHistory(codeReviewAgent.current.getHistory());
     } catch (error) {
@@ -328,10 +328,10 @@ export default function AIAssistantPanel() {
       setIsLoading(false);
     }
   };
-  
+
   const handleTaskExecution = async () => {
     if (!input.trim()) return;
-    
+
     setIsLoading(true);
     try {
       const taskResult = await taskAgent.current.executeTask(input);
@@ -342,46 +342,46 @@ export default function AIAssistantPanel() {
       setIsLoading(false);
     }
   };
-  
+
   const clearHistory = () => {
     codeReviewAgent.current.clearHistory();
     setHistory([]);
     setResult('');
   };
-  
+
   return (
     <div className="ai-assistant-panel">
       <div className="tabs">
-        <button 
+        <button
           className={activeTab === 'code-review' ? 'active' : ''}
           onClick={() => setActiveTab('code-review')}
         >
           代码评审
         </button>
-        <button 
+        <button
           className={activeTab === 'task-automation' ? 'active' : ''}
           onClick={() => setActiveTab('task-automation')}
         >
           任务自动化
         </button>
       </div>
-      
+
       <div className="input-area">
         <textarea
           ref={textareaRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={
-            activeTab === 'code-review' 
-              ? '粘贴您想要评审的代码...' 
+            activeTab === 'code-review'
+              ? '粘贴您想要评审的代码...'
               : '描述您想要执行的任务...'
           }
           rows={10}
         />
       </div>
-      
+
       <div className="actions">
-        <button 
+        <button
           onClick={activeTab === 'code-review' ? handleCodeReview : handleTaskExecution}
           disabled={isLoading || !input.trim()}
         >
@@ -391,7 +391,7 @@ export default function AIAssistantPanel() {
           清除历史
         </button>
       </div>
-      
+
       {result && (
         <div className="result-area">
           <h3>结果：</h3>
@@ -400,7 +400,7 @@ export default function AIAssistantPanel() {
           </div>
         </div>
       )}
-      
+
       {history.length > 0 && (
         <div className="history-area">
           <h3>评审历史：</h3>
@@ -442,7 +442,7 @@ const createAIAgentStore = () => createStore(
         model: 'gpt-3.5-turbo',
         temperature: 0.7,
       },
-      
+
       // 动作
       reviewCode: async (code, fileName) => {
         const { agents } = get();
@@ -453,7 +453,7 @@ const createAIAgentStore = () => createStore(
           throw new Error(`代码评审失败: ${error.message}`);
         }
       },
-      
+
       createNewSession: (name) => {
         const newSession = {
           id: Date.now().toString(),
@@ -461,13 +461,13 @@ const createAIAgentStore = () => createStore(
           createdAt: new Date().toISOString(),
           interactions: []
         };
-        
+
         set(state => ({
           sessions: [...state.sessions, newSession],
           currentSession: newSession
         }));
       },
-      
+
       addToCurrentSession: (interaction) => {
         set(state => ({
           currentSession: {
@@ -481,13 +481,13 @@ const createAIAgentStore = () => createStore(
           )
         }));
       },
-      
+
       updateSettings: (newSettings) => {
         set(state => ({
           settings: { ...state.settings, ...newSettings }
         }));
       },
-      
+
       clearHistory: () => {
         const { agents } = get();
         agents.codeReview.clearHistory();
@@ -549,7 +549,7 @@ export const handleAIAgentError = (error) => {
         };
     }
   }
-  
+
   // 处理网络错误
   if (error.name === 'NetworkError') {
     return {
@@ -558,7 +558,7 @@ export const handleAIAgentError = (error) => {
       action: 'retry'
     };
   }
-  
+
   // 默认错误处理
   return {
     type: 'error',
@@ -575,11 +575,11 @@ export const useAIAgent = (agent) => {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const execute = useCallback(async (action, ...args) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await agent[action](...args);
       setResult(response);
@@ -592,12 +592,12 @@ export const useAIAgent = (agent) => {
       setLoading(false);
     }
   }, [agent]);
-  
+
   const reset = useCallback(() => {
     setResult(null);
     setError(null);
   }, []);
-  
+
   return {
     result,
     loading,
@@ -620,7 +620,7 @@ class CacheManager {
     this.maxSize = maxSize;
     this.accessOrder = []; // LRU队列
   }
-  
+
   get(key) {
     if (this.cache.has(key)) {
       // 更新访问顺序
@@ -629,22 +629,22 @@ class CacheManager {
     }
     return null;
   }
-  
+
   set(key, value, ttl = 300000) { // 默认5分钟过期
     // 如果缓存已满，删除最久未使用的项
     if (this.cache.size >= this.maxSize) {
       const oldestKey = this.accessOrder.shift();
       this.cache.delete(oldestKey);
     }
-    
+
     this.cache.set(key, {
       value,
       expiry: Date.now() + ttl
     });
-    
+
     this.updateAccessOrder(key);
   }
-  
+
   updateAccessOrder(key) {
     const index = this.accessOrder.indexOf(key);
     if (index > -1) {
@@ -652,16 +652,16 @@ class CacheManager {
     }
     this.accessOrder.push(key);
   }
-  
+
   isValid(key) {
     const item = this.cache.get(key);
     if (!item) return false;
-    
+
     if (Date.now() > item.expiry) {
       this.cache.delete(key);
       return false;
     }
-    
+
     return true;
   }
 }
@@ -729,7 +729,7 @@ class Logger {
       debug: 3
     };
   }
-  
+
   log(level, message, data = {}) {
     if (this.levels[level] <= this.levels[this.level]) {
       const timestamp = new Date().toISOString();
@@ -741,33 +741,33 @@ class Logger {
         userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'server',
         url: typeof window !== 'undefined' ? window.location.href : 'server'
       };
-      
+
       // 发送到监控服务
       if (typeof window !== 'undefined') {
         this.sendToMonitoringService(logEntry);
       }
-      
+
       // 控制台输出
       console[level](`[${timestamp}] ${message}`, data);
     }
   }
-  
+
   error(message, data) {
     this.log('error', message, data);
   }
-  
+
   warn(message, data) {
     this.log('warn', message, data);
   }
-  
+
   info(message, data) {
     this.log('info', message, data);
   }
-  
+
   debug(message, data) {
     this.log('debug', message, data);
   }
-  
+
   sendToMonitoringService(logEntry) {
     // 发送到后端监控服务
     fetch('/api/logs', {

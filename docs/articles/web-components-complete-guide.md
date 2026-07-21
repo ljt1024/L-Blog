@@ -12,19 +12,19 @@ Web Components 是一套用于创建可复用、自定义 HTML 元素的 Web 标
 
 | 技术 | 作用 | 状态 |
 |------|------|------|
-| Custom Elements | 定义自定义 HTML 元素 | ✅ 标准 |
-| Shadow DOM | 封装样式和 DOM 结构 | ✅ 标准 |
-| HTML Templates | 定义可复用的 HTML 模板 | ✅ 标准 |
-| HTML Imports | 导入 HTML 文档 | ❌ 已废弃 |
+| Custom Elements | 定义自定义 HTML 元素 | 正确 标准 |
+| Shadow DOM | 封装样式和 DOM 结构 | 正确 标准 |
+| HTML Templates | 定义可复用的 HTML 模板 | 正确 标准 |
+| HTML Imports | 导入 HTML 文档 | 错误 已废弃 |
 
 ### 1.2 为什么需要 Web Components？
 
 ```javascript
-// ❌ 传统方式：框架依赖，难以复用
+// 错误 传统方式：框架依赖，难以复用
 // React 组件只能在 React 中用
 // Vue 组件只能在 Vue 中用
 
-// ✅ Web Components：框架无关，真正可复用
+// 正确 Web Components：框架无关，真正可复用
 // 可以在任何框架中使用
 // 可以在原生 HTML 中使用
 // 可以跨项目、跨团队共享
@@ -619,12 +619,12 @@ export function CounterWrapper() {
 ### 7.1 命名规范
 
 ```javascript
-// ✅ 好的做法：使用连字符分隔
+// 正确 好的做法：使用连字符分隔
 customElements.define('my-button', MyButton);
 customElements.define('user-profile', UserProfile);
 customElements.define('data-table', DataTable);
 
-// ❌ 避免：单个单词或驼峰命名
+// 错误 避免：单个单词或驼峰命名
 // customElements.define('button', MyButton);  // 与原生元素冲突
 // customElements.define('myButton', MyButton);  // 不符合规范
 ```
@@ -692,9 +692,9 @@ class OptimizedComponent extends HTMLElement {
 
 | 特性 | Chrome | Firefox | Safari | Edge |
 |------|--------|---------|--------|------|
-| Custom Elements | ✅ 67+ | ✅ 63+ | ✅ 10.1+ | ✅ 79+ |
-| Shadow DOM | ✅ 67+ | ✅ 63+ | ✅ 10.1+ | ✅ 79+ |
-| HTML Templates | ✅ 26+ | ✅ 22+ | ✅ 8+ | ✅ 15+ |
+| Custom Elements | 正确 67+ | 正确 63+ | 正确 10.1+ | 正确 79+ |
+| Shadow DOM | 正确 67+ | 正确 63+ | 正确 10.1+ | 正确 79+ |
+| HTML Templates | 正确 26+ | 正确 22+ | 正确 8+ | 正确 15+ |
 
 对于不支持的浏览器，可以使用 polyfill：
 
@@ -738,4 +738,4 @@ Web Components 是现代前端的重要技术，提供了：
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

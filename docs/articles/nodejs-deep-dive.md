@@ -7,7 +7,7 @@ date: 2026-05-19
 
 > Node.js 不仅是前端开发的工具链（构建/开发服务器），更是通往全栈的桥梁。理解 Node.js 的核心机制——事件循环、异步 I/O、流、Buffer——是写出高性能后端代码的基础。本文从前端开发者视角出发，深度解析 Node.js 的底层原理与实战应用。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## Node.js 是什么？
 
@@ -120,7 +120,7 @@ console.log('end');
 ### 阻塞事件循环的危害
 
 ```javascript
-// ❌ 阻塞事件循环（同步计算）
+// 错误 阻塞事件循环（同步计算）
 function heavyComputation(n) {
   let result = 0;
   for (let i = 0; i < n; i++) {
@@ -132,7 +132,7 @@ function heavyComputation(n) {
 // 执行期间，所有 I/O 都被阻塞
 heavyComputation(10_000_000_000);  // 阻塞数秒
 
-// ✅ 拆分成异步块
+// 正确 拆分成异步块
 async function nonBlocking(n, chunkSize = 1000000) {
   let result = 0;
   let i = 0;
@@ -157,7 +157,7 @@ async function nonBlocking(n, chunkSize = 1000000) {
 ```javascript
 const fs = require('fs');
 
-// ❌ 回调地狱
+// 错误 回调地狱
 fs.readFile('file1.txt', 'utf8', (err1, data1) => {
   if (err1) throw err1;
   fs.readFile('file2.txt', 'utf8', (err2, data2) => {
@@ -169,7 +169,7 @@ fs.readFile('file1.txt', 'utf8', (err1, data1) => {
   });
 });
 
-// ✅ Promise（Node 10+ 内置 fs.promises）
+// 正确 Promise（Node 10+ 内置 fs.promises）
 const fsp = require('fs').promises;
 
 async function mergeFiles() {
@@ -179,7 +179,7 @@ async function mergeFiles() {
   console.log('完成');
 }
 
-// ✅ 并行读取
+// 正确 并行读取
 async function mergeFilesParallel() {
   const [data1, data2] = await Promise.all([
     fsp.readFile('file1.txt', 'utf8'),
@@ -720,6 +720,6 @@ Node.js 核心概念一览：
 4. **SSR**：Next.js/Nuxt.js 服务端渲染
 5. **BFF**：为前端定制的后端服务
 
-Node.js 是前端开发者通往全栈的第一步，也是最重要的一步 🚀
+Node.js 是前端开发者通往全栈的第一步，也是最重要的一步
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

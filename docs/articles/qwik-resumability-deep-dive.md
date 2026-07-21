@@ -7,7 +7,7 @@ date: 2026-05-08
 
 > 当 React、Vue、Next.js 都在用 Hydration 让服务端渲染的页面"活过来"时，Qwik 走了一条截然不同的路——**Resumability**。服务端渲染的 HTML 已经包含了所有事件绑定信息，客户端无需重新执行任何组件代码即可直接交互。这不是优化，是范式革命。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## Hydration 的问题
 
@@ -245,7 +245,7 @@ export component$(function TodoApp() {
       <ul>
         {filteredTodos.value.map((todo, i) => (
           <li key={i} onClick$={() => toggleTodo(i)}>
-            {todo.done ? '✅' : '⬜'} {todo.text}
+            {todo.done ? '正确' : '⬜'} {todo.text}
           </li>
         ))}
       </ul>
@@ -315,7 +315,7 @@ export component$(function ProductDetail({ productId }: { productId: string }) {
       onResolved={(product) => (
         <div>
           <h1>{product.name}</h1>
-          <p>¥{product.price}</p>
+          <p>{product.price}</p>
           <p>{product.description}</p>
         </div>
       )}
@@ -524,4 +524,4 @@ Qwik 的 Resumability 是对 Hydration 范式的根本挑战：
 
 在移动优先、性能至上的时代，Qwik 的 Resumability 理念值得每一个前端开发者关注。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

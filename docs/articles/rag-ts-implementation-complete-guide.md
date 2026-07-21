@@ -603,29 +603,29 @@ class RAGSystem {
 
   // 知识库构建
   async buildIndex(filePath: string, format: DocFormat) {
-    console.log('📖 加载文档...')
+    console.log(' 加载文档...')
     const docs = await loadDocument(filePath, format)
     const text = docs.map(d => d.pageContent).join('\n')
 
-    console.log('✂️ 分片处理...')
+    console.log(' 分片处理...')
     const chunks = splitText(text, { chunkSize: 500, chunkOverlap: 50 })
 
-    console.log('🔢 向量化...')
+    console.log(' 向量化...')
     const { ids, vectors } = await batchEmbed(chunks)
 
-    console.log('💾 存入向量数据库...')
+    console.log(' 存入向量数据库...')
     await this.insertChunks(chunks, ids, vectors)
 
-    console.log('✅ 索引构建完成！')
+    console.log('正确 索引构建完成！')
     return { chunkCount: chunks.length }
   }
 
   // 问答
   async ask(question: string, useRerank = true) {
-    console.log('🔍 召回相关片段...')
+    console.log(' 召回相关片段...')
     const retrieved = await hybridRetrieve(question, 10)
 
-    console.log('📊 重排...')
+    console.log(' 重排...')
     const finalChunks = useRerank
       ? await this.rerank(question, retrieved)
       : retrieved.slice(0, 5)
@@ -754,4 +754,4 @@ async function reciprocalRankFusion(
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

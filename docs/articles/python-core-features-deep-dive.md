@@ -7,7 +7,7 @@ date: 2026-05-14
 
 > 如果你来自 JavaScript 世界，Python 会让你感到既熟悉又陌生。熟悉的动态类型、一等函数、闭包；陌生的缩进语法、列表推导式、装饰器、生成器。本文从前端开发者的视角出发，深度解析 Python 最核心的语言特性，帮你快速建立 Python 思维。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## JavaScript → Python：思维转换
 
@@ -510,7 +510,7 @@ user = User(name="Alice", age="25", email="alice@example.com")
 # age 字符串 "25" 自动转换为 int 25
 
 # 验证失败抛出 ValidationError
-# User(name="Bob", age=-1, email="invalid")  # ❌ 抛出异常
+# User(name="Bob", age=-1, email="invalid")  # 错误 抛出异常
 ```
 
 ## 异步编程：async/await
@@ -671,7 +671,7 @@ In [2]: requests.get?
 # 显示函数签名和文档
 
 In [3]: %timeit sum(range(1000))
-# 10.5 µs ± 52.3 ns per loop
+# 10.5 s  52.3 ns per loop
 
 In [4]: %debug
 # 进入调试器
@@ -695,4 +695,4 @@ In [4]: %debug
 
 Python 的设计哲学是**优雅和明确**——一件事只有一种最佳写法。这种约束反而让代码更易读、更一致。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

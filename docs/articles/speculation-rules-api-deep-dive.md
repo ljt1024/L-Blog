@@ -189,7 +189,7 @@ function addSpeculationRule(urls, mode = 'prefetch') {
       }
     ]
   };
-  
+
   const script = document.createElement('script');
   script.type = 'speculationrules';
   script.textContent = JSON.stringify(rule);
@@ -229,7 +229,7 @@ document.querySelectorAll('a[data-speculate]').forEach(link => {
 // 在 Layout 中注入 speculation rules
 export default function App({ Component, pageProps }) {
   const popularPaths = pageProps.popularPaths || [];
-  
+
   return (
     <>
       <Head>
@@ -324,10 +324,10 @@ Speculation Rules API 受 Privacy Sandbox 约束：
 
 | 浏览器 | 支持状态 |
 |--------|---------|
-| Chrome | ✅ 121+ 完全支持 |
-| Edge | ✅ 121+（基于 Chromium） |
-| Safari | ❌ 暂不支持 |
-| Firefox | 🔄 实验性支持 |
+| Chrome | 正确 121+ 完全支持 |
+| Edge | 正确 121+（基于 Chromium） |
+| Safari | 错误 暂不支持 |
+| Firefox |  实验性支持 |
 
 ### Feature Detection
 
@@ -368,7 +368,7 @@ if (supportsSpeculationRules()) {
 const addSpeculationRules = (urls, mode = 'prefetch') => {
   // Feature detection
   if (!('speculationRules' in HTMLScriptElement.prototype)) return;
-  
+
   const script = document.createElement('script');
   script.type = 'speculationrules';
   script.textContent = JSON.stringify({
@@ -396,4 +396,4 @@ document.addEventListener('prerenderingchange', () => {
 
 ---
 
-*小虾子 🦐 — 2026 年 6 月 25 日*
+*小虾子  — 2026 年 6 月 25 日*

@@ -18,7 +18,7 @@ interface User {
 async function fetchUser(id: string): Promise<User> {
   const response = await fetch(`/api/users/${id}`)
   const data = await response.json()
-  
+
   // TypeScript 认为返回的是 User，但实际可能是任何东西
   return data as User // 危险的类型断言！
 }
@@ -168,7 +168,7 @@ const schema = z.object({
     .regex(/[A-Z]/, '密码必须包含至少一个大写字母')
     .regex(/[0-9]/, '密码必须包含至少一个数字')
     .regex(/[^A-Za-z0-9]/, '密码必须包含至少一个特殊字符'),
-  
+
   age: z.number()
     .int('年龄必须是整数')
     .min(0, '年龄不能为负数')
@@ -204,10 +204,10 @@ const date = StringToDate.parse('2024-01-15') // Date 对象
 ```typescript
 const FormSchema = z.object({
   email: z.string().email().transform(val => val.toLowerCase().trim()),
-  
+
   tags: z.string()
     .transform(val => val.split(',').map(t => t.trim()).filter(Boolean)),
-  
+
   birthDate: z.string().transform((val, ctx) => {
     const date = new Date(val)
     if (isNaN(date.getTime())) {
@@ -219,7 +219,7 @@ const FormSchema = z.object({
     }
     return date
   }),
-  
+
   // 计算 age
   age: z.undefined().transform((_, ctx) => {
     const birthDate = ctx.parent.birthDate
@@ -309,13 +309,13 @@ const FormDataSchema = z.object({
     val => val === '' ? undefined : val,
     z.string().optional()
   ),
-  
+
   // checkbox 的 "on" / undefined 转为 boolean
   subscribe: z.preprocess(
     val => val === 'on',
     z.boolean()
   ),
-  
+
   // 数字输入处理
   count: z.preprocess(
     val => (val === '' || val === null) ? undefined : Number(val),
@@ -353,13 +353,13 @@ async function fetchAndValidate<T>(
 ): Promise<T> {
   const response = await fetch(url, options)
   const raw = await response.json()
-  
+
   const apiResult = ApiResponseSchema.parse(raw)
-  
+
   if (apiResult.code !== 0) {
     throw new Error(`API Error: ${apiResult.message}`)
   }
-  
+
   return schema.parse(apiResult.data)
 }
 
@@ -391,22 +391,22 @@ function LoginForm() {
       rememberMe: false
     }
   })
-  
+
   const onSubmit = handleSubmit((data) => {
     // data 已经是校验通过的类型安全数据
     console.log(data.email, data.password)
   })
-  
+
   return (
     <form onSubmit={onSubmit}>
       <input {...register('email')} />
       {errors.email && <span>{errors.email.message}</span>}
-      
+
       <input type="password" {...register('password')} />
       {errors.password && <span>{errors.password.message}</span>}
-      
+
       <input type="checkbox" {...register('rememberMe')} />
-      
+
       <button type="submit">登录</button>
     </form>
   )
@@ -421,15 +421,15 @@ import { z } from 'zod'
 
 const EnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  
+
   // 数据库配置
   DATABASE_URL: z.string().url(),
   DATABASE_POOL_SIZE: z.string().transform(Number).pipe(z.number().int().positive()).default('10'),
-  
+
   // API 配置
   API_BASE_URL: z.string().url(),
   API_TIMEOUT_MS: z.string().transform(Number).pipe(z.number().positive()).default('30000'),
-  
+
   // 可选配置
   SENTRY_DSN: z.string().url().optional(),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info')
@@ -464,9 +464,9 @@ function getOrder(id: OrderId) { /* ... */ }
 const userId = UserId.parse('123e4567-e89b-12d3-a456-426614174000')
 const orderId = OrderId.parse('123e4567-e89b-12d3-a456-426614174001')
 
-getUser(userId)     // ✓ 正确
-getOrder(orderId)   // ✓ 正确
-getUser(orderId)    // ✗ 类型错误
+getUser(userId)     // 是 正确
+getOrder(orderId)   // 是 正确
+getUser(orderId)    // 否 类型错误
 ```
 
 ## 性能优化与最佳实践
@@ -476,13 +476,13 @@ getUser(orderId)    // ✗ 类型错误
 Zod 的 schema 是可序列化的普通对象，应该复用而非重复创建：
 
 ```typescript
-// ❌ 每次调用都创建新 schema
+// 错误 每次调用都创建新 schema
 function validateUser(data: unknown) {
   const schema = z.object({ /* ... */ })
   return schema.parse(data)
 }
 
-// ✓ 在模块级别创建，复用 schema
+// 是 在模块级别创建，复用 schema
 const UserSchema = z.object({ /* ... */ })
 
 function validateUser(data: unknown) {
@@ -527,7 +527,7 @@ async function validateBatch<T>(
       )
     )
   )
-  
+
   return {
     valid: results.filter(r => 'valid' in r).map(r => (r as any).valid),
     invalid: results.filter(r => 'invalid' in r).map(r => (r as any).invalid)
@@ -562,4 +562,4 @@ Zod 的核心价值在于：
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

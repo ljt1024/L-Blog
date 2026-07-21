@@ -36,7 +36,7 @@ Gin框架的路由系统基于httprouter，采用Radix树实现高效的路由�
 ```go
 func main() {
     r := gin.Default()
-    
+
     // 嵌套路由组
     v1 := r.Group("/v1")
     {
@@ -45,20 +45,20 @@ func main() {
         {
             users.GET("/", listUsers)
             users.POST("/", createUser)
-            
+
             // 用户详情子路由
             user := users.Group("/:id")
             {
                 user.GET("/", getUser)
                 user.PUT("/", updateUser)
                 user.DELETE("/", deleteUser)
-                
+
                 // 用户资源子路由
                 user.GET("/posts", getUserPosts)
                 user.GET("/comments", getUserComments)
             }
         }
-        
+
         // 管理员API，需要认证中间件
         admin := v1.Group("/admin", authMiddleware())
         {
@@ -66,7 +66,7 @@ func main() {
             admin.POST("/users", createAdminUser)
         }
     }
-    
+
     r.Run()
 }
 ```
@@ -119,20 +119,20 @@ func Logger() gin.HandlerFunc {
     return func(c *gin.Context) {
         // 开始时间
         start := time.Now()
-        
+
         // 处理请求
         c.Next()
-        
+
         // 结束时间
         end := time.Now()
         latency := end.Sub(start)
-        
+
         // 请求信息
         method := c.Request.Method
         uri := c.Request.URL.Path
         statusCode := c.Writer.Status()
         clientIP := c.ClientIP()
-        
+
         // 记录日志
         log.Printf("[%s] %s %s %d %v",
             clientIP,
@@ -149,7 +149,7 @@ func AuthMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
         // 从请求头获取Token
         token := c.GetHeader("Authorization")
-        
+
         // 验证Token
         if token == "" {
             c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
@@ -157,7 +157,7 @@ func AuthMiddleware() gin.HandlerFunc {
             })
             return
         }
-        
+
         // 解析Token
         claims, err := parseToken(token)
         if err != nil {
@@ -166,11 +166,11 @@ func AuthMiddleware() gin.HandlerFunc {
             })
             return
         }
-        
+
         // 将用户信息存储到上下文中
         c.Set("userID", claims.UserID)
         c.Set("username", claims.Username)
-        
+
         // 继续处理请求
         c.Next()
     }
@@ -181,11 +181,11 @@ func RateLimiter(maxRequests int, window time.Duration) gin.HandlerFunc {
     // 使用滑动窗口算法
     var mu sync.Mutex
     requests := make(map[string][]time.Time)
-    
+
     return func(c *gin.Context) {
         clientIP := c.ClientIP()
         now := time.Now()
-        
+
         mu.Lock()
         // 清理过期请求记录
         validRequests := make([]time.Time, 0)
@@ -194,7 +194,7 @@ func RateLimiter(maxRequests int, window time.Duration) gin.HandlerFunc {
                 validRequests = append(validRequests, reqTime)
             }
         }
-        
+
         // 检查请求数是否超过限制
         if len(validRequests) >= maxRequests {
             mu.Unlock()
@@ -203,11 +203,11 @@ func RateLimiter(maxRequests int, window time.Duration) gin.HandlerFunc {
             })
             return
         }
-        
+
         // 记录当前请求
         requests[clientIP] = append(validRequests, now)
         mu.Unlock()
-        
+
         c.Next()
     }
 }
@@ -223,7 +223,7 @@ func Recovery() gin.HandlerFunc {
             if err := recover(); err != nil {
                 // 记录错误堆栈
                 log.Printf("Panic recovered: %v\n%s", err, debug.Stack())
-                
+
                 // 返回错误响应
                 c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
                     "error": "Internal server error",
@@ -240,12 +240,12 @@ func CORSMiddleware() gin.HandlerFunc {
         c.Header("Access-Control-Allow-Origin", "*")
         c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
-        
+
         if c.Request.Method == "OPTIONS" {
             c.AbortWithStatus(http.StatusNoContent)
             return
         }
-        
+
         c.Next()
     }
 }
@@ -261,13 +261,13 @@ Gin的Context是处理HTTP请求的核心对象，它封装了请求和响应的
 type Context struct {
     Request *http.Request       // HTTP请求
     Writer  ResponseWriter      // 响应写入器
-    
+
     Params Params              // 路由参数
     Keys   map[string]interface{} // 键值存储
-    
+
     Errors errorMsgs           // 错误信息
     Accepted []string          // 接受的内容类型
-    
+
     // ... 其他字段
 }
 ```
@@ -279,25 +279,25 @@ type Context struct {
 func handler(c *gin.Context) {
     // 路径参数
     id := c.Param("id")
-    
+
     // 查询参数
     name := c.Query("name")
     defaultName := c.DefaultQuery("name", "default")
-    
+
     // 表单参数
     message := c.PostForm("message")
     defaultMessage := c.DefaultPostForm("message", "default")
-    
+
     // JSON参数
     var jsonData map[string]interface{}
     if err := c.ShouldBindJSON(&jsonData); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    
+
     // 获取请求头
     userAgent := c.GetHeader("User-Agent")
-    
+
     // 获取Cookie
     cookie, err := c.Cookie("session")
     if err != nil {
@@ -310,9 +310,9 @@ func middleware(c *gin.Context) {
     // 存储数据到上下文
     c.Set("userID", 123)
     c.Set("username", "john_doe")
-    
+
     c.Next()
-    
+
     // 获取处理后的数据
     status, exists := c.Get("process_status")
 }
@@ -324,7 +324,7 @@ func handler(c *gin.Context) {
         c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
         return
     }
-    
+
     // 类型断言
     if uid, ok := userID.(int); ok {
         // 使用uid
@@ -383,7 +383,7 @@ func userHandler(c *gin.Context) {
 // 处理不同类型的请求体
 func handleRequest(c *gin.Context) {
     contentType := c.GetHeader("Content-Type")
-    
+
     switch contentType {
     case "application/json":
         var data map[string]interface{}
@@ -392,7 +392,7 @@ func handleRequest(c *gin.Context) {
             return
         }
         // 处理JSON数据
-        
+
     case "application/xml":
         var data map[string]interface{}
         if err := c.ShouldBindXML(&data); err != nil {
@@ -400,12 +400,12 @@ func handleRequest(c *gin.Context) {
             return
         }
         // 处理XML数据
-        
+
     case "application/x-www-form-urlencoded":
         // 处理表单数据
         username := c.PostForm("username")
         password := c.PostForm("password")
-        
+
     default:
         // 处理原始数据
         rawBody, _ := c.GetRawData()
@@ -420,7 +420,7 @@ func streamUpload(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    
+
     for {
         part, err := reader.NextPart()
         if err == io.EOF {
@@ -430,7 +430,7 @@ func streamUpload(c *gin.Context) {
             c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
             return
         }
-        
+
         // 处理每个part
         buf := make([]byte, 1024)
         for {
@@ -444,7 +444,7 @@ func streamUpload(c *gin.Context) {
             // 处理数据块
         }
     }
-    
+
     c.JSON(http.StatusOK, gin.H{"message": "Upload successful"})
 }
 ```
@@ -508,13 +508,13 @@ func sseHandler(c *gin.Context) {
     c.Header("Cache-Control", "no-cache")
     c.Header("Connection", "keep-alive")
     c.Header("Access-Control-Allow-Origin", "*")
-    
+
     // 客户端断开连接时的处理
     clientGone := c.Request.Context().Done()
-    
+
     ticker := time.NewTicker(1 * time.Second)
     defer ticker.Stop()
-    
+
     for {
         select {
         case <-clientGone:
@@ -532,19 +532,19 @@ func sseHandler(c *gin.Context) {
 func downloadHandler(c *gin.Context) {
     filename := c.Query("filename")
     filepath := "./files/" + filename
-    
+
     // 检查文件是否存在
     if _, err := os.Stat(filepath); os.IsNotExist(err) {
         c.JSON(http.StatusNotFound, gin.H{"error": "File not found"})
         return
     }
-    
+
     // 设置响应头
     c.Header("Content-Description", "File Transfer")
     c.Header("Content-Transfer-Encoding", "binary")
     c.Header("Content-Disposition", "attachment; filename="+filename)
     c.Header("Content-Type", "application/octet-stream")
-    
+
     // 发送文件
     c.File(filepath)
 }
@@ -567,11 +567,11 @@ Gin内置了对HTML模板的支持，可以方便地渲染动态页面。
 </head>
 <body>
     {{ template "header" . }}
-    
+
     <main>
         {{ block "content" . }}{{ end }}
     </main>
-    
+
     {{ template "footer" . }}
 </body>
 </html>
@@ -591,7 +591,7 @@ Gin内置了对HTML模板的支持，可以方便地渲染动态页面。
 func setupTemplates(r *gin.Engine) {
     // 加载所有模板文件
     r.LoadHTMLGlob("templates/**/*")
-    
+
     // 或者加载特定模板
     r.LoadHTMLFiles(
         "templates/index.html",
@@ -629,7 +629,7 @@ func setupTemplateFuncs(r *gin.Engine) {
             return template.HTML(s)
         },
     })
-    
+
     r.LoadHTMLGlob("templates/**/*")
 }
 
@@ -684,7 +684,7 @@ func registerHandler(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    
+
     // 处理注册逻辑
     c.JSON(http.StatusOK, gin.H{"message": "Registration successful"})
 }
@@ -696,13 +696,13 @@ func registerHandler(c *gin.Context) {
 // 条件验证
 type UserUpdate struct {
     Action string `json:"action" binding:"required,oneof=create update delete"`
-    
+
     // 当Action为create时必需
     Username string `json:"username" binding:"required_if=Action create"`
-    
+
     // 当Action为update时必需
     UserID   int    `json:"user_id" binding:"required_if=Action update"`
-    
+
     // 可选字段
     Email    string `json:"email" binding:"omitempty,email"`
 }
@@ -761,7 +761,7 @@ var (
 func ErrorHandler() gin.HandlerFunc {
     return func(c *gin.Context) {
         c.Next()
-        
+
         // 处理累积的错误
         if len(c.Errors) > 0 {
             for _, err := range c.Errors {
@@ -775,7 +775,7 @@ func ErrorHandler() gin.HandlerFunc {
                     return
                 }
             }
-            
+
             // 处理其他错误
             c.JSON(http.StatusInternalServerError, gin.H{
                 "code":    500,
@@ -820,19 +820,19 @@ func LoggingMiddleware() gin.HandlerFunc {
         // 生成请求ID
         requestID := generateRequestID()
         c.Set("request_id", requestID)
-        
+
         start := time.Now()
         path := c.Request.URL.Path
         method := c.Request.Method
         clientIP := c.ClientIP()
         userAgent := c.Request.UserAgent()
-        
+
         c.Next()
-        
+
         end := time.Now()
         latency := end.Sub(start).Milliseconds()
         statusCode := c.Writer.Status()
-        
+
         logEntry := RequestLog{
             RequestID:  requestID,
             Method:     method,
@@ -843,12 +843,12 @@ func LoggingMiddleware() gin.HandlerFunc {
             UserAgent:  userAgent,
             Timestamp:  end,
         }
-        
+
         // 记录错误信息
         if len(c.Errors) > 0 {
             logEntry.Error = c.Errors.Last().Error()
         }
-        
+
         // 输出结构化日志
         logBytes, _ := json.Marshal(logEntry)
         log.Println(string(logBytes))
@@ -869,12 +869,12 @@ func setupDatabase() *sql.DB {
     if err != nil {
         log.Fatal(err)
     }
-    
+
     // 设置连接池参数
     db.SetMaxOpenConns(25)                 // 最大打开连接数
     db.SetMaxIdleConns(25)                 // 最大空闲连接数
     db.SetConnMaxLifetime(5 * time.Minute) // 连接最大生命周期
-    
+
     return db
 }
 
@@ -886,7 +886,7 @@ func setupRedis() *redis.Client {
         MinIdleConns: 5,   // 最小空闲连接数
         IdleTimeout:  10 * time.Minute,
     })
-    
+
     return client
 }
 ```
@@ -899,23 +899,23 @@ var cache = cache.New(5*time.Minute, 10*time.Minute)
 
 func getCachedUser(c *gin.Context) {
     userID := c.Param("id")
-    
+
     // 尝试从缓存获取
     if cachedUser, found := cache.Get(userID); found {
         c.JSON(http.StatusOK, cachedUser)
         return
     }
-    
+
     // 从数据库获取
     user, err := getUserFromDB(userID)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-    
+
     // 存储到缓存
     cache.Set(userID, user, 5*time.Minute)
-    
+
     c.JSON(http.StatusOK, user)
 }
 
@@ -923,7 +923,7 @@ func getCachedUser(c *gin.Context) {
 func getCachedUserWithRedis(c *gin.Context) {
     userID := c.Param("id")
     redisClient := getRedisClient()
-    
+
     // 尝试从Redis获取
     cachedUser, err := redisClient.Get(context.Background(), "user:"+userID).Result()
     if err == nil {
@@ -932,18 +932,18 @@ func getCachedUserWithRedis(c *gin.Context) {
         c.JSON(http.StatusOK, user)
         return
     }
-    
+
     // 从数据库获取
     user, err := getUserFromDB(userID)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-    
+
     // 存储到Redis
     userBytes, _ := json.Marshal(user)
     redisClient.Set(context.Background(), "user:"+userID, userBytes, 5*time.Minute)
-    
+
     c.JSON(http.StatusOK, user)
 }
 ```
@@ -958,7 +958,7 @@ func limitedHandler(c *gin.Context) {
     // 获取令牌
     semaphore <- struct{}{}
     defer func() { <-semaphore }() // 释放令牌
-    
+
     // 处理请求
     time.Sleep(100 * time.Millisecond) // 模拟处理时间
     c.JSON(http.StatusOK, gin.H{"message": "Processed"})
@@ -971,11 +971,11 @@ func batchProcessHandler(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    
+
     // 使用goroutine池处理批量请求
     var wg sync.WaitGroup
     results := make([]ProcessResult, len(requests))
-    
+
     for i, req := range requests {
         wg.Add(1)
         go func(index int, request ProcessRequest) {
@@ -983,9 +983,9 @@ func batchProcessHandler(c *gin.Context) {
             results[index] = processItem(request)
         }(i, req)
     }
-    
+
     wg.Wait()
-    
+
     c.JSON(http.StatusOK, results)
 }
 ```

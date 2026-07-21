@@ -7,7 +7,7 @@ date: 2026-05-27
 
 > 当项目从单体演变为 Monorepo，依赖管理、构建顺序、缓存策略立刻成为噩梦。Turborepo 用极简的配置和极致的缓存，让 Monorepo 开发体验回归流畅。本文从零搭建一个完整的 Monorepo 项目，覆盖 pnpm workspace 集成、增量构建、远程缓存、CI/CD 流水线等核心场景。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么需要 Monorepo？
 
@@ -19,7 +19,7 @@ Polyrepo（传统）：
   repo-ui-lib/      ← 独立仓库
   repo-shared/      ← 独立仓库
   repo-api/         ← 独立仓库
-  ❌ 跨仓库修改要发 PR、等 review、改版本、发 npm、再更新引用……
+  错误 跨仓库修改要发 PR、等 review、改版本、发 npm、再更新引用……
 
 Monorepo（统一）：
   monorepo/
@@ -31,7 +31,7 @@ Monorepo（统一）：
       ui/           ← 共享 UI 组件库
       shared/       ← 共享工具函数
       config/       ← 共享 ESLint/TSConfig
-    ✅ 直接改，直接用，零版本管理负担
+    正确 直接改，直接用，零版本管理负担
 ```
 
 ### Monorepo 的痛点
@@ -561,8 +561,8 @@ turbo run build --filter=...[origin/main]
 | 学习曲线 | ⭐ 最低 | ⭐⭐⭐ 较高 | ⭐⭐ 中等 |
 | 配置复杂度 | 一个 turbo.json | nx.json + 插件 | lerna.json |
 | 缓存能力 | 本地 + 远程 | 本地 + 远程（更成熟） | 无内置缓存 |
-| 代码生成 | ❌ | ✅ 强大的 generators | ❌ |
-| 依赖图可视化 | turbo run --graph | nx graph | ❌ |
+| 代码生成 | 错误 | 正确 强大的 generators | 错误 |
+| 依赖图可视化 | turbo run --graph | nx graph | 错误 |
 | 迁移难度 | 低 | 中 | 低（但维护停滞） |
 | 适合场景 | 中小型 Monorepo | 大型/企业级 Monorepo | 简单的包管理 |
 
@@ -578,14 +578,14 @@ turbo run build --filter=...[origin/main]
 ### 1. workspace 协议
 
 ```json
-// ✅ 推荐：workspace 协议（pnpm/yarn 原生支持）
+// 正确 推荐：workspace 协议（pnpm/yarn 原生支持）
 {
   "dependencies": {
     "@repo/ui": "workspace:*"
   }
 }
 
-// ✅ 发布 npm 时自动替换为具体版本
+// 正确 发布 npm 时自动替换为具体版本
 // 本地开发时：@repo/ui → 链接到 workspace
 // pnpm publish 时：@repo/ui → "1.0.0"
 ```
@@ -673,7 +673,7 @@ turbo run dev
 pnpm install          # 生成 pnpm-lock.yaml（唯一锁文件）
 pnpm import          # 可选：从 pnpm-lock.yaml 生成 package-lock.json
 
-# ⚠️ 避免每个子包有自己的 lock 文件
+# 注意 避免每个子包有自己的 lock 文件
 # .gitignore 中不要忽略 pnpm-lock.yaml
 ```
 
@@ -772,6 +772,6 @@ CI 全量构建太慢   →     --filter 只构建变更的包
 - 缓存是灵魂：本地缓存秒级恢复，远程缓存团队共享
 - pnpm workspace + Turborepo 是 2026 年 Monorepo 的黄金组合
 
-Monorepo 不再是大型团队的专属，Turborepo 让中小团队也能轻松驾驭 🚀
+Monorepo 不再是大型团队的专属，Turborepo 让中小团队也能轻松驾驭
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

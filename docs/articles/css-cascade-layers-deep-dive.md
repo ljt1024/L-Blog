@@ -234,7 +234,7 @@ h1 { color: red; }
 ### 5.2 层不能动态切换
 
 ```css
-/* ❌ 无效！层名不能是变量 */
+/* 错误 无效！层名不能是变量 */
 @layer var(--my-layer) {
   .foo { color: red; }
 }
@@ -245,7 +245,7 @@ h1 { color: red; }
 不在任何层内的样式（unlayered styles）优先级高于所有已声明的层。因此**最佳实践是**：将所有 CSS 都放进层中，保持架构一致性：
 
 ```css
-/* ✅ 推荐：全局包裹所有样式 */
+/* 正确 推荐：全局包裹所有样式 */
 @layer base, components, utilities;
 
 @layer base { /* 所有基础样式 */ }
@@ -284,4 +284,4 @@ Cascade Layers 不仅仅是一个语法特性，更是 CSS 架构思维的一次
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

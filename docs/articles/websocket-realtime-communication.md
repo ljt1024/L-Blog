@@ -196,13 +196,13 @@ const ws = new WebSocket('wss://example.com/chat')
 // 连接打开
 ws.onopen = (event) => {
   console.log('WebSocket 连接已建立')
-  
+
   // 发送文本消息
   ws.send('Hello Server!')
-  
+
   // 发送 JSON 数据
   ws.send(JSON.stringify({ type: 'chat', content: '你好' }))
-  
+
   // 发送二进制数据
   const buffer = new ArrayBuffer(4)
   const view = new DataView(buffer)
@@ -230,7 +230,7 @@ ws.onmessage = (event) => {
 // 连接关闭
 ws.onclose = (event) => {
   console.log('连接关闭:', event.code, event.reason)
-  
+
   // 常见关闭码
   // 1000: 正常关闭
   // 1001: 端点离开
@@ -281,61 +281,61 @@ class WebSocketWithHeartbeat {
     this.heartbeatTimeout = options.heartbeatTimeout || 5000
     this.reconnectDelay = options.reconnectDelay || 1000
     this.maxReconnectDelay = options.maxReconnectDelay || 30000
-    
+
     this.ws = null
     this.heartbeatTimer = null
     this.timeoutTimer = null
     this.reconnectAttempts = 0
     this.shouldReconnect = true
-    
+
     this.connect()
   }
-  
+
   connect() {
     this.ws = new WebSocket(this.url)
-    
+
     this.ws.onopen = () => {
       console.log('WebSocket 已连接')
       this.reconnectAttempts = 0
       this.startHeartbeat()
       this.onopen?.()
     }
-    
+
     this.ws.onmessage = (event) => {
       const data = JSON.parse(event.data)
-      
+
       // 收到 pong 响应
       if (data.type === 'pong') {
         this.resetHeartbeat()
         return
       }
-      
+
       this.onmessage?.(data)
     }
-    
+
     this.ws.onclose = (event) => {
       console.log('WebSocket 已关闭:', event.code)
       this.stopHeartbeat()
       this.onclose?.(event)
-      
+
       // 非正常关闭时尝试重连
       if (this.shouldReconnect && event.code !== 1000) {
         this.reconnect()
       }
     }
-    
+
     this.ws.onerror = (error) => {
       console.error('WebSocket 错误:', error)
       this.onerror?.(error)
     }
   }
-  
+
   startHeartbeat() {
     this.heartbeatTimer = setInterval(() => {
       if (this.ws.readyState === WebSocket.OPEN) {
         // 发送 ping
         this.ws.send(JSON.stringify({ type: 'ping' }))
-        
+
         // 设置超时检测
         this.timeoutTimer = setTimeout(() => {
           console.warn('心跳超时，关闭连接')
@@ -344,30 +344,30 @@ class WebSocketWithHeartbeat {
       }
     }, this.heartbeatInterval)
   }
-  
+
   resetHeartbeat() {
     clearTimeout(this.timeoutTimer)
   }
-  
+
   stopHeartbeat() {
     clearInterval(this.heartbeatTimer)
     clearTimeout(this.timeoutTimer)
   }
-  
+
   reconnect() {
     this.reconnectAttempts++
     const delay = Math.min(
       this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1),
       this.maxReconnectDelay
     )
-    
+
     console.log(`${delay}ms 后尝试第 ${this.reconnectAttempts} 次重连...`)
-    
+
     setTimeout(() => {
       this.connect()
     }, delay)
   }
-  
+
   send(data) {
     if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(data))
@@ -375,7 +375,7 @@ class WebSocketWithHeartbeat {
     }
     return false
   }
-  
+
   close() {
     this.shouldReconnect = false
     this.stopHeartbeat()
@@ -407,46 +407,46 @@ class ReconnectingWebSocket {
       maxReconnectInterval: 30000,
       ...options
     }
-    
+
     this.retries = 0
     this.shouldReconnect = true
     this.messageQueue = [] // 断线期间的消息队列
-    
+
     this.connect()
   }
-  
+
   connect() {
     this.ws = new WebSocket(this.url, this.protocols)
-    
+
     this.ws.onopen = () => {
       this.retries = 0
       this.onopen?.()
-      
+
       // 发送队列中的消息
       while (this.messageQueue.length > 0) {
         const data = this.messageQueue.shift()
         this.ws.send(data)
       }
     }
-    
+
     this.ws.onmessage = (e) => this.onmessage?.(e)
     this.ws.onerror = (e) => this.onerror?.(e)
-    
+
     this.ws.onclose = (e) => {
       this.onclose?.(e)
-      
+
       if (this.shouldReconnect && this.retries < this.options.maxRetries) {
         this.retries++
         const delay = Math.min(
           this.options.reconnectInterval * this.retries,
           this.options.maxReconnectInterval
         )
-        
+
         setTimeout(() => this.connect(), delay)
       }
     }
   }
-  
+
   send(data) {
     if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(data)
@@ -455,12 +455,12 @@ class ReconnectingWebSocket {
       this.messageQueue.push(data)
     }
   }
-  
+
   close() {
     this.shouldReconnect = false
     this.ws.close()
   }
-  
+
   get readyState() {
     return this.ws?.readyState ?? WebSocket.CLOSED
   }
@@ -488,38 +488,38 @@ wss.on('connection', (ws, request) => {
   const ip = request.socket.remoteAddress
   const url = new URL(request.url, `http://${request.headers.host}`)
   const userId = url.searchParams.get('userId')
-  
+
   console.log(`用户 ${userId} 已连接 (${ip})`)
-  
+
   // 将客户端加入集合
   ws.userId = userId
   clients.add(ws)
-  
+
   // 发送欢迎消息
   ws.send(JSON.stringify({
     type: 'welcome',
     message: '欢迎加入聊天室',
     onlineCount: clients.size
   }))
-  
+
   // 广播用户上线
   broadcast({
     type: 'user-joined',
     userId,
     onlineCount: clients.size
   }, ws)
-  
+
   // 接收消息
   ws.on('message', (data) => {
     try {
       const message = JSON.parse(data)
-      
+
       // 心跳检测
       if (message.type === 'ping') {
         ws.send(JSON.stringify({ type: 'pong' }))
         return
       }
-      
+
       // 聊天消息
       if (message.type === 'chat') {
         broadcast({
@@ -529,17 +529,17 @@ wss.on('connection', (ws, request) => {
           timestamp: Date.now()
         })
       }
-      
+
     } catch (error) {
       console.error('消息解析失败:', error)
     }
   })
-  
+
   // 连接关闭
   ws.on('close', (code, reason) => {
     console.log(`用户 ${userId} 已断开: ${code} ${reason}`)
     clients.delete(ws)
-    
+
     // 广播用户下线
     broadcast({
       type: 'user-left',
@@ -547,7 +547,7 @@ wss.on('connection', (ws, request) => {
       onlineCount: clients.size
     })
   })
-  
+
   // 错误处理
   ws.on('error', (error) => {
     console.error(`用户 ${userId} 连接错误:`, error)
@@ -557,7 +557,7 @@ wss.on('connection', (ws, request) => {
 // 广播函数
 function broadcast(message, excludeWs = null) {
   const data = JSON.stringify(message)
-  
+
   for (const client of clients) {
     if (client !== excludeWs && client.readyState === 1) {
       client.send(data)
@@ -589,20 +589,20 @@ const chatNamespace = io.of('/chat')
 
 chatNamespace.on('connection', (socket) => {
   console.log('用户连接:', socket.id)
-  
+
   // 加入房间
   socket.on('join-room', (roomId) => {
     socket.join(roomId)
     socket.to(roomId).emit('user-joined', socket.id)
     console.log(`${socket.id} 加入房间 ${roomId}`)
   })
-  
+
   // 离开房间
   socket.on('leave-room', (roomId) => {
     socket.leave(roomId)
     socket.to(roomId).emit('user-left', socket.id)
   })
-  
+
   // 房间内消息
   socket.on('room-message', (roomId, message) => {
     // 发送给房间内所有人（包括发送者）
@@ -612,7 +612,7 @@ chatNamespace.on('connection', (socket) => {
       timestamp: Date.now()
     })
   })
-  
+
   // 私聊
   socket.on('private-message', (targetSocketId, message) => {
     socket.to(targetSocketId).emit('private-message', {
@@ -621,7 +621,7 @@ chatNamespace.on('connection', (socket) => {
       timestamp: Date.now()
     })
   })
-  
+
   // 断开连接
   socket.on('disconnect', (reason) => {
     console.log(`用户断开: ${socket.id}, 原因: ${reason}`)
@@ -651,7 +651,7 @@ const socket = io('http://localhost:3000/chat', {
 
 socket.on('connect', () => {
   console.log('已连接:', socket.id)
-  
+
   // 加入房间
   socket.emit('join-room', 'room-123')
 })
@@ -687,7 +687,7 @@ class ChatServer {
     this.rooms = new Map() // roomId -> Set<userId>
     this.messages = new Map() // roomId -> Message[]
   }
-  
+
   handleConnection(ws, userId) {
     // 用户上线
     const user = {
@@ -696,20 +696,20 @@ class ChatServer {
       lastSeen: Date.now()
     }
     this.users.set(userId, user)
-    
+
     // 发送未读消息
     this.sendUnreadMessages(userId)
-    
+
     ws.on('message', (data) => {
       const msg = JSON.parse(data)
       this.handleMessage(userId, msg)
     })
-    
+
     ws.on('close', () => {
       this.handleDisconnect(userId)
     })
   }
-  
+
   handleMessage(userId, msg) {
     switch (msg.type) {
       case 'join-room':
@@ -726,25 +726,25 @@ class ChatServer {
         break
     }
   }
-  
+
   joinRoom(userId, roomId) {
     const user = this.users.get(userId)
     if (!user) return
-    
+
     // 加入房间
     if (!this.rooms.has(roomId)) {
       this.rooms.set(roomId, new Set())
     }
     this.rooms.get(roomId).add(userId)
     user.rooms.add(roomId)
-    
+
     // 通知房间内其他用户
     this.broadcastToRoom(roomId, {
       type: 'user-joined',
       userId,
       roomId
     }, userId)
-    
+
     // 发送房间历史消息
     const messages = this.messages.get(roomId) || []
     user.ws.send(JSON.stringify({
@@ -753,12 +753,12 @@ class ChatServer {
       messages: messages.slice(-50) // 最近 50 条
     }))
   }
-  
+
   handleChat(userId, msg) {
     const { roomId, content } = msg
     const user = this.users.get(userId)
     if (!user || !user.rooms.has(roomId)) return
-    
+
     const message = {
       id: this.generateId(),
       roomId,
@@ -766,20 +766,20 @@ class ChatServer {
       content,
       timestamp: Date.now()
     }
-    
+
     // 存储消息
     if (!this.messages.has(roomId)) {
       this.messages.set(roomId, [])
     }
     this.messages.get(roomId).push(message)
-    
+
     // 广播给房间内所有人
     this.broadcastToRoom(roomId, {
       type: 'chat',
       message
     })
   }
-  
+
   handleTyping(userId, roomId) {
     // 广播"正在输入"状态（节流）
     this.broadcastToRoom(roomId, {
@@ -788,7 +788,7 @@ class ChatServer {
       roomId
     }, userId)
   }
-  
+
   markAsRead(userId, roomId, messageId) {
     // 更新已读状态
     const user = this.users.get(userId)
@@ -803,27 +803,27 @@ class ChatServer {
       })
     }
   }
-  
+
   broadcastToRoom(roomId, message, excludeUserId = null) {
     const userIds = this.rooms.get(roomId)
     if (!userIds) return
-    
+
     const data = JSON.stringify(message)
-    
+
     for (const userId of userIds) {
       if (userId === excludeUserId) continue
-      
+
       const user = this.users.get(userId)
       if (user && user.ws.readyState === 1) {
         user.ws.send(data)
       }
     }
   }
-  
+
   handleDisconnect(userId) {
     const user = this.users.get(userId)
     if (!user) return
-    
+
     // 通知所有房间该用户下线
     for (const roomId of user.rooms) {
       this.broadcastToRoom(roomId, {
@@ -831,20 +831,20 @@ class ChatServer {
         userId,
         roomId
       })
-      
+
       const room = this.rooms.get(roomId)
       if (room) {
         room.delete(userId)
       }
     }
-    
+
     this.users.delete(userId)
   }
-  
+
   generateId() {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   }
-  
+
   sendUnreadMessages(userId) {
     // 实现离线消息推送
     // ...
@@ -863,26 +863,26 @@ class CollaborativeDocument {
     this.version = 0
     this.clients = new Set()
   }
-  
+
   applyOperation(clientId, operation) {
     // OT（Operational Transformation）算法核心
     // 处理并发编辑冲突
-    
+
     if (operation.type === 'insert') {
       const { position, text } = operation
-      this.content = 
-        this.content.slice(0, position) + 
-        text + 
+      this.content =
+        this.content.slice(0, position) +
+        text +
         this.content.slice(position)
     } else if (operation.type === 'delete') {
       const { position, length } = operation
-      this.content = 
-        this.content.slice(0, position) + 
+      this.content =
+        this.content.slice(0, position) +
         this.content.slice(position + length)
     }
-    
+
     this.version++
-    
+
     // 广播给所有客户端
     this.broadcast({
       type: 'operation',
@@ -891,7 +891,7 @@ class CollaborativeDocument {
       content: this.content
     }, clientId)
   }
-  
+
   broadcast(message, excludeClient) {
     const data = JSON.stringify(message)
     for (const client of this.clients) {
@@ -912,14 +912,14 @@ class StockQuoteService {
     this.subscriptions = new Map() // symbol -> Set<ws>
     this.quotes = new Map() // symbol -> quote
   }
-  
+
   subscribe(ws, symbols) {
     for (const symbol of symbols) {
       if (!this.subscriptions.has(symbol)) {
         this.subscriptions.set(symbol, new Set())
       }
       this.subscriptions.get(symbol).add(ws)
-      
+
       // 立即发送当前行情
       const quote = this.quotes.get(symbol)
       if (quote) {
@@ -931,7 +931,7 @@ class StockQuoteService {
       }
     }
   }
-  
+
   unsubscribe(ws, symbols) {
     for (const symbol of symbols) {
       const subscribers = this.subscriptions.get(symbol)
@@ -940,24 +940,24 @@ class StockQuoteService {
       }
     }
   }
-  
+
   // 模拟行情更新（实际应连接数据源）
   startQuoteStream() {
     setInterval(() => {
       for (const [symbol, subscribers] of this.subscriptions) {
         if (subscribers.size === 0) continue
-        
+
         // 模拟行情变化
         const quote = this.generateQuote(symbol)
         this.quotes.set(symbol, quote)
-        
+
         // 推送给订阅者
         const data = JSON.stringify({
           type: 'quote',
           symbol,
           ...quote
         })
-        
+
         for (const ws of subscribers) {
           if (ws.readyState === 1) {
             ws.send(data)
@@ -966,12 +966,12 @@ class StockQuoteService {
       }
     }, 1000) // 每秒更新
   }
-  
+
   generateQuote(symbol) {
     const lastQuote = this.quotes.get(symbol) || { price: 100 }
     const change = (Math.random() - 0.5) * 2
     const price = lastQuote.price + change
-    
+
     return {
       price: price.toFixed(2),
       change: change.toFixed(2),
@@ -996,12 +996,12 @@ const wss = new WebSocketServer({
     // 从 URL 或 header 获取 token
     const token = new URL(info.req.url, 'http://localhost')
       .searchParams.get('token')
-    
+
     if (!token) {
       callback(false, 401, 'Unauthorized')
       return
     }
-    
+
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
       info.req.user = decoded
@@ -1014,11 +1014,11 @@ const wss = new WebSocketServer({
 
 wss.on('connection', (ws, request) => {
   ws.user = request.user
-  
+
   // 速率限制
   ws.messageCount = 0
   ws.lastReset = Date.now()
-  
+
   ws.on('message', (data) => {
     // 每分钟最多 100 条消息
     const now = Date.now()
@@ -1026,20 +1026,20 @@ wss.on('connection', (ws, request) => {
       ws.messageCount = 0
       ws.lastReset = now
     }
-    
+
     if (ws.messageCount >= 100) {
       ws.close(1008, 'Rate limit exceeded')
       return
     }
-    
+
     ws.messageCount++
-    
+
     // 消息大小限制
     if (data.length > 1024 * 1024) { // 1MB
       ws.close(1009, 'Message too large')
       return
     }
-    
+
     // 处理消息
     handleMessage(ws, data)
   })
@@ -1054,11 +1054,11 @@ function encodeMessage(type, payload) {
   const encoder = new TextEncoder()
   const typeBytes = new Uint8Array([type])
   const payloadBytes = encoder.encode(JSON.stringify(payload))
-  
+
   const buffer = new Uint8Array(1 + payloadBytes.length)
   buffer.set(typeBytes, 0)
   buffer.set(payloadBytes, 1)
-  
+
   return buffer
 }
 
@@ -1067,7 +1067,7 @@ import zlib from 'zlib'
 
 async function sendCompressed(ws, data) {
   const json = JSON.stringify(data)
-  
+
   if (json.length > 1024) {
     const compressed = await new Promise((resolve, reject) => {
       zlib.deflate(json, (err, result) => {
@@ -1075,7 +1075,7 @@ async function sendCompressed(ws, data) {
         else resolve(result)
       })
     })
-    
+
     ws.send(JSON.stringify({
       compressed: true,
       data: compressed.toString('base64')
@@ -1091,7 +1091,7 @@ class ConnectionPool {
     this.connections = new Map()
     this.maxConnections = maxConnections
   }
-  
+
   add(id, ws) {
     if (this.connections.size >= this.maxConnections) {
       // 移除最旧的连接
@@ -1100,14 +1100,14 @@ class ConnectionPool {
       oldWs.close(1001, 'Server overloaded')
       this.connections.delete(oldest)
     }
-    
+
     this.connections.set(id, ws)
   }
-  
+
   remove(id) {
     this.connections.delete(id)
   }
-  
+
   get(id) {
     return this.connections.get(id)
   }
@@ -1127,10 +1127,10 @@ upstream websocket {
 server {
   listen 443 ssl;
   server_name example.com;
-  
+
   ssl_certificate /path/to/cert.pem;
   ssl_certificate_key /path/to/key.pem;
-  
+
   location /ws {
     proxy_pass http://websocket;
     proxy_http_version 1.1;
@@ -1139,7 +1139,7 @@ server {
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    
+
     # 超时设置
     proxy_read_timeout 86400;
     proxy_send_timeout 86400;
@@ -1173,17 +1173,17 @@ const messageLatency = new Histogram({
 // 更新指标
 wss.on('connection', (ws) => {
   connectionsGauge.inc()
-  
+
   ws.on('message', (data) => {
     const start = Date.now()
-    
+
     // 处理消息...
-    
+
     const latency = (Date.now() - start) / 1000
     messageLatency.observe(latency)
     messagesCounter.inc({ type: 'chat' })
   })
-  
+
   ws.on('close', () => {
     connectionsGauge.dec()
   })
@@ -1220,4 +1220,4 @@ WebSocket 是实时通信的核心技术，掌握它需要理解：
 
 ---
 
-*本文由小虾子 🦐 撰写*
+*本文由小虾子  撰写*

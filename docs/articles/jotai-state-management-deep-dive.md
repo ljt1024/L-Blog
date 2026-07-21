@@ -7,7 +7,7 @@ date: 2026-04-28
 
 > Zustand 用 store，Valtio 用 proxy，Jotai 用 atom——三种状态管理方案三种哲学。Jotai 的原子化设计源自 Recoil，但更轻量、更灵活。每个 atom 是一个独立的状态单元，组件只订阅自己用到的 atom，天然实现了最细粒度的更新控制。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 为什么选择 Jotai？
 
@@ -41,7 +41,7 @@ const countAtom = atom(0);
 // 在组件中使用
 function Counter() {
   const [count, setCount] = useAtom(countAtom);
-  
+
   return (
     <div>
       <p>Count: {count}</p>
@@ -110,9 +110,9 @@ const cartCountAtom = atom((get) => {
 const addToCartAtom = atom(null, (get, set, item: { id: string; name: string; price: number }) => {
   const items = get(cartItemsAtom);
   const existing = items.find(i => i.id === item.id);
-  
+
   if (existing) {
-    set(cartItemsAtom, items.map(i => 
+    set(cartItemsAtom, items.map(i =>
       i.id === item.id ? { ...i, qty: i.qty + 1 } : i
     ));
   } else {
@@ -123,21 +123,21 @@ const addToCartAtom = atom(null, (get, set, item: { id: string; name: string; pr
 // 组件：购物车图标
 function CartIcon() {
   const count = useAtomValue(cartCountAtom); // 只读，不订阅 setter
-  
-  return <div>🛒 {count}</div>;
+
+  return <div> {count}</div>;
 }
 
 // 组件：购物车总价
 function CartTotal() {
   const total = useAtomValue(cartTotalAtom);
-  
-  return <div>总计: ¥{total.toFixed(2)}</div>;
+
+  return <div>总计: {total.toFixed(2)}</div>;
 }
 
 // 组件：添加按钮
 function AddToCartButton({ item }: { item: { id: string; name: string; price: number } }) {
   const addToCart = useSetAtom(addToCartAtom); // 只获取 setter
-  
+
   return (
     <button onClick={() => addToCart(item)}>
       加入购物车
@@ -148,12 +148,12 @@ function AddToCartButton({ item }: { item: { id: string; name: string; price: nu
 // 组件：购物车列表
 function CartList() {
   const [items] = useAtom(cartItemsAtom);
-  
+
   return (
     <ul>
       {items.map(item => (
         <li key={item.id}>
-          {item.name} × {item.qty} = ¥{item.price * item.qty}
+          {item.name} × {item.qty} = {item.price * item.qty}
         </li>
       ))}
     </ul>
@@ -178,7 +178,7 @@ const userAtom = atom(async (get) => {
 // 使用 Suspense 处理加载状态
 function UserProfile() {
   const [user] = useAtom(userAtom);
-  
+
   return (
     <div>
       <h1>{user.name}</h1>
@@ -214,7 +214,7 @@ const isFormValidAtom = atom((get) => {
   const email = get(emailAtom);
   const password = get(passwordAtom);
   const confirmPassword = get(confirmPasswordAtom);
-  
+
   return (
     email.includes('@') &&
     password.length >= 8 &&
@@ -226,9 +226,9 @@ const isFormValidAtom = atom((get) => {
 const submitFormAtom = atom(null, async (get, set) => {
   const email = get(emailAtom);
   const password = get(passwordAtom);
-  
+
   if (!get(isFormValidAtom)) return;
-  
+
   await fetch('/api/register', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
@@ -241,7 +241,7 @@ function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useAtom(confirmPasswordAtom);
   const isValid = useAtomValue(isFormValidAtom);
   const submitForm = useSetAtom(submitFormAtom);
-  
+
   return (
     <form onSubmit={(e) => { e.preventDefault(); submitForm(); }}>
       <input
@@ -289,7 +289,7 @@ const userFamily = atomFamily((userId: string) =>
 
 function UserCard({ userId }: { userId: string }) {
   const [user] = useAtom(userFamily(userId));
-  
+
   return <div>{user.name}</div>;
 }
 
@@ -326,7 +326,7 @@ const themeAtom = selectAtom(settingsAtom, (settings) => settings.theme);
 
 function ThemeToggle() {
   const [theme, setTheme] = useAtom(themeAtom);
-  
+
   return (
     <button onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}>
       当前主题: {theme}
@@ -347,7 +347,7 @@ const themeAtom = atomWithStorage('theme', 'dark');
 
 function ThemeToggle() {
   const [theme, setTheme] = useAtom(themeAtom);
-  
+
   return (
     <button onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}>
       {theme}
@@ -367,7 +367,7 @@ const textAtom = atomWithUndo('');
 
 function TextEditor() {
   const [text, setText, undoState] = useAtom(textAtom);
-  
+
   return (
     <div>
       <textarea
@@ -400,7 +400,7 @@ const useStore = create((set) => ({
 function Counter() {
   const count = useStore((s) => s.count); // 必须用 selector
   const increment = useStore((s) => s.increment);
-  
+
   return <button onClick={increment}>{count}</button>;
 }
 
@@ -410,7 +410,7 @@ const nameAtom = atom('Alice');
 
 function Counter() {
   const [count, setCount] = useAtom(countAtom); // 直接使用
-  
+
   return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
 }
 ```
@@ -432,7 +432,7 @@ const state = proxy({
 
 function Counter() {
   const snap = useSnapshot(state);
-  
+
   return <button onClick={() => state.count++}>{snap.count}</button>;
 }
 
@@ -441,7 +441,7 @@ const countAtom = atom(0);
 
 function Counter() {
   const [count, setCount] = useAtom(countAtom);
-  
+
   return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
 }
 ```
@@ -467,7 +467,7 @@ const store = configureStore({ reducer: counterSlice.reducer });
 function Counter() {
   const count = useSelector((s) => s.value);
   const dispatch = useDispatch();
-  
+
   return <button onClick={() => dispatch(increment())}>{count}</button>;
 }
 
@@ -476,7 +476,7 @@ const countAtom = atom(0);
 
 function Counter() {
   const [count, setCount] = useAtom(countAtom);
-  
+
   return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
 }
 ```
@@ -490,7 +490,7 @@ function Counter() {
 ### 1. Atom 定义位置
 
 ```tsx
-// ✅ 推荐：atom 定义在组件外部
+// 正确 推荐：atom 定义在组件外部
 const countAtom = atom(0);
 
 function Counter() {
@@ -498,7 +498,7 @@ function Counter() {
   return <div>{count}</div>;
 }
 
-// ❌ 不推荐：在组件内创建 atom（每次渲染都会创建新 atom）
+// 错误 不推荐：在组件内创建 atom（每次渲染都会创建新 atom）
 function Counter() {
   const countAtom = atom(0); // 错误！
   const [count] = useAtom(countAtom);
@@ -509,26 +509,26 @@ function Counter() {
 ### 2. 使用 useAtomValue 和 useSetAtom
 
 ```tsx
-// ✅ 只读时用 useAtomValue
+// 正确 只读时用 useAtomValue
 const count = useAtomValue(countAtom);
 
-// ✅ 只写时用 useSetAtom
+// 正确 只写时用 useSetAtom
 const setCount = useSetAtom(countAtom);
 
-// ✅ 读写都用 useAtom
+// 正确 读写都用 useAtom
 const [count, setCount] = useAtom(countAtom);
 ```
 
 ### 3. 派生状态优于复杂 selector
 
 ```tsx
-// ✅ 推荐：使用派生 atom
+// 正确 推荐：使用派生 atom
 const totalAtom = atom((get) => {
   const items = get(itemsAtom);
   return items.reduce((sum, item) => sum + item.price, 0);
 });
 
-// ❌ 不推荐：在组件内计算
+// 错误 不推荐：在组件内计算
 function Cart() {
   const [items] = useAtom(itemsAtom);
   const total = items.reduce((sum, item) => sum + item.price, 0);
@@ -568,4 +568,4 @@ Jotai 的原子化设计理念让它成为 React 状态管理的优雅选择：
 
 对比 Zustand 的集中式 Store 和 Valtio 的 Proxy 风格，Jotai 提供了第三种选择：**原子化、不可变、函数式**。选择哪一个，取决于团队偏好和项目需求——但无论选择哪个，都远比 Redux 轻量。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

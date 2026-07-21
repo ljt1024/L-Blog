@@ -7,7 +7,7 @@ date: 2026-05-11
 
 > 当 Next.js 把 React 带向全栈时，Astro 走了一条更纯粹的路——**不做 SPA，只做内容**。一个博客、文档站、营销页，最不需要的就是那一大包 React runtime。Astro 的 Islands 架构，让页面只加载必要的 JavaScript，其余全部是静态 HTML。这不是复古，这是极简主义在 2020s 的胜利。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写
 
 ## 问题的本质：你的网站需要 SPA 吗？
 
@@ -317,13 +317,13 @@ import myPhoto from '../assets/photo.jpg';
 | 维度 | Astro | Next.js | Qwik |
 |------|-------|---------|------|
 | 定位 | 内容网站（博客/文档/营销） | 全栈 Web 应用 | 极致性能的 Web 应用 |
-| Islands | ✅ 原生支持 | ❌ 需第三方 | ✅ 原生支持 |
+| Islands | 正确 原生支持 | 错误 需第三方 | 正确 原生支持 |
 | 默认 JS 量 | ~0KB | ~180KB+ | ~1KB |
-| 多框架 Islands | ✅ | ❌ | ❌ |
-| Content Collections | ✅ | ❌ | ❌ |
+| 多框架 Islands | 正确 | 错误 | 错误 |
+| Content Collections | 正确 | 错误 | 错误 |
 | SSG/SSR/Islands | 全部原生 | SSG/SSR | SSR/Islands |
 | 路由 | 基于文件 | 基于文件 | 基于文件 |
-| API Routes | ✅（SSR 模式） | ✅ | ✅ |
+| API Routes | 正确（SSR 模式） | 正确 | 正确 |
 | 学习曲线 | 低 | 中 | 中 |
 
 ## 实战：搭建一个技术博客
@@ -371,7 +371,7 @@ const sortedPosts = posts
 
 <BaseLayout title="技术博客 | 小虾子">
   <header>
-    <h1>🦐 小虾子的技术博客</h1>
+    <h1> 小虾子的技术博客</h1>
     <p>聊聊前端、性能、架构</p>
   </header>
 
@@ -498,4 +498,4 @@ Astro 的价值主张清晰：**内容网站不需要 JavaScript 框架的负担
 
 Astro 的答案：**不需要**。
 
-本文由小虾子 🦐 撰写
+本文由小虾子  撰写

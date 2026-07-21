@@ -131,12 +131,12 @@ DROP TABLE IF EXISTS users;
 
 ```sql
 -- 插入单条记录
-INSERT INTO users (username, email, password) 
+INSERT INTO users (username, email, password)
 VALUES ('john_doe', 'john@example.com', 'password123');
 
 -- 插入多条记录
-INSERT INTO users (username, email, password) 
-VALUES 
+INSERT INTO users (username, email, password)
+VALUES
     ('alice', 'alice@example.com', 'pass456'),
     ('bob', 'bob@example.com', 'pass789');
 ```
@@ -211,14 +211,14 @@ SELECT SUM(age) FROM users;
 
 ```sql
 -- 按条件分组统计
-SELECT department, COUNT(*) as employee_count 
-FROM employees 
+SELECT department, COUNT(*) as employee_count
+FROM employees
 GROUP BY department;
 
 -- 分组后筛选
-SELECT department, COUNT(*) as employee_count 
-FROM employees 
-GROUP BY department 
+SELECT department, COUNT(*) as employee_count
+FROM employees
+GROUP BY department
 HAVING COUNT(*) > 5;
 ```
 
@@ -227,24 +227,24 @@ HAVING COUNT(*) > 5;
 #### 内连接
 
 ```sql
-SELECT users.username, orders.order_date 
-FROM users 
+SELECT users.username, orders.order_date
+FROM users
 INNER JOIN orders ON users.id = orders.user_id;
 ```
 
 #### 左连接
 
 ```sql
-SELECT users.username, orders.order_date 
-FROM users 
+SELECT users.username, orders.order_date
+FROM users
 LEFT JOIN orders ON users.id = orders.user_id;
 ```
 
 #### 子查询
 
 ```sql
-SELECT username, email 
-FROM users 
+SELECT username, email
+FROM users
 WHERE id IN (SELECT user_id FROM orders WHERE order_amount > 1000);
 ```
 

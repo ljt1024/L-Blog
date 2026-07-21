@@ -132,7 +132,7 @@ module.exports = {
       PORT: 8080
     }
   }],
-  
+
   deploy : {
     production : {
       user : 'SSH_USERNAME',
@@ -326,7 +326,7 @@ module.exports = {
    ```bash
    # 查看端口使用情况
    lsof -i :3000
-   
+
    # 杀掉占用端口的进程
    kill -9 PID
    ```

@@ -40,7 +40,7 @@ Express 的核心组件包括：
 function middleware(req, res, next) {
   // 处理请求
   console.log('Middleware executed');
-  
+
   // 调用下一个中间件
   next();
 }
@@ -120,22 +120,22 @@ app.get('/user/:id', (req, res) => {
 app.get('/response-examples', (req, res) => {
   // 发送文本响应
   res.send('Hello World');
-  
+
   // 发送 JSON 响应
   res.json({ message: 'Hello World' });
-  
+
   // 发送文件
   res.sendFile('/path/to/file.txt');
-  
+
   // 设置状态码
   res.status(404).send('Not Found');
-  
+
   // 设置响应头
   res.set('Content-Type', 'text/plain');
-  
+
   // 重定向
   res.redirect('/login');
-  
+
   // 下载文件
   res.download('/path/to/file.pdf');
 });
@@ -205,11 +205,11 @@ function logger(req, res, next) {
 // 认证中间件
 function requireAuth(req, res, next) {
   const token = req.headers.authorization;
-  
+
   if (!token) {
     return res.status(401).json({ error: 'Authorization header required' });
   }
-  
+
   try {
     // 验证 token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -241,16 +241,16 @@ app.use(errorHandler);
 function errorHandler(err, req, res, next) {
   // 错误日志记录
   console.error(err.stack);
-  
+
   // 根据错误类型返回不同的响应
   if (err instanceof ValidationError) {
     return res.status(400).json({ error: err.message });
   }
-  
+
   if (err instanceof AuthenticationError) {
     return res.status(401).json({ error: err.message });
   }
-  
+
   // 默认错误响应
   res.status(500).json({ error: 'Internal Server Error' });
 }
@@ -354,7 +354,7 @@ class UserController {
       next(err);
     }
   }
-  
+
   static async getUserById(req, res, next) {
     try {
       const user = await User.findById(req.params.id);
@@ -366,7 +366,7 @@ class UserController {
       next(err);
     }
   }
-  
+
   static async createUser(req, res, next) {
     try {
       const user = await User.create(req.body);
@@ -440,11 +440,11 @@ const userSchema = Joi.object({
 // 验证中间件
 function validateUser(req, res, next) {
   const { error, value } = userSchema.validate(req.body);
-  
+
   if (error) {
     return res.status(400).json({ error: error.details[0].message });
   }
-  
+
   req.validatedBody = value;
   next();
 }
@@ -467,26 +467,26 @@ const bcrypt = require('bcrypt');
 // 登录路由
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
-  
+
   // 查找用户
   const user = await User.findOne({ email });
   if (!user) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
-  
+
   // 验证密码
   const isValidPassword = await bcrypt.compare(password, user.password);
   if (!isValidPassword) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
-  
+
   // 生成 JWT
   const token = jwt.sign(
     { userId: user.id, email: user.email },
     process.env.JWT_SECRET,
     { expiresIn: '24h' }
   );
-  
+
   res.json({ token, user: { id: user.id, email: user.email } });
 });
 
@@ -494,16 +494,16 @@ app.post('/api/login', async (req, res) => {
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  
+
   if (!token) {
     return res.status(401).json({ error: 'Access token required' });
   }
-  
+
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       return res.status(403).json({ error: 'Invalid token' });
     }
-    
+
     req.user = user;
     next();
   });
@@ -741,13 +741,13 @@ app.get('/api/users', async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
     const offset = (page - 1) * limit;
-    
+
     const { rows, count } = await User.findAndCountAll({
       limit: parseInt(limit),
       offset: parseInt(offset),
       order: [['createdAt', 'DESC']]
     });
-    
+
     res.json({
       users: rows,
       pagination: {
@@ -779,11 +779,11 @@ app.get('/api/users/:id/posts', async (req, res) => {
         attributes: ['id', 'title', 'createdAt']
       }]
     });
-    
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    
+
     res.json(user.Posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -827,32 +827,32 @@ const sequelize = new Sequelize('database', 'username', 'password', {
 app.post('/api/transfer', async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
-  
+
   try {
     const { fromAccountId, toAccountId, amount } = req.body;
-    
+
     // 从账户扣款
     const fromAccount = await Account.findByIdAndUpdate(
       fromAccountId,
       { $inc: { balance: -amount } },
       { session, new: true }
     );
-    
+
     if (fromAccount.balance < 0) {
       throw new Error('Insufficient funds');
     }
-    
+
     // 向账户存款
     await Account.findByIdAndUpdate(
       toAccountId,
       { $inc: { balance: amount } },
       { session }
     );
-    
+
     // 提交事务
     await session.commitTransaction();
     session.endSession();
-    
+
     res.json({ message: 'Transfer successful' });
   } catch (err) {
     // 回滚事务
@@ -865,18 +865,18 @@ app.post('/api/transfer', async (req, res) => {
 // PostgreSQL 事务
 app.post('/api/orders', async (req, res) => {
   const transaction = await sequelize.transaction();
-  
+
   try {
     // 创建订单
     const order = await Order.create(req.body, { transaction });
-    
+
     // 更新库存
     await Product.decrement('stock', {
       by: req.body.quantity,
       where: { id: req.body.productId },
       transaction
     });
-    
+
     // 提交事务
     await transaction.commit();
     res.status(201).json(order);
@@ -902,20 +902,20 @@ const client = redis.createClient();
 function cacheMiddleware(duration = 300) {
   return async (req, res, next) => {
     const key = '__express__' + req.originalUrl || req.url;
-    
+
     try {
       const cached = await client.get(key);
       if (cached) {
         return res.json(JSON.parse(cached));
       }
-      
+
       // 重写 res.send 方法来缓存响应
       res.sendResponse = res.send;
       res.send = (body) => {
         client.setex(key, duration, body);
         res.sendResponse(body);
       };
-      
+
       next();
     } catch (err) {
       next();
@@ -936,17 +936,17 @@ const cache = new NodeCache({ stdTTL: 600 });
 function memoryCacheMiddleware(req, res, next) {
   const key = req.originalUrl || req.url;
   const cached = cache.get(key);
-  
+
   if (cached) {
     return res.json(cached);
   }
-  
+
   res.sendResponse = res.send;
   res.send = (body) => {
     cache.set(key, JSON.parse(body));
     res.sendResponse(body);
   };
-  
+
   next();
 }
 ```
@@ -966,18 +966,18 @@ app.get('/api/users', async (req, res) => {
   try {
     // 只选择需要的字段
     const users = await User.find({}, { name: 1, email: 1, _id: 1 });
-    
+
     // 分页查询
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
-    
+
     const users = await User.find({})
       .select('name email')
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
-    
+
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -1002,7 +1002,7 @@ app.get('/api/users/stats', async (req, res) => {
         }
       }
     ]);
-    
+
     res.json(stats);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -1050,12 +1050,12 @@ const numCPUs = require('os').cpus().length;
 
 if (cluster.isMaster) {
   console.log(`Master ${process.pid} is running`);
-  
+
   // Fork workers
   for (let i = 0; i < numCPUs; i++) {
     cluster.fork();
   }
-  
+
   cluster.on('exit', (worker, code, signal) => {
     console.log(`Worker ${worker.process.pid} died`);
     cluster.fork(); // 重启 worker
@@ -1064,7 +1064,7 @@ if (cluster.isMaster) {
   // Workers can share any TCP connection
   // In this case it is an HTTP server
   const app = require('./app');
-  
+
   app.listen(3000, () => {
     console.log(`Worker ${process.pid} started`);
   });
@@ -1085,7 +1085,7 @@ class AppError extends Error {
     this.statusCode = statusCode;
     this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
     this.isOperational = true;
-    
+
     Error.captureStackTrace(this, this.constructor);
   }
 }
@@ -1094,7 +1094,7 @@ class AppError extends Error {
 function globalErrorHandler(err, req, res, next) {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
-  
+
   // 开发环境显示详细错误信息
   if (process.env.NODE_ENV === 'development') {
     res.status(err.statusCode).json({
@@ -1112,7 +1112,7 @@ function globalErrorHandler(err, req, res, next) {
       });
     } else {
       // 编程错误或其他未知错误
-      console.error('ERROR 💥', err);
+      console.error('ERROR ', err);
       res.status(500).json({
         status: 'error',
         message: 'Something went very wrong!'
@@ -1273,20 +1273,20 @@ describe('User API', () => {
   beforeEach(async () => {
     await User.deleteMany({});
   });
-  
+
   describe('GET /api/users', () => {
     it('should get all users', async () => {
       await User.create({ name: 'John', email: 'john@example.com' });
-      
+
       const res = await request(app)
         .get('/api/users')
         .expect(200);
-      
+
       expect(res.body).toHaveLength(1);
       expect(res.body[0].name).toBe('John');
     });
   });
-  
+
   describe('POST /api/users', () => {
     it('should create a new user', async () => {
       const userData = {
@@ -1294,25 +1294,25 @@ describe('User API', () => {
         email: 'jane@example.com',
         password: 'password123'
       };
-      
+
       const res = await request(app)
         .post('/api/users')
         .send(userData)
         .expect(201);
-      
+
       expect(res.body.name).toBe('Jane');
       expect(res.body.email).toBe('jane@example.com');
-      
+
       const user = await User.findOne({ email: 'jane@example.com' });
       expect(user).toBeTruthy();
     });
-    
+
     it('should return 400 for invalid data', async () => {
       const invalidData = {
         name: 'J',
         email: 'invalid-email'
       };
-      
+
       await request(app)
         .post('/api/users')
         .send(invalidData)
@@ -1331,7 +1331,7 @@ describe('Validation Utils', () => {
       expect(validateEmail('test@example.com')).toBe(true);
       expect(validateEmail('user.name@domain.co.uk')).toBe(true);
     });
-    
+
     it('should return false for invalid emails', () => {
       expect(validateEmail('invalid-email')).toBe(false);
       expect(validateEmail('')).toBe(false);
@@ -1456,17 +1456,17 @@ const httpRequestDurationMicroseconds = new client.Histogram({
 // 中间件记录指标
 app.use((req, res, next) => {
   const end = httpRequestDurationMicroseconds.startTimer();
-  
+
   res.on('finish', () => {
     const labels = {
       method: req.method,
       route: req.route ? req.route.path : req.path,
       code: res.statusCode
     };
-    
+
     end(labels);
   });
-  
+
   next();
 });
 

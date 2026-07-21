@@ -24,14 +24,14 @@ export default defineConfig({
 ```
 
 ### 3 ref 和 reactive
-ref可以定义基本、对象类型的响应式数据  打印的数据RefImpl {value}  value: Proxy('类型'){}  
-reactive 只能定义对象类型的响应式数据  打印的数据Proxy('类型'){} 
+ref可以定义基本、对象类型的响应式数据  打印的数据RefImpl {value}  value: Proxy('类型'){}
+reactive 只能定义对象类型的响应式数据  打印的数据Proxy('类型'){}
 
-区别: 
+区别:
 1. ref创建的变量必须使用.value(可以使用volar插件自动添加.value)
 2. reactive 重新分配一个新对象，会失去响应式（可以使用Object.assign去在整体替换）
 
-使用原则:  
+使用原则:
 1. 若需要一个基本类型的响应式数据必须用ref
 2. 若需要一个响应式对象，层级不深，ref、reactive都可以
 3. 若需要一个响应式对象，且层级较深，推荐使用reactive
@@ -46,7 +46,7 @@ reactive 只能定义对象类型的响应式数据  打印的数据Proxy('类�
  //address.value  price.value
  let address = ref('杭州')
  let price = ref(200)
- 
+
  // person2.name person2.age
  let person2 = reactive({
     name: '李四',
@@ -152,10 +152,10 @@ const stopWatch = watch(sum, (newVal, oldVal)=> {
 })
 </script>
 ```
-情况2: 监视ref定义的对象数据类型,监视的是对象的地址值,若想监视对象内部属性的变化，需要手动开启  
-watch的第一个参数是: 被监视的数据   
-watch的第二个参数是: 监视的回调  
-watch的第三个参数是: 配置对象(deep、immediate等等)  
+情况2: 监视ref定义的对象数据类型,监视的是对象的地址值,若想监视对象内部属性的变化，需要手动开启
+watch的第一个参数是: 被监视的数据
+watch的第二个参数是: 监视的回调
+watch的第三个参数是: 配置对象(deep、immediate等等)
 ```html
 <template>
   <div>
@@ -207,7 +207,7 @@ function changeAge() {
   person.age += 1
 }
 function changeObj() {
-  obj.a.b.c = 999  
+  obj.a.b.c = 999
 }
 
 watch(person, (newVal, oldVal)=> {
@@ -267,12 +267,12 @@ watch(()=> person.age, (newVal, oldVal)=> {
 // 可以监听car中某个属性发生变化,但是不能监听整个car被替换
 watch(person.car, (newVal, oldVal)=> {
   console.log(newVal, oldVal)
-}) 
+})
 
 // 情况4: 监视响应式对象中的某个属性,且该属性是对象类型,可以直接写,也能写函数,更推荐函数
 watch(()=> person.car, (newVal, oldVal)=> {
   console.log(newVal, oldVal)
-}, { deep: true }) 
+}, { deep: true })
 </script>
 ```
 
@@ -329,7 +329,7 @@ watch([()=> person.age, ()=> person.car], (newVal, oldVal)=> {
 the watchEffect() function allows us to reactively track changes to a set of reactive dependencies and run a callback function whenever any of these dependencies change. It's similar to the watch() function, but it automatically tracks reactive dependencies used within the callback function, and it doesn't require us to explicitly specify the dependencies we want to watch.
 
 
-```html 
+```html
 <template>
   <div>
     <h1>123456789</h1>
@@ -351,7 +351,7 @@ the watchEffect() function allows us to reactively track changes to a set of rea
 
 作用：给标签添加ref属性，可以获取到该标签的DOM对象
      用在组件上，可以获取到组件实例对象
-例子：  
+例子：
   ```html
   <template>
     <div>
@@ -379,7 +379,7 @@ the watchEffect() function allows us to reactively track changes to a set of rea
 ```html
 <template>
   <div>
-    <h1>123456789</h1>    
+    <h1>123456789</h1>
     <button @click="changeAge">点我加改变年龄</button>
     <button @click="changeObj">改变obj</button>
     <Child :name="person.name" :age="person.age" :car="person.car" @childClick="parentClick">
@@ -446,7 +446,7 @@ the watchEffect() function allows us to reactively track changes to a set of rea
 ```
 
 ### 10 Vue3的生命周期
-Vue3的生命周期钩子函数，和Vue2的生命周期钩子函数类似，只是名字不同 
+Vue3的生命周期钩子函数，和Vue2的生命周期钩子函数类似，只是名字不同
 
 
 ### 11 hooks
@@ -458,7 +458,7 @@ Vue3的hooks函数，和Vue2的mixin类似，但是hooks函数更加强大，可
     <h1>123456789</h1>
     <h1>{{name}}</h1>
     <h1>{{age}}</h1>
-    <h1>{{car}}</h1>    
+    <h1>{{car}}</h1>
     <button @click="childClick">子组件按钮</button>
   </div>
 </template>
@@ -485,7 +485,7 @@ export function usePerson() {
 
   function changeAge() {
     age.value += 1
-  }     
+  }
 
   function changeObj() {
     car = {
