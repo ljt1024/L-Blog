@@ -114,6 +114,9 @@
 - [Modern Auth 深度解析：从 Session 到 Passkeys 的现代认证机制](/articles/modern-auth-deep-dive)
 - [FastAPI Web 开发实战：从入门到生产部署](/articles/fastapi-python-web-development)
 
+##  Go
+- [Go 语言完全指南：从入门到工程实战的系统解析](/articles/go-language-complete-guide)
+
 ##  前端性能 & 浏览器
 
 - [CSS 动画性能优化：让页面丝滑流畅的终极指南](/articles/css-animation-performance-optimization)
