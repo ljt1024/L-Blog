@@ -119,6 +119,7 @@
 ##  Go
 - [Go 语言完全指南：从入门到工程实战的系统解析](/articles/go-language-complete-guide)
 - [Go Web 框架 Gin 深度解析：从路由到中间件的工程实战](/articles/go-gin-framework-deep-dive)
+- [Go 并发进阶完全指南：从 Context 到 errgroup 的工程模式](/articles/go-concurrency-advanced)
 
 ##  前端性能 & 浏览器
 
