@@ -53,6 +53,7 @@
 - [微前端架构深入解析：设计模式、实战技巧与避坑指南](/articles/micro-frontend-architecture-deep-dive)
 
 ##  AI & LLM
+- [LangChain 与 LangGraph 深度解析：Python AI 应用开发完整指南](/articles/langchain-langgraph-deep-dive)
 
 - [AI智能体基础概念详解](/articles/ai-agent-basics)
 - [AI智能体技术架构深度解析](/articles/ai-agent-architecture)
