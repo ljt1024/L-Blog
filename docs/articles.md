@@ -56,6 +56,7 @@
 - [LangChain 与 LangGraph 深度解析：Python AI 应用开发完整指南](/articles/langchain-langgraph-deep-dive)
 - [Prompt Engineering & LLM Evaluation 完全指南：从软技巧到工程实践](/articles/prompt-engineering-llm-evaluation)
 - [向量数据库深度对比与选型指南：Chroma / FAISS / Pinecone / Weaviate / Milvus / Qdrant / pgvector](/articles/vector-databases-comparison)
+- [LlamaIndex 深度解析：RAG 数据编排的工程正道](/articles/llamaindex-deep-dive)
 
 - [AI智能体基础概念详解](/articles/ai-agent-basics)
 - [AI智能体技术架构深度解析](/articles/ai-agent-architecture)
