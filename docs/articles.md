@@ -51,6 +51,7 @@
 - [uniapp微信小程序导航栏透明度渐变](/articles/uniappNavCss)
 - [Web Components 完全指南：构建可复用的原生组件系统](/articles/web-components-complete-guide)
 - [微前端架构深入解析：设计模式、实战技巧与避坑指南](/articles/micro-frontend-architecture-deep-dive)
+- [Module Federation 2.0 深度解析：微前端的终极形态](/articles/module-federation-2-deep-dive)
 
 ##  AI & LLM
 - [LangChain 与 LangGraph 深度解析：Python AI 应用开发完整指南](/articles/langchain-langgraph-deep-dive)
