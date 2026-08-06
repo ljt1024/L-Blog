@@ -68,6 +68,7 @@
 - [前端开发者学习 Agent 开发完整路线](/articles/frontend-developer-agent-learning-roadmap)
 - [手把手实现企业级 RAG 系统：分片 → 向量化 → 召回 → 重排 → 回答](/articles/rag-ts-implementation-complete-guide)
 - [Claude Code 完整使用教程：从安装到高效开发](/articles/claude-code-complete-tutorial)
+- [MCP 与 AI Agent Skills 深度解析：让 AI 连接万物的协议与技能系统](/articles/mcp-model-context-protocol-and-agent-skills-deep-dive)
 
 ##  TypeScript & 工程化
 
