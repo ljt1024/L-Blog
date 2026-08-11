@@ -146,6 +146,7 @@
 - [Scroll-driven Animations API 深度解析：让滚动 control 动画](/articles/scroll-driven-animations-api)
 - [View Transitions API 深度解析：浏览器原生的页面过渡方案](/articles/view-transitions-api-deep-dive)
 - [Web Popover API 深度解析：浏览器原生弹层，无需任何 JS 库](/articles/web-popover-api-deep-dive)
+- [Compression Streams API 与 Fetch Streaming 深度解析：浏览器原生流式数据处理](/articles/browser-compression-streams-and-fetch-streaming-deep-dive)
 - [WebAssembly 深度解析：前端性能的最后一块拼图](/articles/webassembly-deep-dive)
 - [Service Worker 与 PWA 深度实践指南：离线优先的现代 Web 应用](/articles/service-worker-pwa-deep-dive)
 - [IndexedDB 深度解析：浏览器端数据库的完整实战指南](/articles/indexeddb-deep-dive)
