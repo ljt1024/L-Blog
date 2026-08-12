@@ -56,6 +56,7 @@
 ##  AI & LLM
 - [LangChain 与 LangGraph 深度解析：Python AI 应用开发完整指南](/articles/langchain-langgraph-deep-dive)
 - [Prompt Engineering & LLM Evaluation 完全指南：从软技巧到工程实践](/articles/prompt-engineering-llm-evaluation)
+- [LLM Evaluation & Benchmarking 完整指南：如何科学评估大语言模型的质量](/articles/llm-evaluation-benchmarking-complete-guide)
 - [向量数据库深度对比与选型指南：Chroma / FAISS / Pinecone / Weaviate / Milvus / Qdrant / pgvector](/articles/vector-databases-comparison)
 - [LlamaIndex 深度解析：RAG 数据编排的工程正道](/articles/llamaindex-deep-dive)
 
