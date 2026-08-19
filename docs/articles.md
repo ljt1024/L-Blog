@@ -59,6 +59,7 @@
 - [LLM Evaluation & Benchmarking 完整指南：如何科学评估大语言模型的质量](/articles/llm-evaluation-benchmarking-complete-guide)
 - [向量数据库深度对比与选型指南：Chroma / FAISS / Pinecone / Weaviate / Milvus / Qdrant / pgvector](/articles/vector-databases-comparison)
 - [AI Agents 深度解析：从单步推理到多智能体协作](/articles/ai-agents-deep-dive)
+- [AI Agent 架构模式深度解析：从单体智能到多智能体协作系统](/articles/agentic-ai-architecture-patterns)
 - [LlamaIndex 深度解析：RAG 数据编排的工程正道](/articles/llamaindex-deep-dive)
 
 - [AI智能体基础概念详解](/articles/ai-agent-basics)
