@@ -104,6 +104,12 @@
 - [Zod 运行时类型校验完全指南：TypeScript 优先的数据校验方案](/articles/zod-runtime-type-validation-deep-dive)
 - [CSS Cascade Layers 深度解析：掌控样式优先级的新一代武器](/articles/css-cascade-layers-deep-dive)
 
+##  数据库
+
+- [PostgreSQL 基础进阶完全指南：从入门到生产级实践](/articles/postgresql-master-guide)
+- [Drizzle ORM 深度解析：TypeScript 全栈开发的最佳数据库方案](/articles/drizzle-orm-deep-dive)
+- [Prisma ORM 深度解析：TypeScript 生态最声明式的数据库 ORM 方案](/articles/prisma-orm-deep-dive)
+
 ##  Python
 
 - [Python 基础完全指南：从零构建坚实的编程地基](/articles/python-basic-guide)
