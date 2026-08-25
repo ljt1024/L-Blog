@@ -107,6 +107,7 @@
 ##  数据库
 
 - [PostgreSQL 基础进阶完全指南：从入门到生产级实践](/articles/postgresql-master-guide)
+- [Redis 深度解析：内存数据库的全场景应用实战](/articles/redis-deep-dive)
 - [Drizzle ORM 深度解析：TypeScript 全栈开发的最佳数据库方案](/articles/drizzle-orm-deep-dive)
 - [Prisma ORM 深度解析：TypeScript 生态最声明式的数据库 ORM 方案](/articles/prisma-orm-deep-dive)
 
