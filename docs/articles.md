@@ -111,6 +111,7 @@
 - [Redis 深度解析：内存数据库的全场景应用实战](/articles/redis-deep-dive)
 - [Drizzle ORM 深度解析：TypeScript 全栈开发的最佳数据库方案](/articles/drizzle-orm-deep-dive)
 - [Prisma ORM 深度解析：TypeScript 生态最声明式的数据库 ORM 方案](/articles/prisma-orm-deep-dive)
+- [数据库索引原理与查询优化深度解析：让 SQL 从慢如蜗牛到快如闪电](/articles/database-indexing-query-optimization-deep-dive)
 
 ##  Python
 
