@@ -35,7 +35,13 @@ export default defineConfig({
       { text: '首页', link: '/' },
       { text: '学习记录', link: '/study/front-end/html-basic', activeMatch: `^/study/`, },
       { text: '文章', link: '/articles' },
-      { text: 'AI 工具', link: 'http://118.31.167.0:3000/ai', target: '_blank' },
+      {
+        text: '个人项目',
+        items: [
+          { text: 'AI 工具', link: 'http://118.31.167.0:3000/ai', target: '_blank', rel: 'noopener noreferrer' },
+          { text: 'LShell', link: 'http://118.31.167.0:7272/', target: '_blank', rel: 'noopener noreferrer' }
+        ]
+      },
     ],
     sidebar: {
       '/study/': [
