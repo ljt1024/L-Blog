@@ -33,7 +33,7 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '首页', link: '/' },
-      { text: '学习记录', link: '/study/index', activeMatch: `^/study/`, },
+      { text: '学习记录', link: '/study/front-end/html-basic', activeMatch: `^/study/`, },
       { text: '文章', link: '/articles' },
       { text: 'AI 工具', link: 'http://118.31.167.0:3000/ai', target: '_blank' },
     ],
