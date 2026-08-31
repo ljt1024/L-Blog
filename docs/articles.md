@@ -73,6 +73,7 @@
 - [手把手实现企业级 RAG 系统：分片 → 向量化 → 召回 → 重排 → 回答](/articles/rag-ts-implementation-complete-guide)
 - [Claude Code 完整使用教程：从安装到高效开发](/articles/claude-code-complete-tutorial)
 - [MCP 与 AI Agent Skills 深度解析：让 AI 连接万物的协议与技能系统](/articles/mcp-model-context-protocol-and-agent-skills-deep-dive)
+- [AI 智能体 Skill 开发深度解析：从原理到实战的完整指南](/articles/agent-skill-development-deep-dive)
 - [WebGPU 与 Transformers.js 深度解析：浏览器端侧 AI 推理的完整实战](/articles/webgpu-browser-local-ai-deep-dive)
 - [生产级 LLM 应用可观测性与治理：Tracing、成本、质量、安全与降级](/articles/llm-observability-production-governance)
 
