@@ -153,6 +153,7 @@
 - [CSS Anchor Positioning 完全指南：革命性的弹出层定位方案](/articles/css-anchor-positioning-guide)
 - [前端性能监控体系搭建实战](/articles/frontend-performance-monitoring)
 - [前端安全完全指南：从 XSS 到 CSP 的攻防实战](/articles/frontend-security-complete-guide)
+- [Web Crypto API 深度解析：浏览器原生的密码学能力](/articles/web-crypto-api-deep-dive)
 - [Web Workers 多线程编程完全指南：让前端拥抱并行计算](/articles/web-workers-multithread-guide)
 - [Cloudflare Workers 深度解析：Edge Computing 时代的全栈开发新范式](/articles/cloudflare-workers-edge-computing-deep-dive)
 - [WebSocket 实时通信深度解析：从原理到企业级实战](/articles/websocket-realtime-communication)
