@@ -178,6 +178,7 @@
 - [Document Picture-in-Picture API 深度解析：画中画不只是视频](/articles/document-picture-in-picture-api-deep-dive)
 - [Web Permissions API 深度解析：浏览器权限的查询、请求与最佳实践](/articles/permissions-api-deep-dive)
 - [CSS Color 4 与 OKLCH 色彩空间深度指南：重新认识你每天都在用的颜色](/articles/css-color-4-oklch-deep-dive)
+- [WebRTC 实时通信深度解析：从原理到 1v1 视频通话实战](/articles/webrtc-real-time-communication-deep-dive)
 
 ---
 
