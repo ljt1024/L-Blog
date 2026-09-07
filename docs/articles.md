@@ -49,6 +49,7 @@
 
 - [uniapp微信小程序新版本获取用户的头像和昵称，手机号](/articles/uniappGetUserInfo)
 - [uniapp微信小程序导航栏透明度渐变](/articles/uniappNavCss)
+- [Custom Elements Reactions 与 ElementInternals API 深度解析](/articles/custom-elements-internals-api)
 - [Web Components 完全指南：构建可复用的原生组件系统](/articles/web-components-complete-guide)
 - [微前端架构深入解析：设计模式、实战技巧与避坑指南](/articles/micro-frontend-architecture-deep-dive)
 - [Module Federation 2.0 深度解析：微前端的终极形态](/articles/module-federation-2-deep-dive)
