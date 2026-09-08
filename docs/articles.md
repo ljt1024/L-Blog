@@ -170,7 +170,6 @@
 - [CSS :has() 选择器深度解析：终于等到你，父选择器！](/articles/css-has-selector-deep-dive)
 - [CSS @property 深度解析：让 CSS 变量拥有类型、动画与继承的魔法](/articles/css-property-houdini-values-api-deep-dive)
 - [Scroll-driven Animations API 深度解析：让滚动 control 动画](/articles/scroll-driven-animations-api)
-- [CSS @property 深度解析：让 CSS 变量拥有类型、动画与继承的魔法](/articles/css-property-houdini-values-api-deep-dive)
 - [View Transitions API 深度解析：浏览器原生的页面过渡方案](/articles/view-transitions-api-deep-dive)
 - [Web Popover API 深度解析：浏览器原生弹层，无需任何 JS 库](/articles/web-popover-api-deep-dive)
 - [Compression Streams API 与 Fetch Streaming 深度解析：浏览器原生流式数据处理](/articles/browser-compression-streams-and-fetch-streaming-deep-dive)
