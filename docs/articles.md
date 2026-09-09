@@ -10,6 +10,7 @@
 - [js实现翻牌抽奖](/articles/jsDraw)
 - [深入理解 JavaScript 事件循环机制](/articles/js-event-loop-deep-dive)
 - [JavaScript 设计模式：从单例到观察者，写出优雅架构](/articles/javascript-design-patterns)
+- [AbortController 深度解析：构建可取消的异步世界](/articles/abort-controller-deep-dive)
 
 ##  Vue 生态
 
