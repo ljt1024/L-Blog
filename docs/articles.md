@@ -66,6 +66,7 @@
 - [AI Agent 架构模式深度解析：从单体智能到多智能体协作系统](/articles/agentic-ai-architecture-patterns)
 - [LlamaIndex 深度解析：RAG 数据编排的工程正道](/articles/llamaindex-deep-dive)
 - [AI Agent Function Calling / Tool Use 深度解析：让大模型连接真实世界](/articles/ai-function-calling-tool-use-deep-dive)
+- [LLM 结构化输出完全指南：让 AI 返回的 JSON 始终可用](/articles/llm-structured-output-deep-dive)
 
 - [AI智能体基础概念详解](/articles/ai-agent-basics)
 - [AI智能体技术架构深度解析](/articles/ai-agent-architecture)
