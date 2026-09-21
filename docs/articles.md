@@ -60,6 +60,7 @@
 - [LangChain 与 LangGraph 深度解析：Python AI 应用开发完整指南](/articles/langchain-langgraph-deep-dive)
 - [Prompt Engineering & LLM Evaluation 完全指南：从软技巧到工程实践](/articles/prompt-engineering-llm-evaluation)
 - [上下文工程（Context Engineering）深度解析：从提示词技巧到上下文管理](/articles/context-engineering-deep-dive)
+- [LLM Prompt Caching 深度解析：把重复计算变成免费午餐](/articles/llm-prompt-caching-deep-dive)
 - [Prompt Injection 与 LLM 安全护栏深度解析：让你的 AI 不被玩坏](/articles/llm-security-guardrails-deep-dive)
 - [LLM Evaluation & Benchmarking 完整指南：如何科学评估大语言模型的质量](/articles/llm-evaluation-benchmarking-complete-guide)
 - [向量数据库深度对比与选型指南：Chroma / FAISS / Pinecone / Weaviate / Milvus / Qdrant / pgvector](/articles/vector-databases-comparison)
