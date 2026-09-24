@@ -193,6 +193,7 @@
 - [WebRTC 实时通信深度解析：从原理到 1v1 视频通话实战](/articles/webrtc-real-time-communication-deep-dive)
 - [Intersection Observer 深度解析：浏览器原生的「进入视口」检测](/articles/intersection-observer-deep-dive)
 - [Resize Observer 深度解析：监听元素尺寸变化的原生方案](/articles/resize-observer-deep-dive)
+- [Screen Wake Lock API 深度解析：防止屏幕熄灭的浏览器原生方案](/articles/screen-wake-lock-api-deep-dive)
 
 ---
 
