@@ -73,6 +73,7 @@
 - [Embeddings 深度解析：语义检索的数学基石，从原理到生产实战](/articles/embeddings-semantic-search-deep-dive)
 - [GraphRAG 深度解析：知识图谱 + 检索增强生成，攻克多跳推理的最后堡垒](/articles/graphrag-knowledge-graph-rag-deep-dive)
 - [Tokenizer 深度解析：LLM 如何读懂文字，从 BPE 原理到成本优化实战](/articles/llm-tokenizer-bpe-deep-dive)
+- [Reranker 深度解析：检索两阶段的精排艺术，从 Cross-Encoder 到 ColBERT](/articles/reranker-cross-encoder-deep-dive)
 - [AI Agent Function Calling / Tool Use 深度解析：让大模型连接真实世界](/articles/ai-function-calling-tool-use-deep-dive)
 - [LLM 结构化输出完全指南：让 AI 返回的 JSON 始终可用](/articles/llm-structured-output-deep-dive)
 - [LLM 流式输出完全指南：从 Server-Sent Events 到前端实时渲染](/articles/llm-streaming-output-deep-dive)
