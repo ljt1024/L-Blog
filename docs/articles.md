@@ -76,6 +76,7 @@
 - [Reranker 深度解析：检索两阶段的精排艺术，从 Cross-Encoder 到 ColBERT](/articles/reranker-cross-encoder-deep-dive)
 - [LLM 推理优化深度解析：KV Cache、Continuous Batching、PagedAttention 与量化](/articles/llm-inference-optimization-deep-dive)
 - [Agent Memory 深度解析：让智能体真正记住用户，从记忆分类到 mem0/Letta 完整实战](/articles/agent-memory-systems-deep-dive)
+- [VLM 多模态大模型深度解析：大模型如何看懂图像，从 ViT 到原生多模态的完整演进](/articles/vlm-multimodal-deep-dive)
 - [AI Agent Function Calling / Tool Use 深度解析：让大模型连接真实世界](/articles/ai-function-calling-tool-use-deep-dive)
 - [LLM 结构化输出完全指南：让 AI 返回的 JSON 始终可用](/articles/llm-structured-output-deep-dive)
 - [LLM 流式输出完全指南：从 Server-Sent Events 到前端实时渲染](/articles/llm-streaming-output-deep-dive)
