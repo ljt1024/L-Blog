@@ -81,6 +81,7 @@
 - [Computer Use Agent 深度解析：当 AI 学会操控屏幕，从截图循环到 Browser Agent 完整实战](/articles/computer-use-agent-deep-dive)
 - [扩散模型深度解析：AI 如何从噪声中画出世界，从 DDPM 原理到 LoRA/ControlNet 完整实战](/articles/diffusion-models-deep-dive)
 - [A2A 协议深度解析：智能体之间的互联网，从 Agent Card 到跨组织任务编排](/articles/a2a-agent-protocol-deep-dive)
+- [多智能体系统架构全解：Harness、Sandbox 与协作拓扑，从单兵到军团的设计科学](/articles/multi-agent-harness-sandbox-architecture-deep-dive)
 - [AI Agent Function Calling / Tool Use 深度解析：让大模型连接真实世界](/articles/ai-function-calling-tool-use-deep-dive)
 - [LLM 结构化输出完全指南：让 AI 返回的 JSON 始终可用](/articles/llm-structured-output-deep-dive)
 - [LLM 流式输出完全指南：从 Server-Sent Events 到前端实时渲染](/articles/llm-streaming-output-deep-dive)

@@ -1,0 +1,524 @@
+# 多智能体系统架构全解：Harness、Sandbox 与协作拓扑，从单兵到军团的设计科学
+
+> 为什么 Claude Code 是一个 Agent 而不是一次 API 调用？为什么 Devin 敢让 Agent 连续工作 5 小时不出事？为什么多智能体系统十个项目九个失败？答案藏在三个关键词里：Harness（骨架）、Sandbox（练兵场）、多智能体拓扑（编制）。这篇文章把 2026 年工程界最前沿的智能体架构一次讲全——单兵怎么造、环境怎么隔离、军团怎么编。
+
+*发布日期：2026-10-16*
+
+## 全景图：一篇文章的地图
+
+先把三者的关系钉在墙上，后面所有章节都在展开这张图：
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    多智能体系统 (Multi-Agent System)         │
+│                                                             │
+│   ┌──────────┐   A2A/消息   ┌──────────┐                    │
+│   │ Harness A │◄───────────►│ Harness B │   ← 编制/拓扑层    │
+│   │ (规划者)  │              │ (执行者)   │                   │
+│   └────┬─────┘              └────┬─────┘                   │
+│        │ MCP/工具调用               │                        │
+│   ┌────▼──────────────────────▼───────┐                    │
+│   │         Sandbox (执行环境)          │   ← 隔离层         │
+│   │   容器/microVM/WASM, 资源限额      │                      │
+│   └───────────────────────────────────┘                     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+- **Harness（骨架）**：单个 Agent 的运行时——循环、上下文管理、工具调用、错误恢复。回答"一个 Agent 是怎么跑起来的"
+- **Sandbox（沙箱）**：Agent 动手干活的环境——代码执行、文件操作、浏览器。回答"怎么让 Agent 放手干而不炸机房"
+- **多智能体拓扑（编制）**：多个 Agent 的协作结构。回答"什么时候值得用多个 Agent、怎么编队"
+
+一个反直觉的结论先行：**三者的建设优先级是 Harness > Sandbox >> 多智能体**。业界九成的"多智能体项目"死因不是协作协议没选好，而是单体 Harness 太弱——单兵都站不稳，编队只是整齐地摔倒。
+
+---
+
+# 第一部分：Harness——单个 Agent 的骨架
+
+## 为什么"调 API"不等于"做 Agent"
+
+一个裸的 LLM 调用是**无状态的函数**：输入 prompt，输出 completion，结束。而 Agent 是**有生命周期的循环系统**。把 Agent 拆到最简，它的本质是这个循环：
+
+```python
+while not done:
+    observation = 感知(task, history)        # 组装上下文
+    action = llm(observation, tools)          # 推理决策
+    result = execute(action)                  # 执行
+    history.append(action, result)            # 记忆
+    done = is_goal_met(result)                # 终止判断
+```
+
+这个循环加上支撑它的全部基础设施，就是 **Harness（具身框架）**。这个词来自测试领域（test harness：让代码跑起来的脚手架），用在 Agent 上极其精准——**LLM 是引擎，Harness 是整辆车**：方向盘（工具系统）、油表（上下文管理）、安全带（错误恢复）、导航（任务规划）。
+
+## Harness 的六大组件（以 Claude Code 为解剖样本）
+
+Claude Code 是 2026 年公认最成熟的 Agent Harness 实现。把它拆开：
+
+### 1. 循环控制（The Loop）
+
+最朴素也最要命的组件。三个必须回答的问题：
+
+```python
+# 什么时候停?
+stop_conditions = [
+    model_output == "任务完成",      # 模型显式宣布
+    steps >= max_turns,              # 预算耗尽
+    cost >= budget_limit,            # 成本上限
+    idle_loops >= 3,                 # 空转检测(连续3步无进展)
+]
+
+# 卡住了怎么办?
+# 工具连续失败 → 注入反思提示("上两次尝试都失败,换个思路")
+# 无限循环 → 相似度检测(本轮输出与上轮几乎一致 → 打断)
+
+# 每轮之间做什么?
+# 检查用户是否中断 / 刷新文件状态 / 检查点保存
+```
+
+**空转检测是被最多自建 Harness 忽略的**——没有它，Agent 会在同一个报错上撞 40 分钟墙，烧掉几十美元。
+
+### 2. 上下文管理（Context Engineering）
+
+Agent 长任务的隐形杀手是**上下文腐化**：50 轮对话后，窗口里堆满废弃的工具输出、过期的文件内容、早已无关的调试信息。注意力被稀释，模型开始"忘记"自己的任务（呼应 Context Engineering 篇，但 Agent 场景更严峻——上下文是**累积**的）。
+
+Claude Code 的三板斧：
+
+```
+① 工具结果截断: 读文件只注入相关段落; 命令输出超长时截断+提示
+② 上下文压缩(compaction): 接近窗口上限时, 让 LLM 把历史总结成
+   "任务状态摘要", 替换原始历史 —— 相当于把工作记忆转存为长期记忆
+③ 子任务隔离: 复杂子任务 spawn 独立的子 Agent, 干完只把结论带回主上下文
+   (这就是多智能体最朴素也最正确的用法: 上下文防火墙)
+```
+
+第三板斧先记住——它是第二部分"多智能体"的伏笔：**多智能体的第一性价值不是"分工"，是上下文隔离**。
+
+### 3. 工具系统（Tool Surface）
+
+Function Calling 篇讲过协议，Harness 层面的问题是**工具集设计**：
+
+```
+工具数量的甜点区: 10~25 个
+  < 5 个: 模型没得选,任务覆盖不足
+  > 40 个: 选择准确率显著下降, 描述互相污染
+
+命名即文档: Read/Grep/Glob/Edit —— 动词开头,语义直白
+  反例: handleFile() (做什么?), process() (处理什么?)
+
+错误消息是给 LLM 看的提示词:
+  "文件不存在" ✗ → "文件不存在。可用 ls 查看目录,或检查路径拼写" ✓
+  工具报错的可操作性直接决定 Agent 的自愈能力
+```
+
+### 4. 权限与确认（The Blast Radius）
+
+Claude Code 的三级权限模型值得抄作业：
+
+```
+Level 1 (自动执行): 读文件、搜索、git status —— 只读操作
+Level 2 (规则判定): 写文件 —— 按 .claude/rules 里的白名单自动判定
+Level 3 (人工确认): bash 命令、git push、删除 —— 必须人点确认
+```
+
+设计哲学：**按"爆炸半径"分级，而不是按操作类型**。读操作的半径是零，随便跑；`rm -rf` 的半径是整个磁盘，永远要人拍板。
+
+### 5. 检查点与恢复（Checkpointing）
+
+5 小时长任务跑到 80% 崩了，从头再来？Harness 必须支持断点续跑：
+
+```
+检查点内容: 完整对话历史 + 文件系统快照(git stash) + 任务状态机
+触发时机: 每完成一个子任务 / 每 N 轮 / 消耗每 X 美元
+恢复方式: 注入压缩摘要 + 恢复文件状态 + 继续未完成任务
+```
+
+### 6. 观测与调试（Observability）
+
+Agent 的调试体验决定开发效率。必备件：
+
+```
+- 每轮的完整 trace(prompt/response/tool_call/result)
+- 成本与 token 计量(按任务聚合)
+- 人为注入点: 暂停/修改下一轮 prompt/手动执行工具
+- 回放: 录制整个 session, 像看录像一样复盘
+```
+
+## Harness vs Framework：一词之差，天壤之别
+
+| | Framework（框架） | Harness（具身框架） |
+|---|---|---|
+| 例子 | LangChain, CrewAI | Claude Code, Devin, SWE-agent |
+| 提供 | 组件库（链、记忆、工具封装） | 完整运行时（循环、恢复、权限、观测） |
+| 类比 | 乐高积木 | 组装好且调校过的整车 |
+| 你的工作 | 拼装 | 驾驶与微调 |
+
+**用 Framework 搭 Harness 是造轮子的过程**——多数团队低估了这个工程量：一个生产级 Harness 的代码量通常超过业务代码本身。这也是为什么"直接用 Claude Code/成熟的 Harness + 自定义工具"在 2026 年成为主流选择。
+
+### SWE-agent 的启示：Harness 决定同一模型的表现上限
+
+普林斯顿的 SWE-agent 论文做了个著名实验：**同一个 GPT-4，换不同的 Harness，SWE-bench 得分从 3% 到 12% 差 4 倍**。差异全部来自 Harness 设计——工具输出的格式（过长的报错信息反而降低成功率）、动作空间的设计、文件查看的截断策略。
+
+> 结论：**模型决定能力的下限，Harness 决定能力的上限。** 同一个模型，好 Harness 能挖掘出数倍的性能。
+
+---
+
+# 第二部分：Sandbox——智能体的练兵场
+
+## 为什么沙箱是刚需
+
+Agent 一旦"动手"，风险就是真实的：
+
+```
+Agent 执行 `pip install` 装到系统 Python
+Agent 写的代码有 `while True` 吃满 CPU
+Agent 测试删除命令时误删宿主文件
+Agent 被网页注入指示 `curl 恶意脚本 | bash`
+Agent 泄漏 .env 里的密钥到外部
+```
+
+Sandbox 的使命一句话：**给 Agent 一个"炸了也无所谓"的世界，同时防止它炸到外面的世界**。
+
+## 隔离强度的光谱
+
+从弱到强，成本递增、延迟递增：
+
+```
+进程级隔离
+  ├ fork 沙箱: 子进程 + ulimit, 同内核
+  └ 隔离弱: 内核漏洞即可逃逸
+      ↓
+容器级隔离 (Docker / gVisor)
+  ├ namespace + cgroups: 文件系统/网络/资源全套隔离
+  ├ gVisor: 拦截系统调用的用户态内核, 逃逸难度大幅提升
+  └ 冷启动: 秒级 | 主流选择: E2B, Modal
+      ↓
+microVM 级隔离 (Firecracker)
+  ├ KVM 虚拟机, 但启动只要 125ms
+  ├ 硬件级虚拟化边界, AWS Lambda 同款技术
+  └ 代表: Firecracker, Cloudflare Workers 底层
+      ↓
+WASM 隔离 (WasmEdge / WASI)
+  ├ 语言级沙箱, 最轻量, 冷启动毫秒级
+  └ 限制: 生态尚不完整(文件/网络 API 受限)
+```
+
+选型的工程判断：
+
+| 场景 | 推荐 | 理由 |
+|------|------|------|
+| 代码解释器（跑用户代码片段） | gVisor 容器 / Firecracker | 不可信代码,强隔离 |
+| Agent 开发环境（改代码/跑测试） | Docker + 资源限额 | 半可信,重效率 |
+| 浏览器 Agent | 容器内浏览器（独立 profile） | 防串主浏览器登录态 |
+| 高并发函数执行 | WASM | 毫秒冷启动+密度 |
+
+## 生产级 Sandbox 的五层配置
+
+光有隔离容器不够，一个能托付给 Agent 的沙箱要五层全配：
+
+```yaml
+# 1. 资源限额 (防吃满宿主)
+mem_limit: 2g
+cpus: 2
+pids_limit: 512           # 防 fork 炸弹
+timeout: 30s              # 单命令硬超时
+
+# 2. 文件系统 (防误删+持久化分离)
+volumes:
+  - workspace/:rw         # 工作区可写(且可快照)
+  - /:ro                  # 其余只读
+tmpfs: /tmp               # 临时目录内存化
+
+# 3. 网络策略 (防外传+防乱装)
+network:
+  egress:
+    allow: [pypi.org, github.com]   # 白名单: 依赖源
+    default: deny                    # 其余全拒(含 .env 泄漏通道)
+
+# 4. 密钥隔离 (最重要也最常被忽略)
+secrets: none            # 沙箱内不放任何密钥
+                          # 需要调 API? 由 Harness 代调(结果送进来)
+                          # 密钥永远不出 Harness 进程
+
+# 5. 可观测
+logging: [stdout, stderr, file_changes]
+snapshot: on_task_complete   # 快照供回滚与审计
+```
+
+第 4 层值得强调：**密钥隔离是沙箱设计里性价比最高的一层**——Agent 被 prompt injection 劫持后最大的损失就是密钥外泄；只要密钥不在沙箱内，攻击者拿到的是一台"没有钥匙的车"。
+
+## 托管方案 vs 自建
+
+- **E2B**：Agent 沙箱即服务，`Sandbox.create()` 一行获得 Python/浏览器/Bash 环境，OpenAI Code Interpreter 同类思路
+- **Modal / Fly Machines**：通用沙箱计算平台，弹性伸缩强
+- **自建**：K8s + gVisor/Firecracker，重但可控，合规场景必选
+
+判断标准和推理部署一样（呼应推理优化篇）：**日均沙箱小时 < 500 用托管，超过或数据敏感再自建**。
+
+---
+
+# 第三部分：多智能体——从单兵到军团
+
+## 先泼冷水：多智能体的三大死亡陷阱
+
+在讲"怎么做"之前，先看"怎么死"——这是多智能体项目九死一生的原因：
+
+```
+陷阱 1: 上下文接力失真
+  Agent A 的结论传给 B 时被压缩/转述, 每传一手失真一分
+  → 三级传递后, C 收到的任务描述已经面目全非
+
+陷阱 2: 成本爆炸
+  N 个 Agent 的对话轮次不是加法是乘法
+  → 单 Agent 20 轮完成的任务, 5 Agent 协作常烧 3~5 倍 token
+
+陷阱 3: 责任弥散
+  没有清晰的决策权划分 → 两个 Agent 互相"礼貌地"改对方的工作
+  → 无限返工循环
+```
+
+对应的三个解药，恰好就是多智能体**真正值得用**的三个理由（下面逐一展开）：结构化的消息契约、上下文隔离带来的专注增益、明确的指挥链。
+
+## 多智能体的四个正确理由
+
+什么时候值得上多智能体？2026 年的工程共识：
+
+### 理由 1：上下文防火墙（最实用）
+
+单 Agent 做复杂任务时，历史互相污染——调试代码的上下文里混着写文档的上下文。拆成多个 Agent，每个只看自己的部分：
+
+```
+反例(单 Agent): 上下文 = 需求分析 + 编码 + 测试 + 文档,全部堆一起
+正解(多 Agent): 
+  规划 Agent: 只看需求,产出任务分解
+  编码 Agent: 只看任务分解+代码,产出实现
+  测试 Agent: 只看代码+接口,产出测试报告
+  → 每个 Agent 的上下文干净, 单位 token 的智力密度更高
+```
+
+这就是前文伏笔的回收：**多智能体的第一性价值是上下文隔离，不是"分工"这个浪漫想象**。
+
+### 理由 2：并行加速（有条件成立）
+
+子任务真正独立时（多文件改写、多方案并行探索），并行是真金白银的加速。注意"真正独立"是稀缺条件——多数看起来并行的任务有隐藏的共享状态（同一个文件、同一个数据库）。
+
+### 理由 3：专业分化（长期主义）
+
+每个 Agent 有自己的工具集、system prompt、记忆——规划者不需要背"怎么写正则"，执行者不需要懂"怎么拆任务"。**专业化的本质还是上下文效率**：工具集小了，选择准了，prompt 短了。
+
+### 理由 4：对抗与制衡（安全场景）
+
+审查 Agent 与生成 Agent 利益对立（一个是甲方一个是质检），比"同一个模型自查"客观得多。辩论式架构（Generator-Critic）在事实核查、代码安全审计里已是标配。
+
+## 五种协作拓扑
+
+```
+1. 编排者-工人 (Orchestrator-Workers)  ★ 最常用,最稳
+   ┌────────┐
+   │ 编排者  │──── 任务分解/结果聚合/重试决策
+   └───┬────┘
+   ┌───┼───────┐
+   ▼   ▼       ▼
+  工人 工人   工人
+   适用: 任务可清晰分解 (DeepResearch 类)
+   关键: 编排者不干活,只做规划和验收 —— 保持上下文干净
+
+2. 流水线 (Pipeline)
+   A → B → C → D
+   适用: 阶段产出明确 (翻译→润色→排版)
+   关键: 每级的消息契约必须严格 schema 化,否则失真
+
+3. 辩论/审查 (Debate / Generator-Critic)
+   生成者 ⇄ 审查者  (N 轮对抗后裁决)
+   适用: 质量敏感场景 (安全审计/事实核查)
+   关键: 审查者的 prompt 要"唱反调", 否则同源模型会互相妥协
+
+4. 分层指挥 (Hierarchical)
+   战略 Agent → 战术 Agent → 执行 Agent (每层管幅 3~7)
+   适用: 超大任务 (整个系统的多 PR 重构)
+   关键: 层间只传"任务+验收标准",不传过程细节
+
+5. 市场/竞标 (Market)
+   发布者广播任务 → 多 Agent 竞标 → 最优者执行
+   适用: 开放生态 (A2A 的自由市场愿景)
+   现状: 信任基础设施不成熟,企业内少见
+```
+
+**选型口诀：能用编排者-工人就别用别的**——它的指挥链最清晰、故障定位最容易。分层是编排者的递归版本；流水线是它的线性退化；辩论是双角色特例；市场还是论文。
+
+## 消息契约：失真问题的工程解
+
+上下文接力失真的解药是**schema 化的任务交接**——Agent 之间不传"自然语言转述"，传结构化契约：
+
+```typescript
+// 一次任务委托的消息契约
+interface TaskHandoff {
+  task_id: string;
+  goal: string;                    // 一句话目标
+  acceptance_criteria: string[];   // 可验证的验收标准 ★ 核心
+  constraints: string[];           // 边界("不要动 auth 模块")
+  artifacts: ArtifactRef[];        // 输入工件引用(不是内容!)
+  context_digest: string;          // 编排者的压缩上下文(<500 token)
+  // 注意: 大内容用引用(文件路径/URL), 交接消息保持轻量
+  //      工人 Agent 按需自己读 —— 拉取式而非推送式
+}
+```
+
+两个细节是精髓：
+
+- **`acceptance_criteria` 可验证**——编排者验收时跑测试/查文件，不靠"看起来对"。没有可验证标准的委托等于开盲盒
+- **引用而非内容**——传"看 `src/auth.py`"而不是把 500 行代码贴进消息。按需拉取让每个 Agent 的上下文保持最小必要
+
+## 完整实战：把三者组装起来
+
+一个"研究→编码→审查"的三 Agent 系统，展示 Harness + Sandbox + 拓扑如何咬合：
+
+```python
+class Squad:
+    """编排者 Harness: 不干活,只分解/委托/验收"""
+    
+    def __init__(self):
+        self.workers = {
+            "researcher": Harness(
+                system_prompt=RESEARCH_PROMPT,      # 专业分化
+                tools=[WebSearch, WebFetch, Write],  # 工具集小而专注
+                sandbox=None,                        # 只读研究,无需沙箱
+            ),
+            "coder": Harness(
+                system_prompt=CODER_PROMPT,
+                tools=[Read, Edit, Bash, Grep],
+                sandbox=DockerSandbox(               # 练兵场
+                    image="python:3.12-slim",
+                    limits=Limits(mem="2g", cpus=2, timeout=60),
+                    network=EgressAllow(["pypi.org"]),
+                    secrets=False,                    # 密钥零进入
+                    snapshot=True,                    # 可回滚审计
+                ),
+            ),
+            "reviewer": Harness(
+                system_prompt=ADVERSARIAL_PROMPT,     # 唱反调的审查者
+                tools=[Read, Bash, Grep],
+                sandbox=DockerSandbox(readonly=True), # 只读审查
+            ),
+        }
+
+    def run(self, goal: str):
+        # ---- 委托 1: 研究(产出规格) ----
+        spec = self.delegate("researcher", TaskHandoff(
+            goal=f"为以下需求产出技术方案: {goal}",
+            acceptance_criteria=["方案含技术选型理由", "含文件级改动清单"],
+            constraints=["调研不超过 15 分钟"],
+            artifacts=[],
+        ))
+        check(spec)   # 编排者按验收标准检查,不过关则打回
+
+        # ---- 委托 2: 编码(在沙箱里实现) ----
+        impl = self.delegate("coder", TaskHandoff(
+            goal="按技术方案实现代码并跑通测试",
+            acceptance_criteria=["pytest 全绿", "diff 只涉及清单内文件"],
+            constraints=["依赖只能从 pypi 安装"],
+            artifacts=[spec.artifact],    # 引用上一环工件
+        ))
+
+        # ---- 委托 3: 对抗审查(独立的沙箱副本) ----
+        review = self.delegate("reviewer", TaskHandoff(
+            goal="审查本次代码变更的安全与质量问题",
+            acceptance_criteria=["每个发现附文件:行号", "无发现时给出'通过'结论"],
+            constraints=["只审查,不修改代码"],
+            artifacts=[impl.artifact],
+        ))
+
+        return self.synthesize(spec, impl, review)
+
+    def delegate(self, role: str, handoff: TaskHandoff):
+        h = self.workers[role]
+        result = h.run(handoff)               # 独立 Harness 循环
+        passed = self.verify(handoff, result)  # 可验证验收
+        if not passed and h.retries < 2:
+            return self.delegate(role, self.patch_handoff(handoff, result.feedback))
+        return result
+```
+
+架构要点回顾（对应三大部分）：
+
+- 每个 worker 是**完整 Harness**（自己的循环/工具/恢复），不是函数调用
+- coder 和 reviewer 各有**独立沙箱**——reviewer 拿到的是快照副本，审查环境被污染也不影响主战场
+- **拉取式交接**——handoff 只传引用和摘要，worker 自己按需读
+- 编排者只做三件事：分解、验收、打回——它的上下文全程干净
+
+## 成本与监控：军团经济的账本
+
+多智能体的成本监控要比单 Agent 严一个量级：
+
+```
+按任务维度聚合(而非按请求):
+  task_cost = Σ(所有 worker 的轮次 × token 单价 + 沙箱秒数 × 单价)
+
+异常检测:
+  单 worker 超过任务预算 60% → 告警
+  worker 间往返超过 3 次 → 大概率责任划分有问题,人工介入
+  总成本 > 单 Agent 基线 × 3 → 这次拆分是失败的
+
+trace 串联:
+  一次任务 → 3 个 worker → 45 轮对话 → 全链路一个 trace ID
+  (A2A 篇讲的透传 trace 在这里同样适用)
+```
+
+**上线前必做的基线实验**：同一个任务，先跑单 Agent 基线，再跑多 Agent 版本——质量提升不显著而成本翻倍的话，老实退回单 Agent。"拆了感觉更专业"不是工程理由。
+
+---
+
+# 第四部分：把三者放回历史坐标
+
+```
+2022  ReAct 论文          → 循环 + 推理 + 行动 (Harness 的思想起点)
+2023  AutoGPT (失败的先驱) → 循环有了,但上下文管理/恢复/权限全缺失
+2024  SWE-agent           → 证明 Harness 设计让同一模型差 4 倍
+     Devin 演示           → Sandbox + Harness + 规划的完整军团demo
+2025  Claude Code         → Harness 工程化的标杆, 单体路线胜利
+     Subagents / MCP      → 上下文隔离的工具化 / 工具协议标准化
+2026  A2A 兴起            → Agent 间协作标准化启动
+      主流共识形成         → 单体 Harness 优先,按需拆分,沙箱刚需
+```
+
+历史给出的教训清晰可辨：**AutoGPT 想直接建军团（多智能体），失败了；Claude Code 先造好单兵（强 Harness），赢了**。2023 年"多智能体框架"遍地开花，2026 年活下来的是"强单体 + 按需 subagent + 沙箱"的朴素架构。
+
+---
+
+# 十大坑（全栈版）
+
+1. **先搭军团后练单兵**——单体 Harness 不行，多智能体只会放大缺陷；先让单 Agent 稳定完成任务，再谈拆分
+2. **沙箱里放密钥**——一次注入就是全部身家；密钥留在 Harness 层，代调 API
+3. **Agent 间传自然语言转述**——三级传递后面目全非；schema 契约 + 引用式工件
+4. **没有可验证的验收标准**——"把代码写好点"这种委托等于开盲盒；每条标准都要能跑命令验证
+5. **编排者亲自干活**——上下文被污染，规划和验收质量双降；编排者只动嘴不动手
+6. **沙箱无网络白名单**——默认全通的沙箱，注入攻击的变现通道畅通无阻
+7. **空转检测缺失**——单 worker 撞墙 40 分钟没人管；每个 Harness 都要 idle loop 检测
+8. **审查者和生成者同 prompt 同倾向**——同源模型会互相妥协；审查者 prompt 要明确"唱反调"
+9. **跳过单 Agent 成本基线**——多智能体上线三个月后发现成本 4 倍、质量持平
+10. **上下文压缩只在窗口快满时做**——腐化早就在发生；按任务阶段主动压缩，别等溢出
+
+---
+
+# 总结
+
+这篇文章的完整逻辑链：
+
+```
+单兵(Harness):  循环控制 + 上下文管理 + 工具系统 + 权限分级 + 检查点 + 观测
+                 → 模型决定下限, Harness 决定上限(SWE-agent: 同模型差 4 倍)
+
+练兵场(Sandbox): 进程 < 容器 < microVM < WASM 隔离光谱
+                 → 五层配置: 资源/文件/网络/密钥隔离/可观测
+                 → 核心原则: 炸了无所谓 + 密钥不出 Harness
+
+军团(多智能体):  四个正确理由(上下文防火墙 > 并行 > 专业化 > 对抗制衡)
+                 → 首选编排者-工人拓扑, 消息契约 schema 化, 验收可验证
+                 → 历史教训: 先强单体, 再按需拆分
+```
+
+至此，博客的智能体系列完成了从零件到军团的全部拼图：**Function Calling（动作）→ MCP（工具协议）→ A2A（协作协议）→ Memory（记忆）→ Computer Use（GUI）→ 本文（系统架构）**。前面五篇是武器库，这一篇是兵法——知道每个武器怎么造之后，这篇回答的是"仗应该怎么打"。
+
+最后一句话收束全文：**多智能体不是把一个 Agent 复制 N 份，而是给一个复杂任务设计一套"信息流动的秩序"——Harness 管单个智能的深度，Sandbox 管动手的自由度，拓扑管智能之间的秩序。三者俱备，军团才成立。**
+
+---
+
+*本文由小虾子 🦐 撰写*
