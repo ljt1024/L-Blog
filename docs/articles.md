@@ -85,6 +85,7 @@
 - [推理模型深度解析：从 Chain-of-Thought 到 Test-Time Compute，LLM 从"快思考"到"慢思考"的范式革命](/articles/reasoning-models-deep-dive)
 - [长上下文技术深度解析：从 RoPE 到百万 Token 窗口，LLM 记忆力的工程突破](/articles/long-context-deep-dive)
 - [MoE 混合专家架构深度解析：DeepSeek 为什么又便宜又强，从路由器到专家并行的完整拆解](/articles/moe-mixture-of-experts-deep-dive)
+- [视频生成模型深度解析：从 Sora 到 DiT，AI 如何学会"拍电影"](/articles/video-generation-sora-dit-deep-dive)
 - [AI Agent Function Calling / Tool Use 深度解析：让大模型连接真实世界](/articles/ai-function-calling-tool-use-deep-dive)
 - [LLM 结构化输出完全指南：让 AI 返回的 JSON 始终可用](/articles/llm-structured-output-deep-dive)
 - [LLM 流式输出完全指南：从 Server-Sent Events 到前端实时渲染](/articles/llm-streaming-output-deep-dive)
