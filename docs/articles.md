@@ -87,6 +87,7 @@
 - [MoE 混合专家架构深度解析：DeepSeek 为什么又便宜又强，从路由器到专家并行的完整拆解](/articles/moe-mixture-of-experts-deep-dive)
 - [视频生成模型深度解析：从 Sora 到 DiT，AI 如何学会"拍电影"](/articles/video-generation-sora-dit-deep-dive)
 - [Scaling Laws 深度解析：大力为什么出奇迹，LLM 训练经济学的底层数学](/articles/scaling-laws-chinchilla-deep-dive)
+- [知识蒸馏深度解析：让小模型继承大模型的"直觉"](/articles/knowledge-distillation-deep-dive)
 - [AI Agent Function Calling / Tool Use 深度解析：让大模型连接真实世界](/articles/ai-function-calling-tool-use-deep-dive)
 - [LLM 结构化输出完全指南：让 AI 返回的 JSON 始终可用](/articles/llm-structured-output-deep-dive)
 - [LLM 流式输出完全指南：从 Server-Sent Events 到前端实时渲染](/articles/llm-streaming-output-deep-dive)
