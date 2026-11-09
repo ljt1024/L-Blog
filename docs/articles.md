@@ -90,6 +90,7 @@
 - [知识蒸馏深度解析：让小模型继承大模型的"直觉"](/articles/knowledge-distillation-deep-dive)
 - [RLHF 与对齐训练深度解析：从 InstructGPT 到 DPO，大模型如何学会"听话"](/articles/rlhf-alignment-dpo-deep-dive)
 - [Agent OS 范式深度解析：超长上下文、记忆分层与多智能体的统一架构](/articles/agent-os-context-memory-multiagent-deep-dive)
+- [DeepSeek Harness 源码深度解析：Everything is a Plugin 的智能体操作系统](/articles/deepseek-harness-architecture-deep-dive)
 - [AI Agent Function Calling / Tool Use 深度解析：让大模型连接真实世界](/articles/ai-function-calling-tool-use-deep-dive)
 - [LLM 结构化输出完全指南：让 AI 返回的 JSON 始终可用](/articles/llm-structured-output-deep-dive)
 - [LLM 流式输出完全指南：从 Server-Sent Events 到前端实时渲染](/articles/llm-streaming-output-deep-dive)
