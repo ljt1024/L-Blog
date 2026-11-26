@@ -93,6 +93,7 @@
 - [DeepSeek Harness 源码深度解析：Everything is a Plugin 的智能体操作系统](/articles/deepseek-harness-architecture-deep-dive)
 - [LangChain Deep Agents 深度解析：开源世界的"造 Claude Code"完整答案](/articles/langchain-deep-agents-architecture-deep-dive)
 - [Agent Evals 深度解析：别再靠"感觉不错"发布智能体](/articles/agent-evals-deep-dive)
+- [Agent 时代的 Prompt Injection 深度解析：当注入从"越狱"升级为"入侵系统"](/articles/agent-prompt-injection-defense-deep-dive)
 - [AI Agent Function Calling / Tool Use 深度解析：让大模型连接真实世界](/articles/ai-function-calling-tool-use-deep-dive)
 - [LLM 结构化输出完全指南：让 AI 返回的 JSON 始终可用](/articles/llm-structured-output-deep-dive)
 - [LLM 流式输出完全指南：从 Server-Sent Events 到前端实时渲染](/articles/llm-streaming-output-deep-dive)
